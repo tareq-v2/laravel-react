@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import ProductList from './ProductList';
 
-export default function Home() {
+const Home = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // Fetch products from the backend
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('/products');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
-    <div className="home-content">
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the main page of the application.</p>
+    <div>
+      <h1>Admin Dashboard</h1>
+      <ProductList products={products} />
     </div>
   );
-}
+};
+
+export default Home;
