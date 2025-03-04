@@ -17,7 +17,7 @@ export default function Layout({ children }) {
         <div className="navbar-links">
           {isAuthenticated ? (
             <>
-              <Link to="/admin-dashboard" className="nav-link">Dashboard</Link>
+              <Link to="/home" className="nav-link">Dashboard</Link>
               <button onClick={handleLogout} className="nav-link">Logout</button>
             </>
           ) : (

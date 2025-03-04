@@ -12,7 +12,7 @@ const ProductSuccessView = () => {
       <div className="error-message">
         <p>No product data found. Please add a product.</p>
         <button onClick={() => navigate('/admin-dashboard')}>Go to Add Product</button>
-        <button onClick={() => navigate('/products')}>View All Products</button>
+        <button onClick={() => navigate('/home')}>View All Products</button>
       </div>
     );
   }

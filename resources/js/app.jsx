@@ -42,6 +42,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Layout><Home /></Layout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
