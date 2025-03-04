@@ -41,9 +41,37 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public function products(){
-        $products = Product::all(); // Fetch all products
-        return response()->json($products);
+    public function products() {
+        $products = Product::all();
+    
+        // Transform the data to match the expected format
+        $transformedProducts = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'imageUrl' => $product->image_url, // Map image_url to imageUrl
+            ];
+        });
+    
+        return response()->json($transformedProducts);
+    }
+    public function productList() {
+        $products = Product::all();
+    
+        // Transform the data to match the expected format
+        $transformedProducts = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'imageUrl' => $product->image_url, // Map image_url to imageUrl
+            ];
+        });
+    
+        return response()->json($transformedProducts);
     }
 
     public function show($id)

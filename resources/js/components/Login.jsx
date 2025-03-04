@@ -17,7 +17,7 @@ export default function Login() {
       const response = await axios.post('/login', formData);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token); // Store token in localStorage
-        navigate('/admin-dashboard'); // Redirect to admin dashboard
+        navigate('/home'); // Redirect to admin dashboard
       }
     } catch (error) {
       setError('Invalid email or password. Please try again.'); // Show error message
