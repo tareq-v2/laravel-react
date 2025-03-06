@@ -84,10 +84,16 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function delete($id){
-        $del = Product::find($id)->delete();
-        if($del){
-            return response()->json(['message' => 'Data delete']);
+    public function destroy(Request $request, $id){
+        try {
+            dd($request->all(), $id);
+            $product->delete();
+            return response()->json(['message' => 'Product deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error deleting product',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }
