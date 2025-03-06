@@ -42,20 +42,21 @@ class ProductController extends Controller
     }
 
     public function products() {
-        $products = Product::all();
-        dd($products);
+        
+        $products = Product::orderBy('created_at', 'asc')->get();
+        // dd($products);
         // Transform the data to match the expected format
-        $transformedProducts = $products->map(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'price' => $product->price,
-                'imageUrl' => $product->image_url, // Map image_url to imageUrl
-            ];
-        });
+        // $transformedProducts = $products->map(function ($product) {
+        //     return [
+        //         'id' => $product->id,
+        //         'name' => $product->name,
+        //         'description' => $product->description,
+        //         'price' => $product->price,
+        //         'imageUrl' => $product->image_url, // Map image_url to imageUrl
+        //     ];
+        // });
     
-        return response()->json($transformedProducts);
+        return response()->json($products);
     }
     public function productList() {
         $products = Product::all();
@@ -81,5 +82,12 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
         return response()->json($product);
+    }
+
+    public function delete($id){
+        $del = Product::find($id)->delete();
+        if($del){
+            return response()->json(['message' => 'Data delete']);
+        }
     }
 }

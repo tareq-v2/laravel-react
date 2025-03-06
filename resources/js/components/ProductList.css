@@ -91,3 +91,13 @@
   font-size: 1.2em;
   color: #888;
 }
+
+/* Add smooth transition for loading */
+.text-center {
+  transition: opacity 0.3s ease;
+}
+
+/* Ensure proper spacing for sticky header */
+body {
+  overflow-x: hidden;
+}
