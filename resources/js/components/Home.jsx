@@ -10,7 +10,8 @@ const Home = () => {
     // Fetch products from the backend
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('/products');
+        const response = await axios.get('http://localhost:8000/api/products');
+        console.log(response);
         const transformedProducts = response.data.map((product) => ({
           ...product,
           discountedPrice: product.price * 0.9,

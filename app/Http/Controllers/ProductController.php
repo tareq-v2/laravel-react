@@ -43,7 +43,7 @@ class ProductController extends Controller
 
     public function products() {
         $products = Product::all();
-    
+        dd($products);
         // Transform the data to match the expected format
         $transformedProducts = $products->map(function ($product) {
             return [
