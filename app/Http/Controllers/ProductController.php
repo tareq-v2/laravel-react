@@ -84,10 +84,10 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function destroy(Request $request, $id){
+    public function destroy($id){
         try {
-            dd($request->all(), $id);
-            $product->delete();
+            // dd($request->all(), $id);
+            Product::find($id)->delete();
             return response()->json(['message' => 'Product deleted successfully']);
         } catch (\Exception $e) {
             return response()->json([

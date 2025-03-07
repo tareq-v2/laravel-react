@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import dotenv from 'dotenv';
+
 
 export default defineConfig({
     plugins: [
@@ -12,6 +14,9 @@ export default defineConfig({
         tailwindcss(),
         react(),
     ],
+    define: {
+        'process.env': JSON.stringify(process.env), // Expose environment variables to the app
+      },
     // server: {
     //     proxy: {
     //       '/api': {

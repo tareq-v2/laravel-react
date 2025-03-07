@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
+// Inside your component
 
 export default function Register() {
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -54,7 +58,7 @@ export default function Register() {
             required
           />
         </div>
-        <div className="input-group">
+        {/* <div className="input-group">
           <label>Password:</label>
           <input
             type="password"
@@ -62,6 +66,25 @@ export default function Register() {
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
           />
+        </div> */}
+
+        <div className="input-group">
+          <label>Password:</label>
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
         </div>
         <button type="submit" className="register-button">Register</button>
       </form>

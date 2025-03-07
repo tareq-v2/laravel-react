@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+// import FacebookLogin from 'react-oauth/facebook';
+
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -21,6 +24,21 @@ export default function Login() {
       }
     } catch (error) {
       setError('Invalid email or password. Please try again.'); // Show error message
+    }
+  };
+
+  const handleSuccess = async (credentialResponse, provider) => {
+    try {
+      const response = await axios.post(`/auth/${provider}`, {
+        token: credentialResponse.credential
+      });
+      
+      // Handle successful login
+      localStorage.setItem('token', response.data.token);
+      window.location.href = '/admin-dashboard';
+      
+    } catch (error) {
+      console.error('Social login failed:', error);
     }
   };
 
@@ -48,6 +66,23 @@ export default function Login() {
           />
         </div>
         <button type="submit" className="login-button">Login</button>
+        <div className="social-login">
+          <GoogleLogin
+            onSuccess={(response) => handleSuccess(response, 'google')}
+            onError={() => console.log('Google login failed')}
+          />
+          
+          {/* <FacebookLogin
+            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+            onSuccess={(response) => handleSuccess(response, 'facebook')}
+            onFailure={() => console.log('Facebook login failed')}
+            render={({ onClick }) => (
+              <button onClick={onClick} className="facebook-btn">
+                Continue with Facebook
+              </button>
+            )}
+          /> */}
+        </div>
       </form>
       <p>
         Don't have an account? <Link to="/register">Register here</Link> 

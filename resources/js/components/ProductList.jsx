@@ -54,7 +54,17 @@ const ProductList = () => {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.post(`/api/delete/products/${productId}`);
+        let token = localStorage.getItem('token');
+        await axios.delete(`api/delete/products/${productId}`, 
+          {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          }
+        }
+      );
         // Remove deleted product from state
         setProducts(prev => prev.filter(product => product.id !== productId));
       } catch (error) {
@@ -63,6 +73,7 @@ const ProductList = () => {
       }
     }
   };
+
   // Display loading message while fetching data
   if (loading) {
     return <div className="loading">Loading products...</div>;

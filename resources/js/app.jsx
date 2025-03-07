@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Router, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
@@ -13,13 +13,19 @@ import ProductSuccessView from './components/ProductSuccessView';
 import ProductList from './components/ProductList';
 import ProductDetails from './components/ProductDetails';
 import ProtectedRoute from './components/ProtectedRoute';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
   return (
     <BrowserRouter>
+        <GoogleOAuthProvider clientId={googleClientId}>
+          <Routes>
+              <Route path="/login" element={<Layout><Login /></Layout>} />
+          </Routes>
+        </GoogleOAuthProvider>
       <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
-        <Route path="/login" element={<Layout><Login /></Layout>} />
         <Route path="/register" element={<Layout><Register /></Layout>} />
         <Route
           path="/admin-dashboard"
