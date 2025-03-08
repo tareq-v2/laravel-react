@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Middleware\CorsMiddleware;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -22,12 +23,12 @@ Route::get('/products/lists', [ProductController::class, 'productsList']);
 
 
 // Google
-Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+Route::post('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->middleware(CorsMiddleware::class);
+Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->middleware(CorsMiddleware::class);
 
-// Facebook
-// Route::get('/auth/facebook', [SocialAuthController::class, 'redirectToFacebook']);
-// Route::get('/auth/facebook/callback', [SocialAuthController::class, 'handleFacebookCallback']);
+Route::get('/sanctum/csrf-cookie', function () {
+  return response()->noContent();
+});
 
 Route::get('/{any}', function () {
   return view('welcome');
