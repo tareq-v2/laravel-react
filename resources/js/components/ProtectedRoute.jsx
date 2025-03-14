@@ -5,3 +5,4 @@ export default function ProtectedRoute({ children }) {
   const isAuthenticated = !!localStorage.getItem('token'); // Check if user is authenticated
   return isAuthenticated ? children : <Navigate to="/login" />; // Redirect to login if not authenticated
 }
+

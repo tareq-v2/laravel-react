@@ -23,8 +23,8 @@ Route::get('/products/lists', [ProductController::class, 'productsList']);
 
 
 // Google
-Route::post('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->middleware(CorsMiddleware::class);
-Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->middleware(CorsMiddleware::class);
+Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);
+Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 
 Route::get('/sanctum/csrf-cookie', function () {
   return response()->noContent();

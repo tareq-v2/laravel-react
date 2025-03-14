@@ -8,5 +8,5 @@ return [
     'allowed_headers' => ['*'], // Allow all headers
     'exposed_headers' => [], // Expose no additional headers
     'max_age' => 0, // Preflight request cache duration (0 = no cache)
-    'supports_credentials' => false, // Allow credentials (cookies, authorization headers)
+    'supports_credentials' => true, // Allow credentials (cookies, authorization headers)
 ];
