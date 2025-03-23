@@ -28,6 +28,8 @@ const Home = () => {
     <div>
       <h1>Admin Dashboard</h1>
       <Link to="/admin-dashboard" className="nav-link">Add Product</Link>
+      <Link to="/game" className="nav-link">Game</Link>
+      <Link to="/snake" className="nav-link">Snake</Link>
       <ProductList products={products} />
     </div>
   );

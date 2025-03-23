@@ -7,13 +7,15 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use PgSql\Result;
+use Illuminate\Support\Facades\Http;
+
 
 class SocialAuthController extends Controller
 {
     // Google
     public function redirectToGoogle()
     {
-        return Socialite::driver('google') ->redirect();
+        return Socialite::driver('google')->redirect();
     }
 
     public function handleGoogleCallback()
@@ -22,22 +24,18 @@ class SocialAuthController extends Controller
     }
 
     private function handleSocialCallback($provider)
-    {
+    {   
+        // dd($this->getAccessToken(request()->session()->token()));
+        $socialUser = Socialtite();
         try {
-            $socialUser = Socialite::driver('google')->user();
+            // dd(Auth::user());
+            $socialUser = Socialite::driver('google');
             // dd($socialUser);
-            // Find or create the user in your database
+
+            // Find or create the user in your databasen 
             $user = User::where(['email' => $socialUser->email])->first();
     
             if (!$user) {
-                // Create a new user
-                // $user->fill([
-                //     'name' => $socialUser->name,
-                //     'email' => $socialUser->email,
-                //     'provider_id' => $socialUser->id,
-                //     'provider' => $provider,
-                //     'password' => bcrypt(rand() . time()), // Dummy password
-                // ])->save();
                 $user = User::create([
                     'name' => $socialUser->name,
                     'email' => $socialUser->email,
@@ -47,7 +45,7 @@ class SocialAuthController extends Controller
                 ]);
             } else {
                 // Update existing user if necessary
-                if ($user->provider !== $provider || $user->provider_id !== $socialUser->getId()) {
+                if ($user->provider !== $provider || $user->provider_id !== $socialUser->id) {
                     $user->update([
                         'provider_id' => $socialUser->id,
                         'provider' => $provider,
@@ -71,4 +69,17 @@ class SocialAuthController extends Controller
             return response()->json(['error' => 'Authentication failed'. $e], 401);
         }
     }
+
+    // private function getAccessToken($code)
+    // {
+    //     $response = Http::post('https://www.googleapis.com/oauth2/v4/token', [
+    //         'code' => $code,
+    //         'client_id' => env('GOOGLE_CLIENT_ID'),
+    //         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    //         'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
+    //         'grant_type' => 'authorization_code',
+    //     ]);
+
+    //     return $response->json()['access_token'];
+    // }
 }

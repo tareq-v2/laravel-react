@@ -94,6 +94,8 @@ import ProductSuccessView from './components/ProductSuccessView';
 import ProductList from './components/ProductList';
 import ProductDetails from './components/ProductDetails';
 import ProtectedRoute from './components/ProtectedRoute';
+import Game from './components/Game';
+import Snake from './components/Snake';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
@@ -101,9 +103,21 @@ function App() {
 
   return (
     <BrowserRouter>
+      
       <GoogleOAuthProvider clientId={googleClientId}>
         <Routes>
-          {/* Public Routes */}
+          <Route
+            path="/game"
+            element={
+              <Game />
+            }
+          />
+          <Route
+            path="/snake"
+            element={
+              <Snake />
+            }
+          />
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />
 

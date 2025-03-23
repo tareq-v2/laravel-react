@@ -1,13 +1,32 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem('token');
 
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove token from localStorage
-    navigate('/login'); // Redirect to login page
+  const handleLogout = async () => {
+    console.log('loging out');
+    try {
+      // Step 1: Log out from the backend
+      await axios.post('/logout', {}, {
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Include Sanctum token
+        'Accept': 'application/json',
+      },
+        withCredentials: true,
+      });
+
+      // Step 2: Remove the token from localStorage
+      localStorage.removeItem('token');
+
+      // Step 3: Redirect to login
+      navigate('/login');
+
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (

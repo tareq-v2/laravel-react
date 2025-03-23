@@ -185,7 +185,8 @@ export default function Login() {
   // Handle social login (Google OAuth)
   const handleSocialLogin = async (authToken, provider) => {
     try {
-      console.log(document.cookie);
+      
+      console.log(authToken);
       const response = await axios.post(`/auth/${provider}/callback`, {
         token: authToken,
       }, {
@@ -193,9 +194,10 @@ export default function Login() {
           'X-XSRF-TOKEN': getCookie('XSRF-TOKEN'), // Include CSRF token in headers
           'Content-Type': 'application/json',
         },
-        withCredentials: true, // Include cookies in the request
+        withCredentials: true,
+        
       });
-
+      
       if (response.data.token) {
         localStorage.setItem('token', response.data.token); // Store the token
         navigate('/admin-dashboard'); // Redirect to admin dashboard
@@ -217,6 +219,11 @@ export default function Login() {
   // Handle Google OAuth error
   const handleGoogleError = () => {
     setError('Google login failed. Please try again.');
+  };
+
+  // Redirect to your backend's Google OAuth redirect endpoint
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:8000/auth/google';
   };
 
   return (
@@ -242,11 +249,14 @@ export default function Login() {
             required
           />
         </div>
+        
+
         <button type="submit" className="login-button">
           Login
         </button>
         <div className="social-login mt-2">
           <GoogleLogin
+            // onClick={handleGoogleLogin}
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
           />
