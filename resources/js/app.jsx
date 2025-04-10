@@ -96,6 +96,7 @@ import ProductDetails from './components/ProductDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 import Game from './components/Game';
 import Snake from './components/Snake';
+import Front from './components/Frontend/Front';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
@@ -118,6 +119,7 @@ function App() {
               <Snake />
             }
           />
+          <Route path="/" element={<Layout><Front /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />
 

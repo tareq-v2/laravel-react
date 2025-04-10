@@ -1,0 +1,53 @@
+/* Layout styles */
+.layout-container {
+    display: flex;
+    background: #f6f7fb;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+  }
+  
+  .footer {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: center;
+    margin-top: auto; /* This pushes the footer to the bottom */
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* Navbar styles */
+  .navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-left: 10px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  
+  button.nav-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+  }
+  .navbar-semi-title {
+    padding-left: 7px;
+    background-color: inherit;
+    border-radius: 0px;
+    height: 35px;
+    width: 270px;
+  }
