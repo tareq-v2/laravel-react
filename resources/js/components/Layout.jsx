@@ -8,26 +8,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 export default function Layout({ children }) {
-  const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem('token');
-
-  const handleLogout = async () => {
-    console.log('loging out');
-    try {
-      await axios.post('/logout', {}, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Accept': 'application/json',
-        },
-        withCredentials: true,
-      });
-
-      localStorage.removeItem('token');
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
 
   return (
     <div className="layout-container">

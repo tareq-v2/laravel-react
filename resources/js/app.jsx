@@ -94,8 +94,6 @@ import ProductSuccessView from './components/ProductSuccessView';
 import ProductList from './components/ProductList';
 import ProductDetails from './components/ProductDetails';
 import ProtectedRoute from './components/ProtectedRoute';
-import Game from './components/Game';
-import Snake from './components/Snake';
 import Front from './components/Frontend/Front';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -107,18 +105,7 @@ function App() {
       
       <GoogleOAuthProvider clientId={googleClientId}>
         <Routes>
-          <Route
-            path="/game"
-            element={
-              <Game />
-            }
-          />
-          <Route
-            path="/snake"
-            element={
-              <Snake />
-            }
-          />
+          
           <Route path="/" element={<Layout><Front /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />
@@ -136,7 +123,7 @@ function App() {
             path="/admin-dashboard"
             element={
               <ProtectedRoute>
-                <Layout><AdminDashboard /></Layout>
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />
@@ -144,7 +131,7 @@ function App() {
             path="/products"
             element={
               <ProtectedRoute>
-                <Layout><ProductList /></Layout>
+                <ProductList />
               </ProtectedRoute>
             }
           />
@@ -152,7 +139,7 @@ function App() {
             path="/product/:id"
             element={
               <ProtectedRoute>
-                <Layout><ProductDetails /></Layout>
+                <ProductDetails />
               </ProtectedRoute>
             }
           />
@@ -160,7 +147,7 @@ function App() {
             path="/home"
             element={
               <ProtectedRoute>
-                <Layout><Home /></Layout>
+                <Home />
               </ProtectedRoute>
             }
           />

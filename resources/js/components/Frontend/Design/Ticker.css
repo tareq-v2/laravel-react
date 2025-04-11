@@ -1,0 +1,50 @@
+/* Ticker.css */
+.ticker-container {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+  
+  .ticker-content {
+    display: inline-block;
+    animation: ticker 20s linear infinite;
+    padding-right: 100%;
+  }
+  
+  @keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  .ticker-container:hover .ticker-content {
+    animation-play-state: paused;
+  }
+
+
+  /* Ticker.css */
+.ticker-wrapper {
+    overflow: hidden;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    margin: 15px 0;
+}
+
+.ticker-content {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    white-space: nowrap;
+}
+
+.ticker-content span {
+    margin-right: 40px;
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Add animation for older browsers */
+.react-ticker__item {
+    display: inline-block;
+}

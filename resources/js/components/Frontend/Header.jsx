@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './Design/Footer.css';
 import HeaderLogo from './HeaderLogo';
+import SubHeader from './SubHeader';
 
 const Header = () => {
     // const navigate = useNavigate();
@@ -25,54 +27,61 @@ const Header = () => {
     }
   };
   return (
-    <nav className="navbar">
-        <div className="container">
-            <div className="navbar-brand">
-                <Link to="/" className="nav-link">
-                    <HeaderLogo 
-                        logoUrl="/ar.png" 
-                        title="Diaspora's #1 Advertising Resource"
-                        siteUrl="/"
-                    />
-                </Link>
-            </div>
-            <div className="prod-code-sec">
-                <div className="clearfix">
-                    <h4 className="mb-0"
+    <>
+        <nav className="navbar">
+            <div className="container">
+                <div className="navbar-brand">
+                    <Link to="/" className="nav-link">
+                        <HeaderLogo 
+                            logoUrl="/ar.png" 
+                            title="Diaspora's #1 Advertising Resource"
+                            siteUrl="/"
+                        />
+                    </Link>
+                </div>
+                <div className="prod-code-sec">
+                    <div className="clearfix">
+                        <h4 className="mb-0"
+                            style={{
+                                fontWeight: "bold !important",
+                                fontSize: "17pt",
+                                color: "#1b2122",
+                            }}
+                        >
+                            Post Your Free Classified Ad
+                        </h4>
+                        <h4 className="text-center mb-0"
                         style={{
                             fontWeight: "bold !important",
-                            fontSize: "17pt",
+                            fontSize: "14pt",
                             color: "#1b2122",
                         }}
-                    >
-                        Post Your Free Classified Ad
-                    </h4>
-                    <h4 className="text-center mb-0"
-                    style={{
-                        fontWeight: "bold !important",
-                        fontSize: "14pt",
-                        color: "#1b2122",
-                    }}
-                    >
-                        Use Promo Code
-                    </h4>
+                        >
+                            Use Promo Code
+                        </h4>
+                    </div>
+                </div>
+                <div className="navbar-links">
+                    {isAuthenticated ? (
+                        <>
+                        <Link to="/home" className="nav-link">Dashboard</Link>
+                        <button onClick={handleLogout} className="nav-link">Logout</button>
+                        </>
+                    ) : (
+                        <>
+                        <Link to="/login" className="nav-link">Login</Link>
+                        <Link to="/register" className="nav-link">Register</Link>
+                        </>
+                    )}
                 </div>
             </div>
-            <div className="navbar-links">
-                {isAuthenticated ? (
-                    <>
-                    <Link to="/home" className="nav-link">Dashboard</Link>
-                    <button onClick={handleLogout} className="nav-link">Logout</button>
-                    </>
-                ) : (
-                    <>
-                    <Link to="/login" className="nav-link">Login</Link>
-                    <Link to="/register" className="nav-link">Register</Link>
-                    </>
-                )}
+        </nav>
+        <nav className="navbar">
+            <div className="container">
+                <SubHeader/>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </>
   );
 };
 

@@ -4,6 +4,7 @@ import ProductList from './ProductList';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const isAuthenticated = !!localStorage.getItem('token');
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -24,12 +25,41 @@ const Home = () => {
     fetchProducts();
   }, []);
 
+  const handleLogout = async () => {
+    console.log('loging out');
+    try {
+      await axios.post('/logout', {}, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
+        },
+        withCredentials: true,
+      });
+
+      localStorage.removeItem('token');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div>
+      <div className="navbar-links">
+          {isAuthenticated ? (
+              <>
+              <Link to="/home" className="nav-link">Dashboard</Link>
+              <button onClick={handleLogout} className="nav-link">Logout</button>
+              </>
+          ) : (
+              <>
+              <Link to="/login" className="nav-link">Login</Link>
+              <Link to="/register" className="nav-link">Register</Link>
+              </>
+          )}
+      </div>
       <h1>Admin Dashboard</h1>
       <Link to="/admin-dashboard" className="nav-link">Add Product</Link>
-      <Link to="/game" className="nav-link">Game</Link>
-      <Link to="/snake" className="nav-link">Snake</Link>
       <ProductList products={products} />
     </div>
   );
