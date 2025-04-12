@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import VideoSection from './VideoSection';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Front = () => {
@@ -24,8 +25,9 @@ const Front = () => {
   }, []);
 
   return (
-    <div className="container mt-5 bg-light">
-      <h1 className="text-center">Welcome to Armenian Advertiser.</h1>
+    <div className="container mt-1 bg-light">
+      <VideoSection/>
+      {/* <h1 className="text-center">Welcome to Armenian Advertiser.</h1> */}
     </div>
   );
 };

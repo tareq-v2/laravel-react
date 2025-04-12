@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Middleware\CorsMiddleware;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\HomeVideo;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -30,7 +31,12 @@ Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);
 Route::get('/sanctum/csrf-cookie', function () {
   return response()->noContent();
 });
-
+Route::get('/home-videos', function() {
+  $videos = HomeVideo::all();
+  return response()->json([
+      'data' => $videos
+  ]);
+});
 Route::get('/{any}', function () {
   return view('welcome');
 })->where('any', '.*');
