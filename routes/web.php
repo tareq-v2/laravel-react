@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Middleware\CorsMiddleware;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\HomeVideo;
+use Illuminate\Http\Request;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -37,6 +38,9 @@ Route::get('/home-videos', function() {
       'data' => $videos
   ]);
 });
+Route::get("checkHoroscope", function(Request $request){
+  return response()->json(['session' => $request->input('src')]);
+})->name('checkHoroscope');
 Route::get('/{any}', function () {
   return view('welcome');
 })->where('any', '.*');

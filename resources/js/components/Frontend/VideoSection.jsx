@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
+import VideoRightSection from './VideoRightSection';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
@@ -13,10 +14,11 @@ const VideoSection = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await axios.get('/home-videos'); // Replace with your Laravel endpoint
-        setVideos(response.data);
-        if (response.data.length > 0) {
-          setCurrentVideo(response.data[0]);
+        const response = await axios.get('/home-videos');
+        // Access the nested data array
+        setVideos(response.data.data);
+        if (response.data.data.length > 0) {
+          setCurrentVideo(response.data.data[0]);
         }
         setLoading(false);
       } catch (err) {
@@ -24,7 +26,7 @@ const VideoSection = () => {
         setLoading(false);
       }
     };
-
+  
     fetchVideos();
   }, []);
 
@@ -71,20 +73,20 @@ const VideoSection = () => {
         <div className="col-lg-7">
             <div className="banner-video-slider">
                 <div className="banner-video-slide">
-                <div className="ratio ratio-16x9">
-                    {currentVideo && (
-                    <iframe
-                        id="main-video-frame"
-                        width="649"
-                        height="365"
-                        src={`https://www.youtube.com/embed/${extractVideoId(currentVideo.video_link)}?autoplay=1&mute=1`}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title={currentVideo.title}
-                    />
-                    )}
-                </div>
+                  <div className="ratio ratio-16x9">
+                      {currentVideo && (
+                      <iframe
+                          id="main-video-frame"
+                          width="649"
+                          height="365"
+                          src={`https://www.youtube.com/embed/${extractVideoId(currentVideo.video_link)}?autoplay=1&mute=1`}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={currentVideo.title}
+                      />
+                      )}
+                  </div>
                 </div>
             </div>
 
@@ -125,9 +127,7 @@ const VideoSection = () => {
                 </Slider>
             </div>
         </div>
-        <div className="col-lg-5">
-            
-        </div>
+        <VideoRightSection/>
      </div>
     </>
   );
