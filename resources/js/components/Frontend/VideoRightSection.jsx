@@ -13,9 +13,9 @@ const VideoRightSection = () => {
   const [selectedSign, setSelectedSign] = useState(null);
   // Dummy data with working image URLs
   const dummyBanners = [
-    { id: 1, image: 'https://placehold.co/600x300?text=Banner+1' },
-    { id: 2, image: 'https://placehold.co/600x300?text=Banner+2' },
-    { id: 3, image: 'https://placehold.co/600x300?text=Banner+3' }
+    { id: 1, image: 'http://localhost:8001/uploads/categoryIcons/jobs.png' },
+    { id: 2, image: 'http://localhost:8001/uploads/categoryIcons/rent.png' },
+    { id: 3, image: 'http://localhost:8001/uploads/categoryIcons/jobs.png' }
   ];
 
   const zodiacSigns = [

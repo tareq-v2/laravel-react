@@ -1,0 +1,202 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+// import { MainContent } from './MainContent';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Design/MainContent.css'; // Assuming you have a CSS file for styling
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+
+const MainContent = () => {
+  // Dummy data for all sections
+  const sections = {
+    adCategories: [
+      { id: 1, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
+      { id: 2, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
+      { id: 3, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
+      { id: 4, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
+      // Add more categories
+    ],
+    directoryCategories: [
+      { id: 1, name: 'Automotive', icon: '/icons/automotive.png' },
+      { id: 2, name: 'Beauty & Salon', icon: '/icons/beauty.png' },
+      // Add more categories
+    ],
+    news: [
+      { 
+        id: 1, 
+        title: 'Latest Industry News', 
+        date: 'March 18, 2025',
+        excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+        image: '/news/news1.jpg'
+      },
+      // Add more news
+    ],
+    businesses: [
+      {
+        id: 1,
+        name: 'Premium Business',
+        address: '123 Main St, Yerevan',
+        logo: '/businesses/logo1.png',
+        description: 'Lorem ipsum dolor sit amet consectetur...'
+      },
+      // Add more businesses
+    ]
+  };
+
+  return (
+    
+    <div className="container">
+      {/* Ad Categories Section */}
+      <section className="section-spacing">
+        <div className="row">
+          <div className="col-md-2">
+            <div className="side-banner">
+              <img src="http://localhost:8001/uploads/banner/side-banner.png" alt="Left banner" />
+            </div>
+          </div>
+          
+          <div className="col-md-8">
+            <div className='ad-categories'>
+            <div className="section-header">
+              <div>
+                 {/* Empthy */}
+              </div>
+              <div>
+                <h1>Classified Ads</h1>
+                <p>Select Category To View Listings</p>
+              </div>
+              <div>
+              <Link to="/post-ad" className="btn btn-primary">
+                <i className="fa fa-plus me-2"></i>Post Your Ad
+              </Link>
+              </div>
+            </div>
+            
+            <div className="category-grid">
+              {sections.adCategories.map(category => (
+                <div key={category.id} className="category-card">
+                  <img src={category.icon} alt={category.name} />
+                  <h4>{category.name}</h4>
+                  <span className="badge">{category.count}+</span>
+                </div>
+              ))}
+            </div>
+            </div>
+          </div>
+
+          <div className="col-md-2">
+            <div className="side-banner">
+              <img src="http://localhost:8001/uploads/banner/side-banner1.png" alt="Right banner" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Directory Categories Section */}
+      <section className="section-spacing">
+        <div className="row">
+          <div className="col-md-2">
+            {/* Side banners similar to ad categories */}
+          </div>
+          
+          <div className="col-md-8">
+            <div className="section-header">
+              <h1>Business Directory</h1>
+              <p>Select Category To View Listings</p>
+              <Link to="/add-business" className="btn btn-primary">
+                <i className="fa fa-plus me-2"></i>Add Your Business
+              </Link>
+            </div>
+            
+            <div className="directory-grid">
+              {sections.directoryCategories.map(category => (
+                <div key={category.id} className="directory-card">
+                  <img src={category.icon} alt={category.name} />
+                  <h4>{category.name}</h4>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="col-md-2">
+            {/* Side banners similar to ad categories */}
+          </div>
+        </div>
+      </section>
+
+
+      {/* News Section */}
+      <section className="section-spacing">
+        <div className="row">
+          <div className="col-md-3">
+            <div className="news-banner">
+              <img src="/banners/news-left.jpg" alt="News banner" />
+            </div>
+          </div>
+          
+          <div className="col-md-6">
+            <div className="section-header">
+                <h1>Latest News</h1>
+            </div>
+            <Swiper
+                className="news-carousel"
+                spaceBetween={10}
+                slidesPerView={2}  // Show 2 slides at once
+                navigation={true}  // Enable arrow navigation
+                pagination={{ clickable: true }}  // Enable dots pagination
+                autoplay={{ delay: 3000 }}  // Auto-slide every 3 seconds
+                modules={[Navigation, Pagination, Autoplay]}  // Load modules
+                breakpoints={{
+                // Responsive breakpoints
+                320: { slidesPerView: 1 },  // 1 slide on mobile
+                768: { slidesPerView: 2 },  // 2 slides on tablet/desktop
+                }}
+            >
+                {sections.news.map(article => (
+                <SwiperSlide key={article.id} className="news-card">
+                    <img src={article.image} alt={article.title} />
+                    <div className="news-content">
+                    <small>{article.date}</small>
+                    <h5>{article.title}</h5>
+                    <p>{article.excerpt}</p>
+                    </div>
+                </SwiperSlide>
+                ))}
+            </Swiper>
+            </div>
+
+          <div className="col-md-3">
+            <div className="news-banner">
+              <img src="/banners/news-right.jpg" alt="News banner" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Businesses Section */}
+      <section className="section-spacing">
+        <div className="section-header">
+          <h1>Featured Businesses</h1>
+        </div>
+        <div className="business-grid">
+          {sections.businesses.map(business => (
+            <div key={business.id} className="business-card">
+              <img src={business.logo} alt={business.name} />
+              <h4>{business.name}</h4>
+              <p>{business.address}</p>
+              <p className="description">{business.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default MainContent;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import VideoSection from './VideoSection';
+import MainContent from './MainContent';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Front = () => {
@@ -27,7 +28,8 @@ const Front = () => {
   return (
     <div className="container mt-1 bg-light">
       <VideoSection/>
-      {/* <h1 className="text-center">Welcome to Armenian Advertiser.</h1> */}
+      <MainContent/>
+      <h1 className="text-center">@Tareq</h1>
     </div>
   );
 };
