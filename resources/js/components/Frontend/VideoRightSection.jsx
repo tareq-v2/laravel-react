@@ -20,7 +20,8 @@ const VideoRightSection = () => {
   const [iframeSrc, setIframeSrc] = useState('');
   const [showIframe, setShowIframe] = useState(false);
   const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isHoroscopeLoading, setIsHoroscopeLoading] = useState(false);
   const [selectedSign, setSelectedSign] = useState(null);
   // Dummy data with working image URLs
@@ -60,6 +61,7 @@ const VideoRightSection = () => {
     setIsHoroscopeLoading(true);
     
     try {
+      setIsLoading(true);
       const baseUrl = `https://mydailyhoroscope.org/widget.php?sign=${sign}&bc=000000&fc=ffffff&fs=12&h=`;
       const modifiedSrc = baseUrl.replace('https:', '');
       
@@ -72,6 +74,7 @@ const VideoRightSection = () => {
       
       setIframeSrc(response.data.session);
       setShowIframe(true);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching horoscope:', error);
     } finally {
@@ -193,71 +196,77 @@ const VideoRightSection = () => {
       </div>
 
       {/* Zodiac Section */}
-      <div className="mt-4 p-3 bg-light rounded-3 position-relative">
-        {!showIframe ? (
-          <>
-            <div className="text-center mb-3">
-              <h5 className="mb-1">Daily Horoscope</h5>
-              <small className="text-muted">
-                {new Date().toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </small>
-            </div>
-
-            <div className="row g-2">
-              {zodiacSigns.map((sign, index) => (
-                <div key={index} className="col-4 col-sm-3 col-lg-2">
-                  <button
-                    className={`btn btn-outline-light w-100 p-1 bg-white ${
-                      isHoroscopeLoading && selectedSign === sign ? 'loading-active' : ''
-                    }`}
-                    onClick={(e) => handleHoroscopeClick(sign, e)}
-                    disabled={isHoroscopeLoading}
-                  >
-                    <div className="ratio ratio-1x1 position-relative">
-                      {isHoroscopeLoading && selectedSign === sign && (
-                        <div className="position-absolute top-50 start-50 translate-middle">
-                          <div className="spinner-border spinner-border-sm text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      )}
-                      <img
-                        src={`https://placehold.co/100x100/4a7b93/fff?text=${encodeURIComponent(sign.slice(0, 3))}`}
-                        alt={sign}
-                        className={`img-fluid rounded-circle ${
-                          isHoroscopeLoading && selectedSign === sign ? 'opacity-25' : ''
-                        }`}
-                      />
-                    </div>
-                    <small className="d-block mt-1 text-dark fw-medium">{sign}</small>
-                  </button>
+      <div>
+        {
+          loading ?  <div>Loading...</div> : (
+            <div className="mt-4 p-3 bg-light rounded-3 position-relative">
+            {!showIframe ? (
+              <>
+                <div className="text-center mb-3">
+                  <h5 className="mb-1">Daily Horoscope</h5>
+                  <small className="text-muted">
+                    {new Date().toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </small>
                 </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="position-relative">
-            <button
-              className="btn btn-danger btn-sm position-absolute"
-              style={{ right: 15, top: -10, zIndex: 1 }}
-              onClick={handleCloseIframe}
-            >
-              &times;
-            </button>
-            <iframe
-              className="w-100 rounded-2"
-              style={{ height: '250px', border: 'none' }}
-              src={iframeSrc}
-              title="Horoscope"
-            />
-          </div>
-        )}
+    
+                <div className="row g-2">
+                  {zodiacSigns.map((sign, index) => (
+                    <div key={index} className="col-4 col-sm-3 col-lg-2">
+                      <button
+                        className={`btn btn-outline-light w-100 p-1 bg-white ${
+                          isHoroscopeLoading && selectedSign === sign ? 'loading-active' : ''
+                        }`}
+                        onClick={(e) => handleHoroscopeClick(sign, e)}
+                        disabled={isHoroscopeLoading}
+                      >
+                        <div className="ratio ratio-1x1 position-relative">
+                          {isHoroscopeLoading && selectedSign === sign && (
+                            <div className="position-absolute top-50 start-50 translate-middle">
+                              <div className="spinner-border spinner-border-sm text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                            </div>
+                          )}
+                          <img
+                            src={`https://placehold.co/100x100/4a7b93/fff?text=${encodeURIComponent(sign.slice(0, 3))}`}
+                            alt={sign}
+                            className={`img-fluid rounded-circle ${
+                              isHoroscopeLoading && selectedSign === sign ? 'opacity-25' : ''
+                            }`}
+                          />
+                        </div>
+                        <small className="d-block mt-1 text-dark fw-medium">{sign}</small>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="position-relative">
+                <button
+                  className="btn btn-danger btn-sm position-absolute"
+                  style={{ right: 15, top: -10, zIndex: 1 }}
+                  onClick={handleCloseIframe}
+                >
+                  &times;
+                </button>
+                <iframe
+                  className="w-100 rounded-2"
+                  style={{ height: '250px', border: 'none' }}
+                  src={iframeSrc}
+                  title="Horoscope"
+                />
+              </div>
+            )}
+          </div>)
+        }
       </div>
+     
 
       <style>{`
         .loading-active {

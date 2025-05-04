@@ -68,22 +68,23 @@ export default function Register() {
           />
         </div> */}
 
-        <div className="input-group">
+        <div className="input-group flex-column">
           <label>Password:</label>
           <div className="password-wrapper">
             <input
+              className="position-relative"
               type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
             />
-            <button
+            <span
               type="button"
-              className="password-toggle"
+              className="password-toggle position-absolute bottom-0 end-0 translate-middle-y me-2"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+            </span>
           </div>
         </div>
         <button type="submit" className="register-button">Register</button>

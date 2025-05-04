@@ -140,8 +140,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 export default function Login() {
+   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -243,12 +246,19 @@ export default function Login() {
         <div className="input-group">
           <label>Password:</label>
           <input
-            type="password"
             value={formData.password}
+            type={showPassword ? 'text' : 'password'}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
           />
-        </div>
+          <span
+            type="button"
+            className="password-toggle position-absolute bottom-0 end-0 translate-middle-y me-2"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+    </div>
         
 
         <button type="submit" className="login-button">
@@ -263,7 +273,7 @@ export default function Login() {
         </div>
       </form>
       <p>
-        Don't have an account? <Link to="/register">Register here</Link>
+        Don't have an account? <Link to="/register">Login here</Link>
       </p>
     </div>
   );
