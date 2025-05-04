@@ -1,0 +1,19 @@
+/* Equalizer.css */
+.equalizer-container {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .bars-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    margin-top: 20px;
+  }
+  
+  .equalizer-bar {
+    width: 10px;
+    background-color: #4CAF50;
+    transition: height 0.1s ease-out;
+  }

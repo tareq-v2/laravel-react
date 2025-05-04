@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import VideoSection from './VideoSection';
 import MainContent from './MainContent';
 import {CompectHeader, DefaultHeader } from './StickyNav';
+import EqualizerBars from './EqualizerBars';
 
 const Front = () => {
   // const [products, setProducts] = useState([]);
 
-   const [isSticky, setIsSticky] = useState(false);
-   const stickyRef = useRef(null);
-   const sentinelRef = useRef(null);
+  //  const [isSticky, setIsSticky] = useState(false);
+  //  const stickyRef = useRef(null);
+  //  const sentinelRef = useRef(null);
 
   // useEffect(() => {
   //   // Fetch products from the backend
