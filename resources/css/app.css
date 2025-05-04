@@ -1,9 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap');
+
 /* General body styling */
 body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Maven Pro", sans-serif !important;
     background: linear-gradient(135deg, #6a11cb, #2575fc);
     color: #333;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
   
   /* Navigation bar */

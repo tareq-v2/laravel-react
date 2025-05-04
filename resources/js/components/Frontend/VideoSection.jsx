@@ -18,6 +18,7 @@ const VideoSection = () => {
         // Access the nested data array
         setVideos(response.data.data);
         if (response.data.data.length > 0) {
+          // console.log(response.data.data[0]);
           setCurrentVideo(response.data.data[0]);
         }
         setLoading(false);
@@ -43,21 +44,33 @@ const VideoSection = () => {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3,
+    rows: 2,
+    slidesPerRow: 3,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    variableWidth: true, 
+    adaptiveHeight: true,
+    nextArrow: <NextArrow />, 
+    prevArrow: <PrevArrow />,
     responsive: [
       {
         breakpoint: 992,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2
+          rows: 2,
+          slidesPerRow: 2,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          variableWidth: true
         }
       },
       {
-        breakpoint: 576,
+        breakpoint: 768,
         settings: {
+          rows: 2,
+          slidesPerRow: 1,
           slidesToShow: 1,
-          slidesToScroll: 1
+          slidesToScroll: 1,
+          variableWidth: true
         }
       }
     ]
@@ -94,7 +107,13 @@ const VideoSection = () => {
             <div className="banner-description-slider mt-2">
                 <Slider {...sliderSettings}>
                 {videos.map((video, index) => (
-                    <div key={video.id} className="col-4 mb-4">
+                    <div 
+                      key={video.id} 
+                      className="col-4 mb-4"   
+                      style={{ 
+                      width: "calc(33.33% - 20px)", // Account for horizontal gap
+                      margin: "0 10px" 
+                    }}>
                     <div
                         className="banner-description-slide cursor-pointer"
                         onClick={() => handleVideoChange(video)}
@@ -105,9 +124,9 @@ const VideoSection = () => {
                         <div className="ratio ratio-21x9">
                         {video.video_thumbnail ? (
                             <img
-                            className="object-fit-cover"
-                            src="ar.png"
-                                style={{ height: '100px', width: '100px' }}
+                            className="object-fit-cover "
+                            src={video.video_thumbnail}
+                                style={{ height: '100%', width: '100%'}}
                             alt="video thumbnail"
                             loading="lazy"
                             />
@@ -134,3 +153,29 @@ const VideoSection = () => {
 };
 
 export default VideoSection;
+
+const NextArrow = (props) => {
+  const { className, onClick } = props;
+  return (
+    <button
+      className={`${className} custom-slick-next`}
+      onClick={onClick}
+      aria-label="Next"
+    >
+     <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 51.388 51.388" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M9.169,51.388c-0.351,0-0.701-0.157-0.93-0.463c-0.388-0.514-0.288-1.243,0.227-1.634l31.066-23.598L8.461,2.098 C7.95,1.708,7.85,0.977,8.237,0.463c0.395-0.517,1.126-0.615,1.64-0.225l33.51,25.456L9.877,51.151 C9.664,51.31,9.415,51.388,9.169,51.388z"></path> </g> </g> </g></svg>
+    </button>
+  );
+};
+
+const PrevArrow = (props) => {
+  const { className, onClick } = props;
+  return (
+    <button
+      className={`${className} custom-slick-prev`}
+      onClick={onClick}
+      aria-label="Previous"
+    >
+    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16 4L8 12L16 20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+    </button>
+  );
+};

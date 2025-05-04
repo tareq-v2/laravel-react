@@ -17,47 +17,47 @@ class HomeVideoSeeder extends Seeder
             [
                 'title' => 'Amazing Nature Scenery',
                 'video_link' => 'https://www.youtube.com/embed/kkJjHNKkB98',
-                'video_thumbnail' => 'nature-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg'
             ],
             [
                 'title' => 'City Time Lapse',
                 'video_link' => 'https://www.youtube.com/embed/T5Yadh-4ikI',
-                'video_thumbnail' => 'city-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'Space Exploration',
                 'video_link' => 'https://www.youtube.com/embed/sKSrBe6wLgI',
-                'video_thumbnail' => 'space-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'Amazing Nature Scenery',
                 'video_link' => 'https://www.youtube.com/embed/kkJjHNKkB98',
-                'video_thumbnail' => 'nature-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'City Time Lapse',
                 'video_link' => 'https://www.youtube.com/embed/T5Yadh-4ikI',
-                'video_thumbnail' => 'city-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'Space Exploration',
                 'video_link' => 'https://www.youtube.com/embed/sKSrBe6wLgI',
-                'video_thumbnail' => 'space-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'Amazing Nature Scenery',
                 'video_link' => 'https://www.youtube.com/embed/kkJjHNKkB98',
-                'video_thumbnail' => 'nature-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'City Time Lapse',
                 'video_link' => 'https://www.youtube.com/embed/T5Yadh-4ikI',
-                'video_thumbnail' => 'city-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
             [
                 'title' => 'Space Exploration',
                 'video_link' => 'https://www.youtube.com/embed/sKSrBe6wLgI',
-                'video_thumbnail' => 'space-thumb.jpg'
+                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
             ],
         ];
         HomeVideo::truncate(); // Clear the table before seeding

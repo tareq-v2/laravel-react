@@ -42,6 +42,7 @@
 
 .category-card img:hover{
     scale: 1.05;
+    filter: invert(12%) sepia(73%) saturate(3566%) hue-rotate(229deg) brightness(87%) contrast(123%);
     transition: scale 0.3s ease-in-out;
 }
 
@@ -127,6 +128,25 @@
   .category-grid, .directory-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+
+/* Swiper slider */
+
+.news-carousel {
+  width: 100%;
+  height: 400px; 
+}
+
+.swiper-slide {
+  height: auto !important;
+}
+
+.news-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 

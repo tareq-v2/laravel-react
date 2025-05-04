@@ -27,8 +27,6 @@ const Front = () => {
 
   return (
     <div className="container mt-1 bg-light">
-      <VideoSection/>
-      <MainContent/>
       <h1 className="text-center">@Tareq</h1>
     </div>
   );

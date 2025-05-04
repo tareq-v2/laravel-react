@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
+import './Design/VideoRightSection.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css/effect-fade";
+
+// import required modules
+import { EffectFade, Autoplay, Pagination, Navigation } from "swiper/modules";
 
 const VideoRightSection = () => {
   const [iframeSrc, setIframeSrc] = useState('');
@@ -13,7 +25,7 @@ const VideoRightSection = () => {
   const [selectedSign, setSelectedSign] = useState(null);
   // Dummy data with working image URLs
   const dummyBanners = [
-    { id: 1, image: 'http://localhost:8001/uploads/categoryIcons/jobs.png' },
+    { id: 1, image: 'https://media.istockphoto.com/id/2161733236/photo/autumn-or-thanksgiving-decoration-background-with-pumkins-and-fall-leaves-copy-space.jpg?s=1024x1024&w=is&k=20&c=yEoT1NsIJB4qoF_icQvY3IZx4TLr2SCi3fHwMxuFnEs=' },
     { id: 2, image: 'http://localhost:8001/uploads/categoryIcons/rent.png' },
     { id: 3, image: 'http://localhost:8001/uploads/categoryIcons/jobs.png' }
   ];
@@ -104,24 +116,79 @@ const VideoRightSection = () => {
       </form>
 
       {/* Banner Slider Section */}
-      <div className="mt-3" style={{ position: 'relative' }}>
+      {/* <div className="mt-3" style={{ position: 'relative' }}>
         {loading ? (
           <div className="text-center py-4">Loading banners...</div>
         ) : (
           <Slider {...bannerSliderSettings}>
             {banners.map(banner => (
               <div key={banner.id} className="banner-slide">
-                <div className="ratio ratio-16x9">
-                  <img
+                <img
                     src={banner.image}
                     alt={`Banner ${banner.id}`}
-                    className="img-fluid rounded-3"
+                    className="rounded-3"
                     style={{ objectFit: 'cover' }}
                   />
-                </div>
               </div>
             ))}
           </Slider>
+        )}
+      </div> */}
+
+      {/* Banner Slider Section */}
+      <div className="mt-3">
+        {loading ? (
+          <div className="text-center py-4">Loading banners...</div>
+        ) : (
+          // <Slider {...bannerSliderSettings}>
+          //   {banners.map(banner => (
+          //     <div key={banner.id} className="banner-slide" style={{ height: '300px', overflow: 'hidden', zIndex: 999 }}>
+          //       <div className="h-100 w-100">
+          //         <img
+          //           src={banner.image }
+          //           alt={`Banner ${banner.id}`}
+          //           className="img-fluid rounded-3 h-100 w-100"
+          //           style={{ 
+          //             objectFit: 'cover',
+          //             objectPosition: 'center'
+          //           }}
+          //         />
+          //       </div>
+          //     </div>
+          //   ))}
+          // </Slider>
+          <Swiper
+              effect={"fade"}
+              spaceBetween={30}
+              centeredSlides={false}
+              autoplay={{
+                duration: 2500,
+                disableOnInteraction: false,
+              }}
+              navigation={false}
+              modules={[EffectFade, Autoplay]}
+              className="mySwiper"
+            >
+              <SwiperSlide>
+                 <img src="http://localhost:8001/uploads/banner/video_right1_456x307.jpg" alt="" />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src="http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg" alt="" />  
+              </SwiperSlide>
+              <SwiperSlide>
+                 <img src="http://localhost:8001/uploads/banner/video_right1_456x307.jpg" alt="" />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src="http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg" alt="" />  
+              </SwiperSlide>
+              <SwiperSlide>
+                 <img src="http://localhost:8001/uploads/banner/video_right1_456x307.jpg" alt="" />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src="http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg" alt="" />  
+              </SwiperSlide> 
+         
+         </Swiper>
         )}
       </div>
 

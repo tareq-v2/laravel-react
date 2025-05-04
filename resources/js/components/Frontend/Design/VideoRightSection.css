@@ -1,0 +1,40 @@
+  
+  /* Individual slides */
+  .slick-slide img {
+    padding: 0px 10px; 
+    height: auto;
+  }
+  
+  /* Prev and next buttons styles */
+
+  .slick-arrow {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    z-index: 1;
+    transition: all 0.3s ease;
+    
+    
+    &::before {
+      display: none;
+    }
+    
+  }
+  
+  .custom-slick-prev {
+    left: -50px;
+  }
+  
+  .custom-slick-next {
+    right: -50px;
+  }
+  
+  @media (max-width: 768px) {
+    .custom-slick-prev {
+      left: -20px;
+    }
+    
+    .custom-slick-next {
+      right: -20px;
+    }
+  }

@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 // import { MainContent } from './MainContent';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/MainContent.css'; // Assuming you have a CSS file for styling
-import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const MainContent = () => {
   // Dummy data for all sections
@@ -18,6 +17,8 @@ const MainContent = () => {
     adCategories: [
       { id: 1, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
       { id: 2, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
+      { id: 3, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
+      { id: 4, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
       { id: 3, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
       { id: 4, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
       // Add more categories
@@ -33,7 +34,28 @@ const MainContent = () => {
         title: 'Latest Industry News', 
         date: 'March 18, 2025',
         excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-        image: '/news/news1.jpg'
+        image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
+      },
+      { 
+        id: 2, 
+        title: 'Latest Industry News', 
+        date: 'March 18, 2025',
+        excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+        image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
+      },
+      { 
+        id: 3, 
+        title: 'Latest Industry News', 
+        date: 'March 18, 2025',
+        excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+        image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
+      },
+      { 
+        id: 4, 
+        title: 'Latest Industry News', 
+        date: 'March 18, 2025',
+        excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+        image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
       },
       // Add more news
     ],
@@ -158,16 +180,15 @@ const MainContent = () => {
                 768: { slidesPerView: 2 },  // 2 slides on tablet/desktop
                 }}
             >
-                {sections.news.map(article => (
+                {sections.news.map(article => 
                 <SwiperSlide key={article.id} className="news-card">
-                    <img src={article.image} alt={article.title} />
+                    <img src={article.icon} alt={article.title} />
                     <div className="news-content">
                     <small>{article.date}</small>
                     <h5>{article.title}</h5>
                     <p>{article.excerpt}</p>
                     </div>
-                </SwiperSlide>
-                ))}
+                </SwiperSlide>)}
             </Swiper>
             </div>
 
