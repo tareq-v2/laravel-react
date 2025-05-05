@@ -3,3 +3,14 @@ php artisan config:clear
 php artisan view:clear
 php artisan route:clear
 php artisan optimize:clear
+
+
+
+
+Task to do:
+5. Implement authentication and authorization
+6. Build out the necessary routes and controllers
+7. Create views using Blade templating engine
+8. Test the application thoroughly
+
+Note: Make sure to keep your code organized and follow best practices throughout the development process.

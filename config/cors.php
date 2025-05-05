@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie'], // Allow CORS for these paths
+    'paths' => ['api/*', 'storage/*', 'sanctum/csrf-cookie'], // Allow CORS for these paths
     'allowed_methods' => ['*'], // Allow all HTTP methods (GET, POST, etc.)
     'allowed_origins' => ['http://localhost:5173'], // Replace with your React app URL
     'allowed_origins_patterns' => [], // Regex patterns for allowed origins

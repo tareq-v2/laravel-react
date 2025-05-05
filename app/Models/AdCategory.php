@@ -11,9 +11,11 @@ class AdCategory extends Model
     protected $guarded = [];
 
     protected $appends = ['icon_path'];
-
+    // In AdCategory.php
     public function getIconPathAttribute()
     {
-        return asset("storage/categoryIcons/{$this->icon}");
+        return $this->icon ? asset("storage/{$this->icon}") : null;
     }
 }
+
+

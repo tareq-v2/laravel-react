@@ -14,6 +14,7 @@ class AdCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        AdCategory::truncate();
         AdCategory::create([
             'name' => 'Jobs',
             'icon' => 'jobs.png',

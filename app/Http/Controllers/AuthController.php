@@ -20,6 +20,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+            'role' => 'customer', // Default role
         ]);
 
         return response()->json(['message' => 'User registered successfully'], 201);
@@ -34,7 +35,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $token = $request->user()->createToken('authToken')->plainTextToken;
-            return response()->json(['token' => $token]);
+            return response()->json([
+                'token' => $token,
+                'role' => $request->user()->role
+            ]);
         }
 
         return response()->json(['message' => 'Invalid credentials'], 401);

@@ -105,7 +105,16 @@ function App() {
       
       <GoogleOAuthProvider clientId={googleClientId}>
         <Routes>
-          
+          <Route
+              path="/notFound"
+              element={
+                  <ProtectedRoute allowedRoles={['customer', 'admin']}>
+                      <div className="container">
+                        Hello : {JSON.stringify(window.localStorage)}
+                      </div>
+                  </ProtectedRoute>
+              }
+          />
           <Route path="/" element={<Layout><Front /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />

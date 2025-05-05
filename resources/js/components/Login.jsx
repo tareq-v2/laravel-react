@@ -178,7 +178,14 @@ export default function Login() {
 
       if (response.data.token) {
         localStorage.setItem('token', response.data.token); // Store token in localStorage
-        navigate('/home'); // Redirect to home page
+        localStorage.setItem('role', response.data.role); // Store role
+        if (response.data.role === 'admin') {
+          navigate('/admin-dashboard');
+      } else if (response.data.role === 'admin') {
+          navigate('/home');
+      } else {
+          navigate('/notFound');
+      }
       }
     } catch (error) {
       setError('Invalid email or password. Please try again.'); // Show error message

@@ -16,6 +16,7 @@ const MainContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  console.log(adCategories);
   // Fetch categories from Laravel backend
   useEffect(() => {
     const fetchCategories = async () => {
@@ -105,7 +106,8 @@ const MainContent = () => {
               </div>
               <div>
               <Link to="/post-ad" className="btn btn-primary">
-                <i className="fa fa-plus me-2"></i>Post Your Ad
+                <i className="fa fa-plus me-2"></i>
+                Post Your Ad
               </Link>
               </div>
             </div>
@@ -118,12 +120,9 @@ const MainContent = () => {
                 <div className="category-grid">
                   {adCategories.map(category => (
                     <div key={category.id} className="category-card">
-                      <img 
-                        src={`${category.icon}`} 
-                        alt={category.name} 
-                        onError={(e) => {
-                          e.target.src = 'fallback-icon.png'; // Add fallback image
-                        }}
+                      <img
+                        src={category.icon}
+                        alt={category.name}
                       />
                       <h4>{category.name}</h4>
                     </div>

@@ -9,6 +9,7 @@ class FrontendController extends Controller
 {
     public function categoryIcons(){
         $categories = AdCategory::all();
+        // dd($categories);
         return response()->json([
             'data' => $categories->map(function ($category) {
                 return [
