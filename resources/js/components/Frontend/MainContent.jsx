@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// import { MainContent } from './MainContent';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/MainContent.css'; // Assuming you have a CSS file for styling
 
@@ -12,17 +12,27 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const MainContent = () => {
-  // Dummy data for all sections
+  const [adCategories, setAdCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Fetch categories from Laravel backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('category/icons');
+        
+        setAdCategories(response.data.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   const sections = {
-    adCategories: [
-      { id: 1, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
-      { id: 2, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
-      { id: 3, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
-      { id: 4, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
-      { id: 3, name: 'Jobs', icon: 'http://localhost:8001/uploads/categoryIcons/jobs.png', count: 45 },
-      { id: 4, name: 'Cars', icon: 'http://localhost:8001/uploads/categoryIcons/rent.png', count: 32 },
-      // Add more categories
-    ],
     directoryCategories: [
       { id: 1, name: 'Automotive', icon: '/icons/automotive.png' },
       { id: 2, name: 'Beauty & Salon', icon: '/icons/beauty.png' },
@@ -100,7 +110,27 @@ const MainContent = () => {
               </div>
             </div>
             
-            <div className="category-grid">
+            {loading ? (
+                <div className="text-center">Loading categories...</div>
+              ) : error ? (
+                <div className="text-center text-danger">Error: {error}</div>
+              ) : (
+                <div className="category-grid">
+                  {adCategories.map(category => (
+                    <div key={category.id} className="category-card">
+                      <img 
+                        src={`${category.icon}`} 
+                        alt={category.name} 
+                        onError={(e) => {
+                          e.target.src = 'fallback-icon.png'; // Add fallback image
+                        }}
+                      />
+                      <h4>{category.name}</h4>
+                    </div>
+                  ))}
+                </div>
+              )}
+            {/* <div className="category-grid">
               {sections.adCategories.map(category => (
                 <div key={category.id} className="category-card">
                   <img src={category.icon} alt={category.name} />
@@ -108,7 +138,7 @@ const MainContent = () => {
                   <span className="badge">{category.count}+</span>
                 </div>
               ))}
-            </div>
+            </div> */}
             </div>
           </div>
 
