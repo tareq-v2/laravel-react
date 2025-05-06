@@ -198,7 +198,7 @@ export default function Login() {
         if (response.data.role === 'admin') {
           navigate('/home');
         } else {
-          navigate('/notFound');
+          navigate('/user/dashboard');
         }
       }
     } catch (error) {

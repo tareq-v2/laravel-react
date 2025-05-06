@@ -6,6 +6,7 @@ import Footer from './Frontend/Footer';
 import Header from './Frontend/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import ScrollToTop from './Frontend/ScrollToTop';
 
 export default function Layout({ children }) {
 
@@ -16,7 +17,7 @@ export default function Layout({ children }) {
       <main className="main-content">
         {children}
       </main>
-      
+      <ScrollToTop/>
       <Footer />
     </div>
   );

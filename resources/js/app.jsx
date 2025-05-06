@@ -82,6 +82,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Router, Route } from 'react-router-dom';
+import { LanguageProvider } from './components/Frontend/src/context/LanguageContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
@@ -97,23 +98,69 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Front from './components/Frontend/Front';
 import CustomerDashboard from './components/Frontend/Customer/Dashboard';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import AdvertiseWithUs from './components/Frontend/AdvertiseWithUs';
+import TermsAndConditions from './components/Frontend/TermsAndCondition';
+import ContactForm from './components/Frontend/ContactUs';
+import AboutUs from './components/Frontend/AboutUs';
+import PrivacyPolicy from './components/Frontend/PrivacyPolicy';
 
 function App() {
   const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
 
   return (
-    <BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
       
       <GoogleOAuthProvider clientId={googleClientId}>
         <Routes>
           <Route
-              path="/notFound"
+              path="/user/dashboard"
               element={
                   <ProtectedRoute allowedRoles={['customer', 'admin']}>
                     <Layout>
                       <CustomerDashboard />
-                      </Layout>
+                    </Layout>
                   </ProtectedRoute>
+              }
+          />
+          <Route
+              path="/advertise/with/us"
+              element={
+                <Layout>
+                  <AdvertiseWithUs />
+                </Layout>
+              }
+          />
+          <Route
+              path="/terms/and/conditions"
+              element={
+                <Layout>
+                  <TermsAndConditions />
+                </Layout>
+              }
+          />
+          <Route
+              path="/contact/us"
+              element={
+                <Layout>
+                  <ContactForm />
+                </Layout>
+              }
+          />
+          <Route
+              path="/about/us"
+              element={
+                <Layout>
+                  <AboutUs />
+                </Layout>
+              }
+          />
+          <Route
+              path="/privacy/policy"
+              element={
+                <Layout>
+                  <PrivacyPolicy />
+                </Layout>
               }
           />
           <Route path="/" element={<Layout><Front /></Layout>} />
@@ -163,7 +210,9 @@ function App() {
           />
         </Routes>
       </GoogleOAuthProvider>
+      
     </BrowserRouter>
+    </LanguageProvider>
   );
 };
 

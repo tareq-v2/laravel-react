@@ -1,0 +1,74 @@
+.privacy-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.8;
+  }
+  
+  .privacy-title {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .privacy-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  
+  .privacy-section {
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: transform 0.3s ease;
+  }
+  
+  .privacy-section:hover {
+    transform: translateY(-3px);
+  }
+  
+  .section-title {
+    color: #3498db;
+    font-weight: 600;
+    font-size: 1.4rem;
+  }
+  
+  .privacy-icon {
+    color: #3498db;
+    padding: 1rem;
+    background-color: #e9f5ff;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  
+  .contact-section {
+    border-top: 2px solid #ecf0f1;
+    padding-top: 2rem;
+  }
+  
+  .contact-link {
+    color: #3498db;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  .contact-link:hover {
+    text-decoration: underline;
+  }
+  
+  .section-content {
+    color: #4a5568;
+    font-size: 1rem;
+  }
+
+  

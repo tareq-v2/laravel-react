@@ -10,19 +10,21 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { useTranslation } from './src/hooks/useTranslation';
 
 const MainContent = () => {
+  const t = useTranslation();
   const [adCategories, setAdCategories] = useState([]);
+  const [directoryCategories, setDirectoryCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  console.log(adCategories);
-  // Fetch categories from Laravel backend
+  // Fetch ad categories from Laravel backend
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('category/icons');
-        
+        const response = await axios.get('ad/category/icons');
+        console.log(response.data.data);
         setAdCategories(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -33,12 +35,24 @@ const MainContent = () => {
 
     fetchCategories();
   }, []);
+
+  // Fetch directory categories from Laravel backend
+  useEffect(() => {
+    const fetchDirectoryCategories = async () => {
+      try {
+        const response = await axios.get('directory/category/icons');
+        console.log(response.data.data);
+        setDirectoryCategories(response.data.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchDirectoryCategories();
+  }, []);
   const sections = {
-    directoryCategories: [
-      { id: 1, name: 'Automotive', icon: '/icons/automotive.png' },
-      { id: 2, name: 'Beauty & Salon', icon: '/icons/beauty.png' },
-      // Add more categories
-    ],
     news: [
       { 
         id: 1, 
@@ -96,48 +110,39 @@ const MainContent = () => {
           
           <div className="col-md-8">
             <div className='ad-categories'>
-            <div className="section-header">
-              <div>
-                 {/* Empthy */}
-              </div>
-              <div>
-                <h1>Classified Ads</h1>
-                <p>Select Category To View Listings</p>
-              </div>
-              <div>
-              <Link to="/post-ad" className="btn btn-primary">
-                <i className="fa fa-plus me-2"></i>
-                Post Your Ad
-              </Link>
-              </div>
-            </div>
-            
-            {loading ? (
-                <div className="text-center">Loading categories...</div>
-              ) : error ? (
-                <div className="text-center text-danger">Error: {error}</div>
-              ) : (
-                <div className="category-grid">
-                  {adCategories.map(category => (
-                    <div key={category.id} className="category-card">
-                      <img
-                        src={category.icon}
-                        alt={category.name}
-                      />
-                      <h4>{category.name}</h4>
-                    </div>
-                  ))}
+              <div className="section-header">
+                <div>
+                  {/* Empty */}
                 </div>
-              )}
-            {/* <div className="category-grid">
-              {sections.adCategories.map(category => (
-                <div key={category.id} className="category-card">
-                  <img src={category.icon} alt={category.name} />
-                  <h4>{category.name}</h4>
-                  <span className="badge">{category.count}+</span>
+                <div>
+                  <h1>Classified Ads</h1>
+                  <p>{t('Select Category To View Listings')}</p>
                 </div>
-              ))}
-            </div> */}
+                <div>
+                <Link to="/post-ad" className="btn btn-primary">
+                  <i className="fa fa-plus me-2"></i>
+                  Post Your Ad
+                </Link>
+                </div>
+              </div>
+              
+              {loading ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : error ? (
+                  <div className="text-center text-danger">Error: {error}</div>
+                ) : (
+                  <div className="category-grid">
+                    {adCategories.map(category => (
+                      <div key={category.id} className="category-card">
+                        <img
+                          src={category.icon}
+                          alt={category.name}
+                        />
+                        <h6 className="font-weight-semibold mb-0">{category.name}</h6>
+                      </div>
+                    ))}
+                  </div>
+                )}
             </div>
           </div>
 
@@ -157,21 +162,42 @@ const MainContent = () => {
           </div>
           
           <div className="col-md-8">
+            <div className="ad-categories">
             <div className="section-header">
+              <div>
+                 {/* Empty */}
+              </div>
+              <div>
               <h1>Business Directory</h1>
-              <p>Select Category To View Listings</p>
+                <p>Select Category To View Listings</p>
+              </div>
+              <div>
               <Link to="/add-business" className="btn btn-primary">
-                <i className="fa fa-plus me-2"></i>Add Your Business
+                <i className="fa fa-plus me-2"></i>
+                Add Your Business
               </Link>
+              </div>
             </div>
             
             <div className="directory-grid">
-              {sections.directoryCategories.map(category => (
-                <div key={category.id} className="directory-card">
-                  <img src={category.icon} alt={category.name} />
-                  <h4>{category.name}</h4>
+            {loading ? (
+                <div className="text-center">Loading categories...</div>
+              ) : error ? (
+                <div className="text-center text-danger">Error: {error}</div>
+              ) : (
+                <div className="category-grid">
+                  {directoryCategories.map(category => (
+                    <div key={category.id} className="category-card">
+                      <img
+                        src={category.icon}
+                        alt={category.name}
+                      />
+                      <h6 className="font-weight-semibold mb-0">{category.name}</h6>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+            </div>
             </div>
           </div>
 

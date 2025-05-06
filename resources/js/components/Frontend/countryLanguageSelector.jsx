@@ -1,21 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { LanguageContext } from './src/context/LanguageContext';
 
 const CountryLanguageDropdown = () => {
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const { language, changeLanguage } = useContext(LanguageContext);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const countries = [
     { code: 'US', name: 'English', flag: 'https://img.freepik.com/free-photo/flag-united-states-america_1401-253.jpg?t=st=1746366632~exp=1746370232~hmac=3538d88186d30237afbe868e12d58a5c62d1d623afcc691387513d402d7d06a4&w=996', lang: 'en' },
-    { code: 'FR', name: 'Armanian', flag: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Flag_of_Armenia.svg', lang: 'AR' },
-    { code: 'DE', name: 'Russian', flag: 'https://cdn.pixabay.com/photo/2013/07/13/14/17/russia-162400_1280.png', lang: 'RS' },
-
+    { code: 'AM', name: 'Armenian', flag: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Flag_of_Armenia.svg', lang: 'ar' },
+    { code: 'RU', name: 'Russian', flag: 'https://cdn.pixabay.com/photo/2013/07/13/14/17/russia-162400_1280.png', lang: 'rs' },
   ];
 
+  const selectedCountry = countries.find(c => c.lang === language) || countries[0];
+
   const handleCountrySelect = (country) => {
-    setSelectedCountry(country);
+    changeLanguage(country.lang);
     setIsOpen(false);
-    console.log('Selected country:', country);
   };
 
   useEffect(() => {
@@ -27,7 +29,6 @@ const CountryLanguageDropdown = () => {
       }
     };
 
-    // Add when dropdown is open
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
@@ -38,24 +39,26 @@ const CountryLanguageDropdown = () => {
   }, [isOpen]);
 
   return (
-    <div className="dropdown" onClick={() => setIsOpen(!isOpen)} ref={dropdownRef}>
+    <div className="dropdown" ref={dropdownRef}>
       <button 
         className="btn btn-transparent dropdown-toggle d-flex align-items-center gap-1"
         type="button"
-        id="countryDropdown"
+        onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
+        aria-label="Select language"
       >
-        <span className="fs-5">
-          {selectedCountry ? <img src={selectedCountry.flag } alt="" width="20" height="20" /> : <img src={countries[0].flag} alt="" width="20" height="20" />}
-        </span>
-        <span>
-          {selectedCountry ? selectedCountry.name : countries[0].name || 'Select Language'}
-        </span>
+        <img 
+          src={selectedCountry.flag} 
+          alt={selectedCountry.name} 
+          width="20" 
+          height="15" 
+          className="border"
+        />
+        <span className="d-none d-sm-inline">{selectedCountry.name}</span>
       </button>
 
       <div 
         className={`dropdown-menu ${isOpen ? 'show' : ''}`} 
-        aria-labelledby="countryDropdown"
         style={{ minWidth: '200px' }}
       >
         {countries.map((country) => (
@@ -63,13 +66,18 @@ const CountryLanguageDropdown = () => {
             key={country.code}
             className="dropdown-item d-flex align-items-center gap-3 py-2"
             onClick={() => handleCountrySelect(country)}
-            onKeyPress={(e) => e.key === 'Enter' && handleCountrySelect(country)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCountrySelect(country)}
             role="option"
+            aria-selected={country.lang === language}
             tabIndex={0}
           >
-            <span className="fs-4">
-                <img src={country.flag} alt="" width="20" height="20" />
-            </span>
+            <img 
+              src={country.flag} 
+              alt="" 
+              width="20" 
+              height="15" 
+              className="border"
+            />
             <div className="d-flex flex-column">
               <span className="fw-medium">{country.name}</span>
               <small className="text-muted text-uppercase">{country.code}</small>
@@ -77,22 +85,6 @@ const CountryLanguageDropdown = () => {
           </button>
         ))}
       </div>
-
-      <style>{`
-        .dropdown-toggle::after {
-          vertical-align: middle;
-        }
-        .dropdown-item:focus {
-          background-color: #f8f9fa;
-        }
-        .fs-4 {
-          width: 32px;
-        }
-        .dropdown-menu {
-          max-height: 300px;
-          overflow-y: auto;
-        }
-      `}</style>
     </div>
   );
 };

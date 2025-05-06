@@ -3,16 +3,33 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Middleware\CorsMiddleware;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
+use App\Models\GuestMessage;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/category/icons', [FrontendController::class, 'categoryIcons']);
+Route::get('ad/category/icons', [FrontendController::class, 'categoryIcons']);
+Route::get('directory/category/icons', [DirectoryController::class, 'categoryIcons']);
+
+Route::post('/contact', function (Request $request) {
+  $validated = $request->validate([
+      'name' => 'nullable|string|max:255',
+      'email' => 'required|email|max:255',
+      'message' => 'required|string|max:2000'
+  ]);
+
+  // Store in database
+  GuestMessage::create($validated);
+
+  return response()->json(['message' => 'Contact form submitted successfully']);
+  
+});
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthController::class, 'logout']);
