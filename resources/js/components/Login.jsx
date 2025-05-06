@@ -144,7 +144,23 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 export default function Login() {
-   const [showPassword, setShowPassword] = useState(false);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  // Send code to your backend API
+  fetch('auth/google/callback', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ code })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Handle token and user data
+  });
+
+
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -180,12 +196,10 @@ export default function Login() {
         localStorage.setItem('token', response.data.token); // Store token in localStorage
         localStorage.setItem('role', response.data.role); // Store role
         if (response.data.role === 'admin') {
-          navigate('/admin-dashboard');
-      } else if (response.data.role === 'admin') {
           navigate('/home');
-      } else {
+        } else {
           navigate('/notFound');
-      }
+        }
       }
     } catch (error) {
       setError('Invalid email or password. Please try again.'); // Show error message
@@ -193,32 +207,60 @@ export default function Login() {
   };
 
   // Handle social login (Google OAuth)
-  const handleSocialLogin = async (authToken, provider) => {
-    try {
+  // const handleSocialLogin = async (authToken, provider) => {
+  //   try {
       
-      console.log(authToken);
-      const response = await axios.post(`/auth/${provider}/callback`, {
-        token: authToken,
-      }, {
-        headers: {
-          'X-XSRF-TOKEN': getCookie('XSRF-TOKEN'), // Include CSRF token in headers
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
+  //     console.log(authToken);
+  //     const response = await axios.post(`/auth/${provider}/callback`, {
+  //       token: authToken,
+  //     }, {
+  //       headers: {
+  //         'X-XSRF-TOKEN': getCookie('XSRF-TOKEN'), // Include CSRF token in headers
+  //         'Content-Type': 'application/json',
+  //       },
+  //       withCredentials: true,
         
-      });
+  //     });
       
+  //     if (response.data.token) {
+  //       localStorage.setItem('token', response.data.token); // Store the token
+  //       navigate('/admin-dashboard'); // Redirect to admin dashboard
+  //     } else {
+  //       throw new Error('No token received from the server.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Social login failed:', error);
+  //     setError('Social login failed. Please try again.'); // Show error message
+  //   }
+  // };
+
+  // Updated handleSocialLogin function
+  const handleSocialLogin = async (code, provider) => {
+    try {
+      const response = await axios.post(
+        `api/auth/${provider}/callback`, // Full backend URL
+        { code }, // Send code parameter
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+        }
+      );
+
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token); // Store the token
-        navigate('/admin-dashboard'); // Redirect to admin dashboard
-      } else {
-        throw new Error('No token received from the server.');
+        localStorage.setItem('token', response.data.token);
+        navigate('/admin-dashboard');
       }
     } catch (error) {
-      console.error('Social login failed:', error);
-      setError('Social login failed. Please try again.'); // Show error message
+      console.error('Login failed:', error.response?.data);
+      setError(error.response?.data?.error || 'Login failed');
     }
   };
+
+if (code) {
+  handleSocialLogin(code, 'google');
+}
 
   // Handle Google OAuth success
   const handleGoogleSuccess = (credentialResponse) => {
@@ -280,7 +322,7 @@ export default function Login() {
         </div>
       </form>
       <p>
-        Don't have an account? <Link to="/register">Login here</Link>
+        Don't have an account? <Link to="/register">Register Here</Link>
       </p>
     </div>
   );

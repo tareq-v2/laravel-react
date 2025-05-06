@@ -95,6 +95,7 @@ import ProductList from './components/ProductList';
 import ProductDetails from './components/ProductDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 import Front from './components/Frontend/Front';
+import CustomerDashboard from './components/Frontend/Customer/Dashboard';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
@@ -109,9 +110,9 @@ function App() {
               path="/notFound"
               element={
                   <ProtectedRoute allowedRoles={['customer', 'admin']}>
-                      <div className="container">
-                        Hello : {JSON.stringify(window.localStorage)}
-                      </div>
+                    <Layout>
+                      <CustomerDashboard />
+                      </Layout>
                   </ProtectedRoute>
               }
           />
