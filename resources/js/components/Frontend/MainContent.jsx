@@ -133,13 +133,15 @@ const MainContent = () => {
                 ) : (
                   <div className="category-grid">
                     {adCategories.map(category => (
-                      <div key={category.id} className="category-card">
-                        <img
-                          src={category.icon}
-                          alt={category.name}
-                        />
-                        <h6 className="font-weight-semibold mb-0">{category.name}</h6>
-                      </div>
+                      <Link to="/ad/sub/categories">
+                        <div key={category.id} className="category-card">
+                          <img
+                            src={category.icon}
+                            alt={category.name}
+                          />
+                          <h6 className="font-weight-semibold mb-0">{category.name}</h6>
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 )}

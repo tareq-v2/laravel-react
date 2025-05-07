@@ -1,0 +1,18 @@
+.category-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  .section-header {
+    padding: 2rem 0;
+  }
+  
+  .side-banner img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+  }

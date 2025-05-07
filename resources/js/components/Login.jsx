@@ -145,19 +145,19 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function Login() {
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const code = urlParams.get('code');
 
-  // Send code to your backend API
-  fetch('auth/google/callback', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ code })
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Handle token and user data
-  });
+  // // Send code to your backend API
+  // fetch('auth/google/callback', {
+  //   method: 'POST',
+  //   headers: {'Content-Type': 'application/json'},
+  //   body: JSON.stringify({ code })
+  // })
+  // .then(response => response.json())
+  // .then(data => {
+  //   // Handle token and user data
+  // });
 
 
   const [showPassword, setShowPassword] = useState(false);
@@ -178,6 +178,12 @@ export default function Login() {
   useEffect(() => {
     axios.get('/sanctum/csrf-cookie', {
       withCredentials: true // Required for cookies
+    })
+    .then(() => {
+      console.log('CSRF Cookie fetched:', document.cookie);
+    })
+    .catch((error) => {
+      console.error('Error fetching CSRF cookie:', error);
     });
   }, []);
 
@@ -197,7 +203,9 @@ export default function Login() {
         localStorage.setItem('role', response.data.role); // Store role
         if (response.data.role === 'admin') {
           navigate('/home');
-        } else {
+        } else if (response.data.role === 'super_admin') {
+          navigate('/admin/dashboard');
+        }else {
           navigate('/user/dashboard');
         }
       }
@@ -235,11 +243,10 @@ export default function Login() {
   // };
 
   // Updated handleSocialLogin function
-  const handleSocialLogin = async (code, provider) => {
+  const handleSocialLogin = async (provider) => {
     try {
       const response = await axios.post(
         `api/auth/${provider}/callback`, // Full backend URL
-        { code }, // Send code parameter
         {
           headers: {
             'Content-Type': 'application/json',
@@ -257,10 +264,6 @@ export default function Login() {
       setError(error.response?.data?.error || 'Login failed');
     }
   };
-
-if (code) {
-  handleSocialLogin(code, 'google');
-}
 
   // Handle Google OAuth success
   const handleGoogleSuccess = (credentialResponse) => {

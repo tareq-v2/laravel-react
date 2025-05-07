@@ -103,6 +103,7 @@ import TermsAndConditions from './components/Frontend/TermsAndCondition';
 import ContactForm from './components/Frontend/ContactUs';
 import AboutUs from './components/Frontend/AboutUs';
 import PrivacyPolicy from './components/Frontend/PrivacyPolicy';
+import AdSubCategories from './components/Frontend/AdSubCategories';
 
 function App() {
   const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
@@ -117,51 +118,41 @@ function App() {
               path="/user/dashboard"
               element={
                   <ProtectedRoute allowedRoles={['customer', 'admin']}>
-                    <Layout>
-                      <CustomerDashboard />
-                    </Layout>
+                    <Layout><CustomerDashboard /></Layout>
                   </ProtectedRoute>
               }
           />
           <Route
-              path="/advertise/with/us"
+              path="/admin/dashboard"
               element={
-                <Layout>
-                  <AdvertiseWithUs />
-                </Layout>
+                  <ProtectedRoute allowedRoles={['super_admin']}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
               }
+          />
+          <Route
+              path="/ad/sub/categories"
+              element={<Layout><AdSubCategories /></Layout>}
+          />
+          <Route
+              path="/advertise/with/us"
+              element={<Layout><AdvertiseWithUs /></Layout>}
           />
           <Route
               path="/terms/and/conditions"
-              element={
-                <Layout>
-                  <TermsAndConditions />
-                </Layout>
-              }
+              element={<Layout><TermsAndConditions /></Layout>}
           />
           <Route
               path="/contact/us"
-              element={
-                <Layout>
-                  <ContactForm />
-                </Layout>
-              }
+              element={<Layout><ContactForm /></Layout>}
           />
           <Route
               path="/about/us"
-              element={
-                <Layout>
-                  <AboutUs />
-                </Layout>
-              }
+              element={<Layout><AboutUs /></Layout>}
           />
           <Route
               path="/privacy/policy"
-              element={
-                <Layout>
-                  <PrivacyPolicy />
-                </Layout>
-              }
+              element={<Layout><PrivacyPolicy /></Layout>}
           />
           <Route path="/" element={<Layout><Front /></Layout>} />
           <Route path="/login" element={<Layout><Login /></Layout>} />

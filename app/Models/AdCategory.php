@@ -16,6 +16,14 @@ class AdCategory extends Model
     {
         return $this->icon ? asset("storage/{$this->icon}") : null;
     }
+
+    protected $table = 'ad_categories'; // Ensure this matches your categories table name
+
+    // Define relationship with subcategories
+    public function subCategories()
+    {
+        return $this->hasMany(AdSubCategory::class, 'category_id');
+    }
 }
 
 
