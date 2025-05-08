@@ -4,6 +4,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/AdSubCategories.css';
 import { useTranslation } from './src/hooks/useTranslation';
+import AdSubCategoriesListing from './AdSubCategoriesListing';
 
 const AdSubCategories = () => {
   const t = useTranslation();
@@ -15,9 +16,9 @@ const AdSubCategories = () => {
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/ad/sub/category/icons/${id}`);
-        
-        if (response.data?.data) {
+        const response = await axios.get(`http://localhost:8001/ad/sub/category/icons/${id}`);
+        console.log(response.data.data);
+        if (response.data) {
           setAdSubCategories(response.data.data);
         } else {
           throw new Error('Invalid data structure');
@@ -37,26 +38,10 @@ const AdSubCategories = () => {
       <section className="section-spacing">
         <div className="row">
           <div className="col-md-2">
-            <div className="side-banner">
-              <img src="http://localhost:8001/uploads/banner/side-banner.png" alt="Left banner" />
-            </div>
           </div>
 
           <div className="col-md-8">
             <div className='ad-categories'>
-              <div className="section-header d-flex justify-content-between align-items-center mb-4">
-                <div></div>
-                <div className="text-center">
-                  <h1 className="mb-3">{t('Classified Ads')}</h1>
-                  <p className="lead">{t('Select Category To View Listings')}</p>
-                </div>
-                <div>
-                  <Link to="/post-ad" className="btn btn-primary">
-                    <i className="fa fa-plus me-2"></i>
-                    {t('Post Your Ad')}
-                  </Link>
-                </div>
-              </div>
 
               {loading ? (
                 <div className="text-center py-5">
@@ -94,16 +79,13 @@ const AdSubCategories = () => {
                 </div>
               ) : (
                 <div className="col-12 text-center py-5">
-                  <p className="text-muted">No subcategories found</p>
+                  <AdSubCategoriesListing subCateogoryId={id}/>
                 </div>
               )}
             </div>
           </div>
 
           <div className="col-md-2">
-            <div className="side-banner">
-              <img src="http://localhost:8001/uploads/banner/side-banner1.png" alt="Right banner" />
-            </div>
           </div>
         </div>
       </section>

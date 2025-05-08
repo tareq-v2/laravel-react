@@ -24,15 +24,20 @@ class FrontendController extends Controller
     public function subCategoryIcons($id)
     {
         $subCategories = AdSubCategory::where('category_id', $id)->get();
-        
-        return response()->json([
-            'data' => $subCategories->map(function ($subCategory) {
-                return [
-                    'id' => $subCategory->id,
-                    'name' => $subCategory->name,
-                    'icon' => $subCategory->icon, // Changed from icon_path to icon
-                ];
-            })
-        ]);
+        if($subCategories){
+            return response()->json([
+                'data' => $subCategories->map(function ($subCategory) {
+                    return [
+                        'id' => $subCategory->id,
+                        'name' => $subCategory->name,
+                        'icon' => $subCategory->icon, // Changed from icon_path to icon
+                    ];
+                })
+            ]);
+        }else{
+            return response()->json([
+                'data' => 'Nothing found'
+            ]);
+        }
     }
 }
