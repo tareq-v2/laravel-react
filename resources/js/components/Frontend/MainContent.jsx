@@ -133,7 +133,7 @@ const MainContent = () => {
                 ) : (
                   <div className="category-grid">
                     {adCategories.map(category => (
-                      <Link to="/ad/sub/categories">
+                      <Link to={`/ad/sub/categories/${category.id}`}>
                         <div key={category.id} className="category-card">
                           <img
                             src={category.icon}

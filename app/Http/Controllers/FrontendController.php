@@ -10,7 +10,6 @@ class FrontendController extends Controller
 {
     public function categoryIcons(){
         $categories = AdCategory::all();
-        // dd($categories);
         return response()->json([
             'data' => $categories->map(function ($category) {
                 return [
@@ -22,9 +21,9 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function subCategoryIcons()
+    public function subCategoryIcons($id)
     {
-        $subCategories = AdSubCategory::all();
+        $subCategories = AdSubCategory::where('category_id', $id)->get();
         
         return response()->json([
             'data' => $subCategories->map(function ($subCategory) {

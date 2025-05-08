@@ -131,7 +131,7 @@ function App() {
               }
           />
           <Route
-              path="/ad/sub/categories"
+              path="/ad/sub/categories/:id"
               element={<Layout><AdSubCategories /></Layout>}
           />
           <Route

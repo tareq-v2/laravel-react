@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/AdSubCategories.css';
@@ -7,6 +7,7 @@ import { useTranslation } from './src/hooks/useTranslation';
 
 const AdSubCategories = () => {
   const t = useTranslation();
+  const { id } = useParams();
   const [adSubCategories, setAdSubCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // Changed from array to null
@@ -14,7 +15,7 @@ const AdSubCategories = () => {
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/ad/sub/category/icons');
+        const response = await axios.get(`http://localhost:8000/ad/sub/category/icons/${id}`);
         
         if (response.data?.data) {
           setAdSubCategories(response.data.data);

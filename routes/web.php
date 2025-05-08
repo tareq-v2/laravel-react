@@ -15,7 +15,7 @@ use App\Models\GuestMessage;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('ad/category/icons', [FrontendController::class, 'categoryIcons']);
-Route::get('ad/sub/category/icons', [FrontendController::class, 'subCategoryIcons']);
+Route::get('ad/sub/category/icons/{id}', [FrontendController::class, 'subCategoryIcons']);
 Route::get('directory/category/icons', [DirectoryController::class, 'categoryIcons']);
 
 Route::post('/contact', function (Request $request) {
