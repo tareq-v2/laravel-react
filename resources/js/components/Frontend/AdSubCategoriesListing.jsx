@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import { useParams } from 'react-router-dom'; // Import useParams
 import { useTranslation } from './src/hooks/useTranslation';
 
-const AdSubCategoriesListing = ( subCategoryId ) => {
+const AdSubCategoriesListing = (subCategoryId) => {
+  // const { subCategoryId } = useParams(); // Get parameter from URL
   const t = useTranslation();
-  console.log(subCategoryId);
-  
+  console.log(subCategoryId['subCategoryId']);
   const getContent = () => {
-    switch(subCategoryId) {
+    switch(parseInt(subCategoryId['subCategoryId'])) { // Use numerical comparisons
       case 8:
         return <div>Item for sale</div>;
       case 10:
@@ -21,7 +19,7 @@ const AdSubCategoriesListing = ( subCategoryId ) => {
 
   return (
     <div className="container">
-        {getContent()}
+      {getContent()}
     </div>
   );
 };

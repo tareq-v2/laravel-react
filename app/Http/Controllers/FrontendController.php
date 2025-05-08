@@ -30,7 +30,8 @@ class FrontendController extends Controller
                     return [
                         'id' => $subCategory->id,
                         'name' => $subCategory->name,
-                        'icon' => $subCategory->icon, // Changed from icon_path to icon
+                        'icon' => $subCategory->icon,
+                        'route' => $subCategory->route,
                     ];
                 })
             ]);

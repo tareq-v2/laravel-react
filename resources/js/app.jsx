@@ -104,6 +104,20 @@ import ContactForm from './components/Frontend/ContactUs';
 import AboutUs from './components/Frontend/AboutUs';
 import PrivacyPolicy from './components/Frontend/PrivacyPolicy';
 import AdSubCategories from './components/Frontend/AdSubCategories';
+import AdSubCategoriesListing from './components/Frontend/AdSubCategoriesListing';
+import JobOfferList from './components/Frontend/adCategories/listing/JobOfferList';
+import JobWantedResume from './components/Frontend/adCategories/listing/JobWantedResume';
+import LocalServicesLosAngeles from './components/Frontend/adCategories/listing/LocalServicesLosAngeles';
+import LocalServicesArmenia from './components/Frontend/adCategories/listing/LocalServicesArmenia';
+
+import HousingApartmentHouseRent from './components/Frontend/adCategories/listing/HousingApartmentHouseRent';
+import HousingWanted from './components/Frontend/adCategories/listing/HousingWanted';
+import HousingRoommatesShared from './components/Frontend/adCategories/listing/HousingRoommatesShared';
+import HousingOfficeCommercialRent from './components/Frontend/adCategories/listing/HousingOfficeCommercialRent';
+import HousingVacationRentals from './components/Frontend/adCategories/listing/HousingVacationRentals';
+import HousingArmeniaRentals from './components/Frontend/adCategories/listing/HousingArmeniaRentals';
+import HousingInternationalRentals from './components/Frontend/adCategories/listing/HousingInternationalRentals';
+import HousingOtherRentals from './components/Frontend/adCategories/listing/HousingOtherRentals';
 
 function App() {
   const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
@@ -134,6 +148,71 @@ function App() {
               path="/ad/sub/categories/:id"
               element={<Layout><AdSubCategories /></Layout>}
           />
+          <Route
+              path="/ad/sub/categories/:subCategoryId"
+              element={<Layout><AdSubCategoriesListing /></Layout>}
+          />
+
+          <Route
+              path="/job/offer/list"
+              element={<Layout><JobOfferList /></Layout>}
+          />
+
+          <Route
+              path="/job/wanted/resume"
+              element={<Layout><JobWantedResume /></Layout>}
+          />
+
+          <Route
+              path="/housing/apartment-house-rent"
+              element={<Layout><HousingApartmentHouseRent /></Layout>}
+          />
+
+          <Route
+              path="/housing/wanted"
+              element={<Layout><HousingWanted /></Layout>}
+          />
+
+          <Route
+              path="/housing/roommates-shared"
+              element={<Layout><HousingRoommatesShared /></Layout>}
+          />
+
+          <Route
+              path="/housing/office-commercial-rent"
+              element={<Layout><HousingOfficeCommercialRent /></Layout>}
+          />
+
+          <Route
+              path="/housing/vacation-rentals"
+              element={<Layout><HousingVacationRentals /></Layout>}
+          />
+
+          <Route
+              path="/housing/armenia-rentals"
+              element={<Layout><HousingArmeniaRentals /></Layout>}
+          />
+
+          <Route
+              path="/housing/international-rentals"
+              element={<Layout><HousingInternationalRentals /></Layout>}
+          />
+
+          <Route
+              path="/housing/other-rentals"
+              element={<Layout><HousingOtherRentals /></Layout>}
+          />
+
+          <Route
+              path="/local-services/los-angeles"
+              element={<Layout><LocalServicesLosAngeles /></Layout>}
+          />
+
+          <Route
+              path="/local-services/armenia"
+              element={<Layout><LocalServicesArmenia /></Layout>}
+          />
+
           <Route
               path="/advertise/with/us"
               element={<Layout><AdvertiseWithUs /></Layout>}

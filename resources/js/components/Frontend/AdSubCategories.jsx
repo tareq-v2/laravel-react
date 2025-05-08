@@ -16,7 +16,7 @@ const AdSubCategories = () => {
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
-        const response = await axios.get(`http://localhost:8001/ad/sub/category/icons/${id}`);
+        const response = await axios.get(`http://localhost:8000/ad/sub/category/icons/${id}`);
         console.log(response.data.data);
         if (response.data) {
           setAdSubCategories(response.data.data);
@@ -56,12 +56,12 @@ const AdSubCategories = () => {
                   {adSubCategories.map((subCategory) => (
                     <div key={subCategory.id} className="col">
                       <Link 
-                        to={`/ad/categories/${subCategory.id}`} 
+                        to={`/${subCategory.route}`} 
                         className="subCategory-card card h-100 border-0 shadow-sm text-decoration-none"
                       >
                         <div className="card-body text-center d-flex flex-column justify-content-center p-3">
                           <img
-                            src={`http://localhost:8001/uploads/${subCategory.icon}`} // Fixed port to 8001
+                            src={`http://localhost:8000/uploads/${subCategory.icon}`} // Fixed port to 8001
                             alt={subCategory.name}
                             className="img-fluid mb-3 mx-auto"
                             style={{ maxWidth: '80px', height: '80px', objectFit: 'contain' }}
@@ -79,7 +79,7 @@ const AdSubCategories = () => {
                 </div>
               ) : (
                 <div className="col-12 text-center py-5">
-                  <AdSubCategoriesListing subCateogoryId={id}/>
+                  <AdSubCategoriesListing subCategoryId={id}/>
                 </div>
               )}
             </div>
