@@ -11,12 +11,18 @@ use Illuminate\Support\Facades\Artisan;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
+use App\Models\JobOfferCategory;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('ad/category/icons', [FrontendController::class, 'categoryIcons']);
 Route::get('ad/sub/category/icons/{id}', [FrontendController::class, 'subCategoryIcons']);
 Route::get('directory/category/icons', [DirectoryController::class, 'categoryIcons']);
+
+Route::get('/job-offer-categories', function() {
+    $categories = \App\Models\JobOfferCategory::all();
+    return array_chunk($categories->toArray(), ceil($categories->count() / 4));
+});
 
 Route::post('/contact', function (Request $request) {
   $validated = $request->validate([

@@ -61,7 +61,7 @@ const AdSubCategories = () => {
                       >
                         <div className="card-body text-center d-flex flex-column justify-content-center p-3">
                           <img
-                            src={`http://localhost:8000/uploads/${subCategory.icon}`} // Fixed port to 8001
+                            src={`http://localhost:8000/storage/${subCategory.icon}`} // Fixed port to 8001
                             alt={subCategory.name}
                             className="img-fluid mb-3 mx-auto"
                             style={{ maxWidth: '80px', height: '80px', objectFit: 'contain' }}

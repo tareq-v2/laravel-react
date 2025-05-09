@@ -131,18 +131,23 @@ const MainContent = () => {
                 ) : error ? (
                   <div className="text-center text-danger">Error: {error}</div>
                 ) : (
-                  <div className="category-grid">
-                    {adCategories.map(category => (
-                      <Link to={`/ad/sub/categories/${category.id}`}>
-                        <div key={category.id} className="category-card">
-                          <img
-                            src={category.icon}
-                            alt={category.name}
-                          />
-                          <h6 className="font-weight-semibold mb-0">{category.name}</h6>
+                  <div className="container">
+                    <div className="row g-4">
+                      {adCategories.map(category => (
+                        <div key={category.id} className="col-md-3">
+                          <Link to={`/ad/sub/categories/${category.id}`} className="text-decoration-none">
+                            <div className="category-card h-100 p-3"> {/* Add padding inside card */}
+                              <img
+                                src={category.icon}
+                                alt={category.name}
+                                className="img-fluid"
+                              />
+                              <h6 className="font-weight-semibold mb-0 mt-2">{category.name}</h6>
+                            </div>
+                          </Link>
                         </div>
-                      </Link>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 )}
             </div>
@@ -182,21 +187,30 @@ const MainContent = () => {
             </div>
             
             <div className="directory-grid">
-            {loading ? (
+              {loading ? (
                 <div className="text-center">Loading categories...</div>
               ) : error ? (
                 <div className="text-center text-danger">Error: {error}</div>
               ) : (
-                <div className="category-grid">
-                  {directoryCategories.map(category => (
-                    <div key={category.id} className="category-card">
-                      <img
-                        src={category.icon}
-                        alt={category.name}
-                      />
-                      <h6 className="font-weight-semibold mb-0">{category.name}</h6>
-                    </div>
-                  ))}
+                <div className="container">
+                  <div className="row g-4">
+                    {directoryCategories.map(category => (
+                      <div key={category.id} className="col-md-3 col-6">
+                        <Link to={`/your-route/${category.id}`} className="text-decoration-none">
+                          <div className="category-card h-100 p-3">
+                            <img
+                              src={category.icon}
+                              alt={category.name}
+                              className="img-fluid"
+                            />
+                            <h6 className="font-weight-semibold mb-0 mt-2 text-center">
+                              {category.name}
+                            </h6>
+                          </div>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

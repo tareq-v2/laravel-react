@@ -20,12 +20,6 @@ return new class extends Migration
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
             $table->integer('order')->nullable();
-
-            // Foreign key constraint (assuming categories table exists)
-            $table->foreign('category_id')
-                  ->references('id')
-                  ->on('ad_categories')
-                  ->onDelete('cascade');
         });
     }
 

@@ -8,6 +8,8 @@ const AdSubCategoriesListing = (subCategoryId) => {
   console.log(subCategoryId['subCategoryId']);
   const getContent = () => {
     switch(parseInt(subCategoryId['subCategoryId'])) { // Use numerical comparisons
+      case 6:
+        return <div>Business for sale</div>;
       case 8:
         return <div>Item for sale</div>;
       case 10:

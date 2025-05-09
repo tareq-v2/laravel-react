@@ -105,6 +105,7 @@ import AboutUs from './components/Frontend/AboutUs';
 import PrivacyPolicy from './components/Frontend/PrivacyPolicy';
 import AdSubCategories from './components/Frontend/AdSubCategories';
 import AdSubCategoriesListing from './components/Frontend/AdSubCategoriesListing';
+import CreateJobOfferForm from './components/Frontend/create/JobOfferForm';
 import JobOfferList from './components/Frontend/adCategories/listing/JobOfferList';
 import JobWantedResume from './components/Frontend/adCategories/listing/JobWantedResume';
 import LocalServicesLosAngeles from './components/Frontend/adCategories/listing/LocalServicesLosAngeles';
@@ -156,6 +157,11 @@ function App() {
           <Route
               path="/job/offer/list"
               element={<Layout><JobOfferList /></Layout>}
+          />
+
+          <Route
+              path="/create-job-offer"
+              element={<Layout><CreateJobOfferForm /></Layout>}
           />
 
           <Route
