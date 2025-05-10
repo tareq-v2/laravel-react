@@ -52,6 +52,10 @@ const VirtualKeyboard = ({ isVisible, onClose, onKeyPress, targetInput }) => {
         onKeyPress(value.substring(0, start) + '\n' + value.substring(end));
         input.setSelectionRange(start + 1, start + 1);
         break;
+      case 'Tab':
+        onKeyPress(value.substring(0, start) + '\t' + value.substring(end));
+        input.setSelectionRange(start + 1, start + 1);
+      break;
       case ' ':
         onKeyPress(value.substring(0, start) + ' ' + value.substring(end));
         input.setSelectionRange(start + 1, start + 1);

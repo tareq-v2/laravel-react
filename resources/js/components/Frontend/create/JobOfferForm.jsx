@@ -87,14 +87,6 @@
           }
         }, [keyboardTarget, showKeyboard]);
 
-        // Generate CAPTCHA text
-        // const generateCaptcha = () => {
-        //   const randomString = Math.random().toString(36).substr(2, 5).toUpperCase();
-        //   setCaptchaText(randomString);
-        //   setCaptchaInput('');
-        //   setCaptchaError('');
-        // };
-
         const generateCaptcha = () => {
           // Generate 5-character alphanumeric string with special characters
           const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
@@ -192,69 +184,69 @@
         };
 
         const handleSubmit = async (e) => {
-            e.preventDefault();
-            
-            // Basic validation
-            const newErrors = {};
-            if (!formData.title) newErrors.title = 'Title is required';
-            if (!formData.city) newErrors.city = 'Location is required';
-            if (!formData.category) newErrors.category = 'Category is required';
-            if (!formData.description) newErrors.description = 'Description is required';
-            
-            if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+          e.preventDefault();
+          
+          // Basic validation
+          const newErrors = {};
+          if (!formData.title) newErrors.title = 'Title is required';
+          if (!formData.city) newErrors.city = 'Location is required';
+          if (!formData.category) newErrors.category = 'Category is required';
+          if (!formData.description) newErrors.description = 'Description is required';
+          
+          if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          return;
+          }
+
+          // CAPTCHA validation
+          if (!isReturningFromPreview && captchaInput !== captchaText) {
+            setCaptchaError('Invalid CAPTCHA code');
             return;
-            }
+          }
+          setShowPreview(true);
+          // try {
+          //   const formPayload = new FormData();
+          //   for (const key in formData) {
+          //       if (key !== 'attachment' && formData[key] !== null) {
+          //       formPayload.append(key, formData[key]);
+          //       }
+          //   }
+          //   if (formData.attachment) {
+          //       formPayload.append('attachment', formData.attachment);
+          //   }
 
-            // CAPTCHA validation
-            if (!isReturningFromPreview && captchaInput !== captchaText) {
-              setCaptchaError('Invalid CAPTCHA code');
-              return;
-            }
-            setShowPreview(true);
-            // try {
-            //   const formPayload = new FormData();
-            //   for (const key in formData) {
-            //       if (key !== 'attachment' && formData[key] !== null) {
-            //       formPayload.append(key, formData[key]);
-            //       }
-            //   }
-            //   if (formData.attachment) {
-            //       formPayload.append('attachment', formData.attachment);
-            //   }
+          //   const response = await axios.post('/job-offers-post', formPayload, {
+          //       headers: { 'Content-Type': 'multipart/form-data' }
+          //   });
 
-            //   const response = await axios.post('/job-offers-post', formPayload, {
-            //       headers: { 'Content-Type': 'multipart/form-data' }
-            //   });
-
-            //   console.log('Submission successful:', response.data);
-            //   // Reset form
-            //   setFormData({
-            //       title: '',
-            //       city: '',
-            //       category: '',
-            //       description: '',
-            //       businessName: '',
-            //       address: '',
-            //       salary: '',
-            //       name: '',
-            //       telNo: '',
-            //       telExt: '',
-            //       altTelNo: '',
-            //       altTelExt: '',
-            //       email: '',
-            //       website: '',
-            //       keywords: '',
-            //       captcha: '',
-            //       attachment: null
-            //   });
-                  
-            // } catch (error) {
-            //   console.error('Submission error:', error);
-            //   if (error.response?.data?.errors) {
-            //       setErrors(error.response.data.errors);
-            //   }
-            // }
+          //   console.log('Submission successful:', response.data);
+          //   // Reset form
+          //   setFormData({
+          //       title: '',
+          //       city: '',
+          //       category: '',
+          //       description: '',
+          //       businessName: '',
+          //       address: '',
+          //       salary: '',
+          //       name: '',
+          //       telNo: '',
+          //       telExt: '',
+          //       altTelNo: '',
+          //       altTelExt: '',
+          //       email: '',
+          //       website: '',
+          //       keywords: '',
+          //       captcha: '',
+          //       attachment: null
+          //   });
+                
+          // } catch (error) {
+          //   console.error('Submission error:', error);
+          //   if (error.response?.data?.errors) {
+          //       setErrors(error.response.data.errors);
+          //   }
+          // }
         };
 
         const handleFinalSubmit = async () => {
@@ -332,7 +324,7 @@
                                 }
                               }
                             />
-                            <label className="form-check-label text-dark fw-semibold" for="titleCheckbox">
+                            <label className="form-check-label text-dark fw-semibold" htmlFor="titleCheckbox">
                               Armenian Keyboard (Հայերեն Ստեղնաշար)
                             </label>
                           </div>
@@ -819,10 +811,10 @@ const Preview = ({ formData, filePreviews, onEdit, onSubmit }) => {
           </div>
         </div>
 
-        <div className="d-flex justify-content-between mt-4">
+        <div className="mt-4">
           <button 
             type="button" 
-            className="btn btn-secondary"
+            className="btn btn-secondary mr-2"
             onClick={onEdit}
           >
             Edit Post
