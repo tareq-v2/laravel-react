@@ -1,14 +1,29 @@
 .captcha-display {
-    background: #f0f0f0;
-    padding: 8px 15px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 1.5rem;
-    letter-spacing: 3px;
-    font-weight: bold;
-    color: #333;
-    text-decoration: line-through;
-    transform: skew(-10deg);
+  background: #f8f9fa;
+  padding: 3px 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: line-through;
+  /* transform: skew(-5deg); */
+  text-align: center;
+}
+
+.refresh-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.btn-success:hover .refresh-icon {
+  transform: rotate(360deg);
+}
+.refresh-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
 }
 
 .btn-refresh {

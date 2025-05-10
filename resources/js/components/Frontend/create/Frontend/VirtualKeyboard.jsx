@@ -10,7 +10,7 @@ const VirtualKeyboard = ({ isVisible, onClose, onKeyPress, targetInput }) => {
       ["ք", "ո", "ե", "րտ", "թ", "փ", "ը", "ի", "օ", "պ", "խ", "ծ"],
       ["ա", "ս", "դ", "ֆ", "գ", "հ", "յ", "կ", "լ", "ձ", "ղ", "ֆ"],
       ["⇧", "զ", "ց", "ւ", "է", "բ", "ն", "մ", ",", ".", "՚", "⌫"],
-      [" ", "⏎"]
+      ["Tab", " ", "⏎"]
     ],
     shift: [
       ["՜", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "՛"],
@@ -18,7 +18,7 @@ const VirtualKeyboard = ({ isVisible, onClose, onKeyPress, targetInput }) => {
       ["Ք", "Ո", "Ե", "ՐՏ", "Թ", "Փ", "Ը", "Ի", "Օ", "Պ", "Խ", "Ծ"],
       ["Ա", "Ս", "Դ", "Ֆ", "Գ", "Հ", "Յ", "Կ", "Լ", "Ձ", "Ղ", "Ֆ"],
       ["⇧", "Զ", "Ց", "Ւ", "Է", "Բ", "Ն", "Մ", "<", ">", "՛", "⌫"],
-      [" ", "⏎"]
+      ["Tab", " ", "⏎"]
     ]
   });
 
@@ -86,20 +86,34 @@ const VirtualKeyboard = ({ isVisible, onClose, onKeyPress, targetInput }) => {
            border: '1px solid #404040'
          }}>
       <div className="d-flex justify-content-end mb-2">
-        <button 
-          onClick={handleClose} 
-          className="btn btn-sm btn-danger"
-          style={{
-            padding: '5px 10px',
-            borderRadius: '5px'
-          }}
-        >
-          <FaTimes />
-        </button>
+         {/* Close Button */}
+        <div className="d-flex justify-content-end mb-2">
+          <button 
+            onClick={handleClose} 
+            className="btn btn-sm btn-danger"
+            style={{
+              padding: '5px 10px',
+              borderRadius: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            <FaTimes size={14} />
+            <span>Close</span>
+          </button>
+        </div>
       </div>
       
-      {(shiftActive ? layout.shift : layout.default).map((row, i) => (
-        <div key={i} className="d-flex justify-content-center mb-2">
+      {(shiftActive ? layout.shift : layout.default).map((row, i, arr) => (
+        <div 
+          key={i} 
+          className="d-flex mb-2"
+          style={{ 
+            justifyContent: i === arr.length - 1 ? 'space-between' : 'center',
+            width: '100%'
+          }}
+        >
           {row.map((key, j) => (
             <button
               key={`${i}-${j}`}
@@ -110,15 +124,21 @@ const VirtualKeyboard = ({ isVisible, onClose, onKeyPress, targetInput }) => {
                 border: '1px solid #505050',
                 borderRadius: '5px',
                 padding: '8px 12px',
-                minWidth: '50px',
+                minWidth: key === ' ' ? '250px' : 
+                         key === 'Tab' || key === '⏎' ? '80px' : '50px',
                 margin: '2px',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                flex: key === ' ' ? 2 : 1,
+                height: '45px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#4d4d4d'}
               onMouseOut={(e) => e.currentTarget.style.backgroundColor = shiftActive && key === '⇧' ? '#2450a0' : '#3d3d3d'}
               onClick={() => handleKeyClick(key)}
             >
-              {key}
+              {key === ' ' ? 'Space' : key}
             </button>
           ))}
         </div>
@@ -132,6 +152,7 @@ const VirtualKeyboard = ({ isVisible, onClose, onKeyPress, targetInput }) => {
           transform: translateX(-50%);
           z-index: 1000;
           min-width: 800px;
+          max-width: 95%;
         }
         
         .btn-danger:hover {

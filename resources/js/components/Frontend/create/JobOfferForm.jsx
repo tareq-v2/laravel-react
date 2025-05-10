@@ -1,7 +1,7 @@
     import React, { useState, useEffect, useRef } from 'react';
     import { Link } from 'react-router-dom';
     import axios from 'axios';
-    import { FaFileAlt } from 'react-icons/fa';
+    import { FaFileAlt, FaRedo } from 'react-icons/fa';
     import VirtualKeyboard from './Frontend/VirtualKeyboard';
     import './Frontend/JobOfferForm.css';
 
@@ -44,7 +44,7 @@
         const [captchaInput, setCaptchaInput] = useState('');
         const [captchaError, setCaptchaError] = useState('');
         const [descCheckbox, setDescCheckbox] = useState(false);
-        
+        const [isReturningFromPreview, setIsReturningFromPreview] = useState(false);
         // Handle checkbox changes
         const handleTitleCheckbox = (e) => {
           const isChecked = e.target.checked;
@@ -88,13 +88,24 @@
         }, [keyboardTarget, showKeyboard]);
 
         // Generate CAPTCHA text
+        // const generateCaptcha = () => {
+        //   const randomString = Math.random().toString(36).substr(2, 5).toUpperCase();
+        //   setCaptchaText(randomString);
+        //   setCaptchaInput('');
+        //   setCaptchaError('');
+        // };
+
         const generateCaptcha = () => {
-          const randomString = Math.random().toString(36).substr(2, 5).toUpperCase();
-          setCaptchaText(randomString);
+          // Generate 5-character alphanumeric string with special characters
+          const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
+          let captcha = '';
+          for(let i = 0; i < 5; i++) {
+            captcha += chars[Math.floor(Math.random() * chars.length)];
+          }
+          setCaptchaText(captcha);
           setCaptchaInput('');
           setCaptchaError('');
         };
-
         // Initialize CAPTCHA
         useEffect(() => {
           generateCaptcha();
@@ -196,7 +207,7 @@
             }
 
             // CAPTCHA validation
-            if (captchaInput !== captchaText) {
+            if (!isReturningFromPreview && captchaInput !== captchaText) {
               setCaptchaError('Invalid CAPTCHA code');
               return;
             }
@@ -284,18 +295,22 @@
                 <Preview
                   formData={formData}
                   filePreviews={filePreviews}
-                  onEdit={() => setShowPreview(false)}
+                  onEdit={() => {
+                      setShowPreview(false);
+                      setIsReturningFromPreview(true);
+                    }
+                  }
                   onSubmit={handleFinalSubmit}
                 />
               ) : (
                 
                 <form onSubmit={handleSubmit} encType="multipart/form-data">
                   <div className="card">
-                    <div className="card-header d-md-flex justify-content-between align-items-center">
-                      <h4 className="mb-0"><strong>Create Ad</strong></h4>
-                      <h4 className="mb-0">
+                    <div className="card-header mb-1 d-md-flex justify-content-between align-items-center">
+                      <h6 className="mb-0 text-muted"><strong>Create Ad</strong></h6>
+                      <h6 className="mb-0 text-muted">
                         <strong>Free for 30 days</strong>
-                      </h4>
+                      </h6>
                     </div>
 
                     <div className="card-body">
@@ -303,7 +318,7 @@
                       {/* Title Input */}
                       <div className="form-group">
                         <div className="d-flex justify-content-between align-items-center">
-                          <label className="form-label text-dark">
+                          <label className="form-label text-dark fw-semibold">
                             Ad Title <span className="text-danger">*</span>
                           </label>
                           <div className="form-check form-switch">
@@ -317,7 +332,7 @@
                                 }
                               }
                             />
-                            <label className="form-check-label" for="titleCheckbox">
+                            <label className="form-check-label text-dark fw-semibold" for="titleCheckbox">
                               Armenian Keyboard (Հայերեն Ստեղնաշար)
                             </label>
                           </div>
@@ -349,8 +364,8 @@
                       </div>
 
                       {/* Location Input */}
-                      <div className="form-group">
-                        <label className="form-label text-dark">
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">
                           Location <span className="text-danger">*</span>
                         </label>
                         <input
@@ -364,8 +379,8 @@
                       </div>
 
                       {/* Category Select */}
-                      <div className="form-group">
-                        <label className="form-label text-dark">
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">
                           Job Category <span className="text-danger">*</span>
                         </label>
                         <select
@@ -385,27 +400,24 @@
                       </div>
 
                       {/* Description Input */}
-                      <div className="form-group">
-                        <label className="form-label text-dark">
-                          Job Description/Requirements <span className="text-danger">*</span>
-                        </label>
-                        <div className="d-flex justify-content-end">
+                      <div className="form-group mt-3">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <label className="form-label text-dark fw-semibold mb-0">
+                            Job Description/Requirements <span className="text-danger">*</span>
+                          </label>
+                          
                           <div className="form-check form-switch">
                             <input
                               type="checkbox"
                               id='descCheckbox'
                               className="form-check-input keyboard-toggle"
                               checked={showKeyboard && keyboardTarget === descInputRef.current}
-                              onChange={() => {
+                              onChange={(e) => {
                                 handleKeyboardToggle(descInputRef);
-                                handleDescCheckbox;
-                                handleInputChange(e);
-                                if (descCheckbox) {
-                                  setFormData(prev => ({ ...prev, description: e.target.value }));
-                                }
+                                handleDescCheckbox(e);
                               }}
                             />
-                            <label className="form-check-label" for="descCheckbox">
+                            <label className="form-check-label text-dark fw-semibold" htmlFor="descCheckbox">
                               Armenian Keyboard (Հայերեն Ստեղնաշար)
                             </label>
                           </div>
@@ -428,8 +440,8 @@
                       </div>
 
                       {/* Business Name Input */}
-                      <div className="form-group">
-                        <label className="form-label">Business Name</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Business Name</label>
                         <input
                           type="text"
                           name="businessName"
@@ -440,8 +452,8 @@
                       </div>
 
                       {/* Address Input */}
-                      <div className="form-group">
-                        <label className="form-label">Address</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Address</label>
                         <input
                           type="text"
                           name="address"
@@ -452,8 +464,8 @@
                       </div>
 
                       {/* Salary Input */}
-                      <div className="form-group">
-                        <label className="form-label">Salary/Compensation</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Salary/Compensation</label>
                         <input
                           type="text"
                           name="salary"
@@ -465,8 +477,8 @@
                       </div>
 
                       {/* Contact Info Section */}
-                      <div className="form-group">
-                        <label className="form-label">Contact Name</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Contact Name</label>
                         <input
                           type="text"
                           name="name"
@@ -477,10 +489,10 @@
                       </div>
 
                       {/* Telephone Inputs */}
-                      <div className="form-group">
+                      <div className="form-group mt-3">
                         <div className="row">
                           <div className="col-8">
-                            <label className="form-label">Tel No.</label>
+                            <label className="form-label text-dark fw-semibold">Tel No.</label>
                             <input
                               type="text"
                               name="telNo"
@@ -490,7 +502,7 @@
                             />
                           </div>
                           <div className="col-4">
-                            <label className="form-label">Ext.</label>
+                            <label className="form-label text-dark fw-semibold">Ext.</label>
                             <input
                               type="number"
                               name="telExt"
@@ -503,10 +515,10 @@
                       </div>
 
                       {/* Alt Telephone Inputs */}
-                      <div className="form-group">
+                      <div className="form-group mt-3">
                         <div className="row">
                           <div className="col-8">
-                            <label className="form-label">Alt Tel No.</label>
+                            <label className="form-label text-dark fw-semibold">Alt Tel No.</label>
                             <input
                               type="text"
                               name="altTelNo"
@@ -516,7 +528,7 @@
                             />
                           </div>
                           <div className="col-4">
-                            <label className="form-label">Alt Ext.</label>
+                            <label className="form-label text-dark fw-semibold">Alt Ext.</label>
                             <input
                               type="number"
                               name="altTelExt"
@@ -529,8 +541,8 @@
                       </div>
 
                       {/* Email Section */}
-                      <div className="form-group">
-                        <label className="form-label">Email</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Email</label>
                         <input
                           type="email"
                           name="email"
@@ -541,8 +553,8 @@
                       </div>
 
                       {/* Website Section */}
-                      <div className="form-group">
-                        <label className="form-label">Website</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Website</label>
                         <input
                           type="text"
                           name="website"
@@ -553,8 +565,8 @@
                       </div>
 
                       {/* Keyword Section */}
-                      <div className="form-group">
-                        <label className="form-label">Keywords</label>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Keywords</label>
                         <input
                           type="text"
                           name="keywords"
@@ -566,10 +578,9 @@
 
 
                       {/* File Upload */}
-                      <div className="form-group">
-                        <label className="form-label text-dark">Attachments (max 5)</label>
-                        <div className="input-group">
-                          <div className="custom-file">
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">Attachments (max 5)</label>
+                         <div className="custom-file">
                             <input
                               type="file"
                               multiple
@@ -586,7 +597,6 @@
                                 : ''}
                             </label>
                           </div>
-                        </div>
                         
                         {filePreviews.length > 0 && (
                           <div className="row mt-3">
@@ -619,28 +629,55 @@
                         )}
                       </div>
                       
-                      {/* CAPTCHA Section */}
-                      <div className="form-group">
-                        <label className="form-label">CAPTCHA Verification</label>
-                        <div className="d-flex align-items-center gap-2 mb-2">
-                          <div className="captcha-display">{captchaText}</div>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-success"
-                            onClick={generateCaptcha}
-                          >
-                            <i className="fa fa-refresh"></i>
-                          </button>
+                      {!isReturningFromPreview && (
+                        <div className="form-group mt-3">
+                          <div className="d-flex flex-nowrap align-items-center gap-2">
+                            {/* CAPTCHA Display */}
+                            <div 
+                              className="captcha-display flex-shrink-0" 
+                              style={{
+                                userSelect: 'none',
+                                pointerEvents: 'none',
+                                cursor: 'not-allowed',
+                                width: '120px'
+                              }}
+                            >
+                              {captchaText}
+                            </div>
+
+                            {/* Refresh Button */}
+                            <button
+                              type="button"
+                              className="btn btn-outline-dark flex-shrink-0"
+                              onClick={generateCaptcha}
+                              aria-label="Refresh CAPTCHA"
+                              style={{ 
+                                width: '38px', 
+                                height: '38px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              <FaRedo className="refresh-icon" />
+                            </button>
+
+                            {/* CAPTCHA Input */}
+                            <input
+                              type="text"
+                              value={captchaInput}
+                              onChange={(e) => setCaptchaInput(e.target.value)}
+                              className={`form-control flex-grow-1 ${errors.captcha ? 'is-invalid' : ''}`}
+                              placeholder="Enter CAPTCHA code"
+                              onCopy={(e) => e.preventDefault()}
+                              onCut={(e) => e.preventDefault()}
+                              onPaste={(e) => e.preventDefault()}
+                              style={{ minWidth: '180px' }}
+                            />
+                          </div>
+                          {errors.captcha && <div className="invalid-feedback">{errors.captcha}</div>}
                         </div>
-                        <input
-                          type="text"
-                          value={captchaInput}
-                          onChange={(e) => setCaptchaInput(e.target.value)}
-                          className={`form-control ${captchaError ? 'is-invalid' : ''}`}
-                          placeholder="Enter CAPTCHA code"
-                        />
-                        {captchaError && <div className="invalid-feedback">{captchaError}</div>}
-                      </div>
+                      )}
 
                       {/* Submit Button */}
                       <div className="form-group mt-4">
