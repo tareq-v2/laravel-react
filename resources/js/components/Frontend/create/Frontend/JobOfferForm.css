@@ -1,0 +1,75 @@
+.captcha-display {
+    background: #f0f0f0;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: line-through;
+    transform: skew(-10deg);
+}
+
+.btn-refresh {
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+.file-preview-icon {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+.custom-file-input:focus ~ .custom-file-label {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+.virtual-keyboard-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+.keyboard-toggle:checked + label {
+    color: #2450a0;
+}
+.shift-active {
+    background-color: #2450a0;
+    color: white;
+}
+
+.virtual-keyboard-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+[data-armenian-input]:focus {
+  caret-color: #2450a0;
+  box-shadow: 0 0 0 2px #2450a055;
+}
+
+[data-armenian-input] {
+    caret-color: #2450a0;
+    caret-shape: block !important;
+}
+
+.keyboard-active {
+    box-shadow: 0 0 0 2px #2450a0;
+}
+
+.virtual-keyboard-container button {
+  min-width: 50px;
+  padding: 8px 12px;
+}

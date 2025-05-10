@@ -18,6 +18,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('ad/category/icons', [FrontendController::class, 'categoryIcons']);
 Route::get('ad/sub/category/icons/{id}', [FrontendController::class, 'subCategoryIcons']);
 Route::get('directory/category/icons', [DirectoryController::class, 'categoryIcons']);
+Route::post('job-offers-post', [FrontendController::class, 'jobOfferPost']);
 
 Route::get('/job-offer-categories', function() {
     $categories = \App\Models\JobOfferCategory::all();

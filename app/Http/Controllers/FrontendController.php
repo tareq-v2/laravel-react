@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
+    public function jobOfferPost(Request $request){
+        dd($request->all());
+    }
     public function categoryIcons(){
         $categories = AdCategory::all();
     
