@@ -119,6 +119,7 @@ import HousingVacationRentals from './components/Frontend/adCategories/listing/H
 import HousingArmeniaRentals from './components/Frontend/adCategories/listing/HousingArmeniaRentals';
 import HousingInternationalRentals from './components/Frontend/adCategories/listing/HousingInternationalRentals';
 import HousingOtherRentals from './components/Frontend/adCategories/listing/HousingOtherRentals';
+import Payment from './components/Frontend/create/Payment';
 
 function App() {
   const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
@@ -136,6 +137,14 @@ function App() {
                     <Layout><CustomerDashboard /></Layout>
                   </ProtectedRoute>
               }
+          />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute allowedRoles={['customer', 'admin']}>
+                <Layout><Payment /></Layout>
+              </ProtectedRoute>
+            }
           />
           <Route
               path="/admin/dashboard"

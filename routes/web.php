@@ -6,12 +6,10 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\FrontendController;
-use App\Http\Middleware\CorsMiddleware;
-use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\DraftController;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
-use App\Models\JobOfferCategory;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -38,6 +36,10 @@ Route::post('/contact', function (Request $request) {
   return response()->json(['message' => 'Contact form submitted successfully']);
   
 });
+
+Route::post('/save-draft', [DraftController::class, 'store']);
+Route::get('/get-draft/{ip}', [DraftController::class, 'getDraft']);
+Route::post('/drafts/{id}/confirm', [DraftController::class, 'confirmDraftUsage']);
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthController::class, 'logout']);
