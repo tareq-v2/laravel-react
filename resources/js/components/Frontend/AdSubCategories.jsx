@@ -16,7 +16,7 @@ const AdSubCategories = () => {
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/ad/sub/category/icons/${id}`);
+        const response = await axios.get(`/ad/sub/category/icons/${id}`);
         console.log(response.data.data);
         if (response.data) {
           setAdSubCategories(response.data.data);
