@@ -167,3 +167,75 @@
 .btn-submit:hover {
     animation: pulse 1.5s infinite;
 }
+.feature-card {
+  transition: transform 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-color);
+}
+
+.duration-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-right: 10px;
+}
+
+.duration-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.duration-card.selected {
+  border-color: var(--primary-color);
+  background: rgba(100, 200, 100, 0.1);
+}
+
+.price-bubble {
+  background: var(--gradient);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.interactive-preview {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.interactive-preview:hover {
+  border-color: var(--primary-color);
+}

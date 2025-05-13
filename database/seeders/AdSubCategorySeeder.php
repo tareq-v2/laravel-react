@@ -19,6 +19,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'businessman.png',
             'active_status' => 'Yes',
             'route' => 'job/offer/list',
+            'rate' => '10',
             'order' => 1
         ]);
         AdSubCategory::create([
@@ -27,6 +28,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'job-seeker.png',
             'active_status' => 'Yes',
             'route' => 'job/wanted/resume',
+            'rate' => 10,
             'order' => 2
         ]);
 
@@ -37,6 +39,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'house-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/apartment-house-rent',
+            'rate' => '10',
             'order' => 3
         ]);
         AdSubCategory::create([
@@ -45,6 +48,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'housing-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/wanted',
+            'rate' => 'free',
             'order' => 4
         ]);
         AdSubCategory::create([
@@ -53,6 +57,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'roommate-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/roommates-shared',
+            'rate' => '10',
             'order' => 5
         ]);
         AdSubCategory::create([
@@ -61,6 +66,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'commercial-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/office-commercial-rent',
+            'rate' => '10',
             'order' => 6
         ]);
         AdSubCategory::create([
@@ -69,6 +75,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'vacation-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/vacation-rentals',
+            'rate' => '10',
             'order' => 7
         ]);
         AdSubCategory::create([
@@ -77,6 +84,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'armenian-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/armenia-rentals',
+            'rate' => '10',
             'order' => 8
         ]);
         AdSubCategory::create([
@@ -85,6 +93,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'global-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/international-rentals',
+            'rate' => '10',
             'order' => 9
         ]);
         AdSubCategory::create([
@@ -93,6 +102,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'other-rent.png',
             'active_status' => 'Yes',
             'route' => 'housing/other-rentals',
+            'rate' => '10',
             'order' => 10
         ]);
 
@@ -103,6 +113,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'buy.png',
             'active_status' => 'Yes',
             'route' => 'cars/sale',
+            'rate' => '10',
             'order' => 11
         ]);
         AdSubCategory::create([
@@ -111,6 +122,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'global-rent.png',
             'active_status' => 'Yes',
             'route' => 'cars/lease-rent',
+            'rate' => '10',
             'order' => 12
         ]);
 
@@ -121,6 +133,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'home-for-sell.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/homes-sale',
+            'rate' => '10',
             'order' => 13
         ]);
         AdSubCategory::create([
@@ -129,6 +142,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'town-home.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/investment-properties',
+            'rate' => '10',
             'order' => 14
         ]);
         AdSubCategory::create([
@@ -137,6 +151,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'land.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/land-sale',
+            'rate' => '10',
             'order' => 15
         ]);
         AdSubCategory::create([
@@ -145,6 +160,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'market.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/commercial',
+            'rate' => '10',
             'order' => 16
         ]);
         AdSubCategory::create([
@@ -153,6 +169,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'vacation-home.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/vacation-homes',
+            'rate' => '10',
             'order' => 17
         ]);
         AdSubCategory::create([
@@ -161,6 +178,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'time-shares.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/time-share',
+            'rate' => '10',
             'order' => 18
         ]);
         AdSubCategory::create([
@@ -169,6 +187,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'hook.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/armenia',
+            'rate' => '10',
             'order' => 19
         ]);
         AdSubCategory::create([
@@ -177,6 +196,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'international-real-estate.png',
             'active_status' => 'Yes',
             'route' => 'real-estate/international',
+            'rate' => '10',
             'order' => 20
         ]);
 
@@ -187,6 +207,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'event.png',
             'active_status' => 'Yes',
             'route' => 'events/entertainment',
+            'rate' => '10',
             'order' => 22
         ]);
         AdSubCategory::create([
@@ -195,6 +216,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'travel.png',
             'active_status' => 'Yes',
             'route' => 'events/travel',
+            'rate' => '10',
             'order' => 21
         ]);
 
@@ -204,8 +226,10 @@ class AdSubCategorySeeder extends Seeder
             'name' =>  'Birds',
             'icon' => 'birds.png',
             'active_status' => 'Yes',
-            'route' => 'pets/birds'
+            'route' => 'pets/birds',
+            'rate' => '10',
         ]);
+        
         AdSubCategory::create([
             'category_id' => 9,
             'name' =>  'Cats',
@@ -294,6 +318,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'professional.png',
             'active_status' => 'Yes',
             'route' => 'community/professional-connect',
+            'rate' => '10',
             'order' => 33
         ]);
         AdSubCategory::create([
@@ -302,6 +327,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'interest.png',
             'active_status' => 'Yes',
             'route' => 'community/hobbies-interests',
+            'rate' => '10',
             'order' => 34
         ]);
 
@@ -312,6 +338,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'lc_los_angeles.png',
             'active_status' => 'Yes',
             'route' => 'local-services/los-angeles',
+            'rate' => '10',
             'order' => 35
         ]);
         AdSubCategory::create([
@@ -320,6 +347,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'lc_armenia.png',
             'active_status' => 'Yes',
             'route' => 'local-services/armenia',
+            'rate' => '10',
             'order' => 36
         ]);
 
@@ -330,6 +358,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'food_delevery_takeout.png',
             'active_status' => 'Yes',
             'route' => 'food/delivery-takeout',
+            'rate' => '10',
             'order' => 37
         ]);
         AdSubCategory::create([
@@ -338,6 +367,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'pastries.png',
             'active_status' => 'Yes',
             'route' => 'food/pastries-catering',
+            'rate' => '10',
             'order' => 38
         ]);
         AdSubCategory::create([
@@ -346,6 +376,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'restaurant_fine.png',
             'active_status' => 'Yes',
             'route' => 'food/restaurants-dining',
+            'rate' => '10',
             'order' => 39
         ]);
 
@@ -356,6 +387,7 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'car_part_accessories.png',
             'active_status' => 'Yes',
             'route' => 'cars/parts-accessories',
+            'rate' => '10',
             'order' => 40
         ]);
     }

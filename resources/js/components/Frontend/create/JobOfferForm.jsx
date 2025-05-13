@@ -50,6 +50,7 @@
         const [filePreviews, setFilePreviews] = useState([]);
         const [showFeatureSelection, setShowFeatureSelection] = useState(false);
         const [showAuthModal, setShowAuthModal] = useState(false);
+        const [getRate, setRate] = useState();
         const navigate = useNavigate();
 
         // Handle checkbox changes
@@ -109,6 +110,15 @@
           if (newState && inputRef.current) inputRef.current.focus();
         };
 
+        useEffect(() => {
+          const rate = async () => {
+            const response = await axios.get('job/offer/rate');
+            console.log(response);
+            
+            setRate(response.data.rate);
+          };
+          rate();
+        }, []);
         // Caret handling
         useEffect(() => {
           if (keyboardTarget && showKeyboard) {
@@ -513,80 +523,76 @@
               <div className="col-xl-8" style={{ position: 'relative' }}>
 
                 {showFeatureSelection ? (
-                  // Featured Post Selection Component
-                  <div className="card">
-                    <div className="card-header">
-                      <h4 className="mb-0"><strong>Premium Feature Selection</strong></h4>
-                    </div>
-                    <div className="card-body">
-                      <div className="form-group">
-                        <label className="form-label">
-                          Keep post featured for 24 hours? - $XX.XX
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="py-4 border-bottom">
-                          {/* Radio buttons */}
-                          <div className="mb-2">
-                            <div className="form-check">
-                              <input
-                                type="radio"
-                                id="featureYes"
-                                name="feature"
-                                value="Yes"
-                                checked={formData.featured === 'Yes'}
-                                onChange={(e) => setFormData(prev => ({
-                                  ...prev,
-                                  featured: e.target.value
-                                }))}
-                                className="form-check-input"
-                              />
-                              <label className="form-check-label" htmlFor="featureYes">
-                                Yes
-                              </label>
-                            </div>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              type="radio"
-                              id="featureNo"
-                              name="feature"
-                              value="No"
-                              checked={formData.featured === 'No'}
-                              onChange={(e) => setFormData(prev => ({
-                                ...prev,
-                                featured: e.target.value
-                              }))}
-                              className="form-check-input"
-                            />
-                            <label className="form-check-label" htmlFor="featureNo">
-                              No
-                            </label>
-                          </div>
-                        </div>
+                  <div className="card feature-card">
+                  <div className="card-header">
+                    <h4 className="mb-0">
+                      <strong className='ml-5'>Boost Your Post Visibility</strong>
+                    </h4>
+                  </div>
+                  
+                  <div className="card-body">
+                    <div className="feature-option active">
+                      <div className="option-header">
+                        <h5>Featured Post Duration</h5>
+                        <span className="price-bubble">$49.99</span>
                       </div>
                       
-                      <div className="mt-4 flex gap-4">
-                        <button 
-                          type="button" 
-                          className="btn-edit"
-                          onClick={() => {
-                            setShowFeatureSelection(false);
-                            setShowPreview(true);
-                          }}
-                        >
-                          Back to Preview
-                        </button>
-                        
-                        <button 
-                          type="button" 
-                          className="btn-submit"
-                          onClick={handleFeaturedSubmit}
-                        >
-                          Confirm and Submit
-                        </button>
+                      <div className="duration-selector">
+                        {[24, 48].map((hours) => (
+                          <label 
+                            key={hours}
+                            className={`duration-card ${
+                              formData.duration === hours ? 'selected' : ''
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="duration"
+                              value={hours}
+                              checked={formData.duration === hours}
+                              onChange={() => setFormData(prev => ({
+                                ...prev,
+                                duration: hours,
+                                featured: 'Yes'
+                              }))}
+                            />
+                            <div className="card-content">
+                              <div className="top-section">
+                                <span className="hours">{hours}h</span>
+                                <span className="badge">🔥 Hot Deal</span>
+                              </div>
+                              <div className="price-section">
+                                <span className="price">${(49.99 * (hours/24)).toFixed(2)}</span>
+                                <span className="per-hour">${(49.99/24).toFixed(2)}/hour</span>
+                              </div>
+                            </div>
+                          </label>
+                        ))}
                       </div>
+
+                    </div>
+
+                    <div className="action-buttons mt-3">
+                      <button 
+                        className="btn-back"
+                        onClick={() => {
+                          setShowFeatureSelection(false);
+                          setShowPreview(true);
+                        }}
+                      >
+                        ← Back to Preview
+                      </button>
+                      
+                      <button 
+                        className="btn-confirm"
+                        onClick={handleFeaturedSubmit}
+                        disabled={!formData.featured}
+                      >
+                        Confirm & Submit
+                      </button>
                     </div>
                   </div>
+                </div>
                 ) : showPreview ? (
                   // Preview Component
                   <Preview
@@ -605,7 +611,7 @@
                       <div className="card-header mb-1 d-md-flex justify-content-between align-items-center">
                         <h6 className="mb-0 text-muted"><strong>Create Ad</strong></h6>
                         <h6 className="mb-0 text-muted">
-                          <strong>Free for 30 days</strong>
+                          <strong>${getRate} for 30 days</strong>
                         </h6>
                       </div>
 

@@ -28,6 +28,18 @@ const Home = () => {
     
     fetchCurrentUser();
   }, []);
+
+  const [expandedMenus, setExpandedMenus] = useState({
+    ads: false,
+  });
+
+  const toggleMenu = (menu) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menu]: !prev[menu]
+    }));
+  };
+
   const handleLogout = async () => {
     try {
       await axios.post('/logout', {}, {
@@ -64,17 +76,52 @@ const Home = () => {
               {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
             </button>
           </div>
-          
+        
           <nav className="nav-menu">
-            <Link to="/admin-dashboard" className="nav-item">
+            {/* Dashboard Link */}
+            <div className='nav-item' data-tooltip="Analytics">
               <FaChartLine className="nav-icon" />
               {isSidebarExpanded && 'Dashboard'}
-            </Link>
-            <Link to="/admin/orders" className="nav-item">
-              <FaList className="nav-icon" />
-              {isSidebarExpanded && 'Orders'}
-            </Link>
-            <Link to="/home/users" className="nav-item">
+            </div>
+
+            {/* Collapsible Ads Section */}
+            <div className="nav-parent">
+              <div 
+                className="nav-item" 
+                onClick={() => toggleMenu('ads')}
+                data-tooltip="Ads"
+              >
+                <FaBox className="nav-icon" />
+                {isSidebarExpanded && (
+                  <>
+                    <span>Ads</span>
+                    <span className="chevron">
+                      {expandedMenus.ads ? <FaChevronDown /> : <FaChevronRight />}
+                    </span>
+                  </>
+                )}
+              </div>
+              
+              {expandedMenus.ads && isSidebarExpanded && (
+                <div className="nav-children">
+                  <Link to="/ads/categories" className="nav-item child">
+                    <FaList className="nav-icon" />
+                    Categories
+                  </Link>
+                  <Link to="/ads/subcategories" className="nav-item child">
+                    <FaList className="nav-icon" />
+                    Subcategories
+                  </Link>
+                  <Link to="/ads/main" className="nav-item child">
+                    <FaList className="nav-icon" />
+                    Main Ads
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Users Link */}
+            <Link to="/home/users" className="nav-item" data-tooltip="Users">
               <FaUsers className="nav-icon" />
               {isSidebarExpanded && 'Users'}
             </Link>

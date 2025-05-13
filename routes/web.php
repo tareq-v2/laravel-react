@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
+use App\Models\AdSubCategory;
 use Illuminate\Support\Facades\Auth;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -23,6 +24,11 @@ Route::post('job-offers-post', [FrontendController::class, 'jobOfferPost']);
 Route::get('/job-offer-categories', function() {
     $categories = \App\Models\JobOfferCategory::all();
     return array_chunk($categories->toArray(), ceil($categories->count() / 4));
+});
+
+Route::get('job/offer/rate', function(){
+  $rate = AdSubCategory::find(1)->rate;
+  return response()->json(['rate' => $rate]);
 });
 
 Route::post('/contact', function (Request $request) {
