@@ -70,7 +70,7 @@
 
 .main-content {
   flex: 1;
-  padding: 30px;
+  padding: 5;
 }
 
 .dashboard-header {
@@ -78,6 +78,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  background: tomato;
 }
 
 .stats-grid {
@@ -203,12 +204,8 @@
 }
 
 .main-content {
-  margin-left: 50px;
+  /* margin-left: 50px; */
   transition: all 0.3s ease;
-}
-
-.main-content.expanded {
-  margin-left: 80px;
 }
 
 .sidebar.collapsed .logout-btn {
@@ -239,7 +236,7 @@
   /* Dark Theme */
   --primary-bg: #1a1a1a;
   --secondary-bg: #2d2d2d;
-  --text-color: #e0e0e0;
+  --text-color: #342f2f;
   --border-color: #404040;
   --card-bg: #252525;
   --hover-bg: #3d3d3d;
@@ -296,4 +293,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+}
+.header-left{
+    padding: 5px 25px;
 }

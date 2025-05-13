@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
+use Illuminate\Support\Facades\Auth;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -48,9 +49,18 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/products', [ProductController::class, 'products']);
   Route::get('/product/{id}', [ProductController::class, 'show']);
   Route::delete('/delete/products/{id}', [ProductController::class, 'destroy']);
+  Route::get('/users', [UserController::class, 'users']);
+  Route::post('/user/create', [UserController::class, 'create']);
+  Route::post('/user/edit/{id}', [UserController::class, 'edit']);
+  Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
+  Route::get('/currentUser', function(){
+    return response()->json([
+      'data' => Auth::user()->toArray()
+    ]);
+  });
 });
 // Route::get('/users', [UserController::class, 'index']);
-Route::get('/users', [UserController::class, 'users']);
+
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 Route::get('/products/lists', [ProductController::class, 'productsList']);

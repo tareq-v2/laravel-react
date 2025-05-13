@@ -11,7 +11,23 @@ const Home = () => {
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/currentUser', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setCurrentUser(response.data.data);
+      } catch (err) {
+        console.error('Error fetching user:', err);
+      }
+    };
+    
+    fetchCurrentUser();
+  }, []);
   const handleLogout = async () => {
     try {
       await axios.post('/logout', {}, {
@@ -71,13 +87,11 @@ const Home = () => {
 
         <main className={`main-content ${!isSidebarExpanded ? 'expanded' : ''}`}>
 
-          
-          {location.pathname === '/home' ? (
-          // Dashboard content
-          <>
-            <header className="dashboard-header">
+          <header className="dashboard-header">
               <div className="header-left">
-                <h1>Welcome, Admin</h1>
+                <h3>
+                  Welcome, {currentUser?.name || 'Admin'}
+                </h3>
               </div>
               <div className="quick-actions">
               <button 
@@ -87,11 +101,16 @@ const Home = () => {
               >
                 {darkMode ? <FaSun /> : <FaMoon />}
               </button>
-              <Link to="/admin/add-product" className="action-btn">
+              {/* <Link to="/admin/add-product" className="action-btn">
                 <FaPlus /> {isSidebarExpanded && 'Add Product'}
-              </Link>
+              </Link> */}
             </div>
           </header>
+          
+          {location.pathname === '/home' ? (
+          // Dashboard content
+          <>
+            
             <div className="stats-grid">
             <div className="stat-card">
               <FaList className="stat-icon" />

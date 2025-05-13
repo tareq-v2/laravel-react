@@ -209,6 +209,7 @@
           document.addEventListener('keydown', handleKeyDown);
           return () => document.removeEventListener('keydown', handleKeyDown);
         }, [showKeyboard]);
+        
         useEffect(() => {
           const loadDraft = async () => {
             if (location.state?.draftData) {
