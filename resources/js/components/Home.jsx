@@ -1,36 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaBox, FaUsers, FaChartLine, FaSignOutAlt, FaPlus, FaList, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaBox, FaUsers, FaChartLine, FaSignOutAlt, FaPlus, FaList, FaChevronLeft, FaChevronRight, FaMoon, FaSun } from 'react-icons/fa';
 import './AdminDashboard.css';
+import { useTheme } from './Frontend/src/context/ThemeContext';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const Home = () => {
+  const location = useLocation();
+  const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productsRes, statsRes] = await Promise.all([
-          axios.get('/products'),
-          // axios.get('/admin/stats')
-        ]);
-
-        setProducts(productsRes.data);
-        setStats({
-          totalProducts: statsRes.data.total_products,
-          totalOrders: statsRes.data.total_orders,
-          totalUsers: statsRes.data.total_users,
-          // totalRevenue: statsRes.data.total_revenue
-        });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleLogout = async () => {
     try {
@@ -59,7 +39,11 @@ const Home = () => {
     <div className="admin-dashboard">
         <aside className={`sidebar ${!isSidebarExpanded ? 'collapsed' : ''}`}>
           <div className="brand">
-            <h2>{isSidebarExpanded ? 'Admin Panel' : 'D'}</h2>
+            <h2>
+              <Link to='/home'>
+                {isSidebarExpanded ? 'Admin Panel' : 'D'}
+              </Link>
+            </h2>
             <button className="toggle-btn" onClick={toggleSidebar}>
               {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
             </button>
@@ -70,15 +54,11 @@ const Home = () => {
               <FaChartLine className="nav-icon" />
               {isSidebarExpanded && 'Dashboard'}
             </Link>
-            <Link to="/admin/products" className="nav-item">
-              <FaBox className="nav-icon" />
-              {isSidebarExpanded && 'Products'}
-            </Link>
             <Link to="/admin/orders" className="nav-item">
               <FaList className="nav-icon" />
               {isSidebarExpanded && 'Orders'}
             </Link>
-            <Link to="/admin/users" className="nav-item">
+            <Link to="/home/users" className="nav-item">
               <FaUsers className="nav-icon" />
               {isSidebarExpanded && 'Users'}
             </Link>
@@ -90,23 +70,29 @@ const Home = () => {
         </aside>
 
         <main className={`main-content ${!isSidebarExpanded ? 'expanded' : ''}`}>
-          <header className="dashboard-header">
-            <div className="header-left">
-              <h1>Welcome, Admin</h1>
-            </div>
-            <div className="quick-actions">
+
+          
+          {location.pathname === '/home' ? (
+          // Dashboard content
+          <>
+            <header className="dashboard-header">
+              <div className="header-left">
+                <h1>Welcome, Admin</h1>
+              </div>
+              <div className="quick-actions">
+              <button 
+                onClick={toggleTheme}
+                className="theme-toggle"
+                aria-label="Toggle theme"
+              >
+                {darkMode ? <FaSun /> : <FaMoon />}
+              </button>
               <Link to="/admin/add-product" className="action-btn">
                 <FaPlus /> {isSidebarExpanded && 'Add Product'}
               </Link>
             </div>
           </header>
-
-          <div className="stats-grid">
-            <div className="stat-card">
-              <FaBox className="stat-icon" />
-              <h3>Total Products</h3>
-              {/* <p>{stats.totalProducts}</p> */}
-            </div>
+            <div className="stats-grid">
             <div className="stat-card">
               <FaList className="stat-icon" />
               <h3>Total Orders</h3>
@@ -123,19 +109,14 @@ const Home = () => {
               {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
             </div>
           </div>
-
-          <section className="recent-activity">
-            <h2>Recent Products</h2>
-            <div className="products-grid">
-              {products.slice(0, 4).map(product => (
-                <div key={product.id} className="product-card">
-                  <img src={product.image} alt={product.name} />
-                  <h4>{product.name}</h4>
-                  <p>${product.price}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          </>
+        ) : (
+          // Nested route content
+          <div className="content-container">
+            <header>{/* Header with title based on route */}</header>
+            <Outlet /> {/* This renders nested routes */}
+          </div>
+        )}
         </main>
     </div>
     

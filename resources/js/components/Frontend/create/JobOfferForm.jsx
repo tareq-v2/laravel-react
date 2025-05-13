@@ -119,16 +119,17 @@
         }, [keyboardTarget, showKeyboard]);
 
         const generateCaptcha = () => {
-          // Generate 5-character alphanumeric string with special characters
-          const chars = '1234567890';
-          // const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
-          let captcha = '';
-          for(let i = 0; i < 5; i++) {
-            captcha += chars[Math.floor(Math.random() * chars.length)];
-          }
-          setCaptchaText(captcha);
-          setCaptchaInput('');
-          setCaptchaError('');
+          setTimeout(() => {
+            // const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
+            const chars = '1234567890';
+            let captcha = '';
+            for(let i = 0; i < 5; i++) {
+              captcha += chars[Math.floor(Math.random() * chars.length)];
+            }
+            setCaptchaText(captcha);
+            setCaptchaInput('');
+            setCaptchaError('');
+          }, 1000);
         };
 
         // Initialize CAPTCHA
@@ -362,6 +363,7 @@
           // CAPTCHA validation
           if (!isReturningFromPreview && captchaInput !== captchaText) {
             setCaptchaError('Invalid CAPTCHA code');
+            generateCaptcha();
             return;
           }
           setShowPreview(true);

@@ -219,3 +219,81 @@
 .sidebar.collapsed .logout-btn span {
   display: none;
 }
+
+
+:root {
+  /* Light Theme */
+  --primary-bg: #ffffff;
+  --secondary-bg: #f5f6fa;
+  --text-color: #2c3e50;
+  --border-color: #e0e0e0;
+  --card-bg: #ffffff;
+  --hover-bg: #f8f9fa;
+  --sidebar-bg: #2c3e50;
+  --sidebar-text: #bdc3c7;
+  --stat-icon: #3498db;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  /* Dark Theme */
+  --primary-bg: #1a1a1a;
+  --secondary-bg: #2d2d2d;
+  --text-color: #e0e0e0;
+  --border-color: #404040;
+  --card-bg: #252525;
+  --hover-bg: #3d3d3d;
+  --sidebar-bg: #1a252f;
+  --sidebar-text: #95a5a6;
+  --stat-icon: #e0e0e0;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-dashboard {
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+}
+
+.stat-card, .product-card, .recent-activity {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.nav-item:hover {
+  background: var(--hover-bg);
+}
+
+.stat-icon {
+  color: var(--stat-icon);
+}
+
+.theme-toggle {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}

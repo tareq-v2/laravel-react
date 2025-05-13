@@ -7,6 +7,7 @@ use App\Http\Controllers\DirectoryController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\DraftController;
+use App\Http\Controllers\UserController;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
@@ -48,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/product/{id}', [ProductController::class, 'show']);
   Route::delete('/delete/products/{id}', [ProductController::class, 'destroy']);
 });
+// Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'users']);
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 Route::get('/products/lists', [ProductController::class, 'productsList']);
