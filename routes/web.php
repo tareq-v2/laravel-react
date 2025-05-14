@@ -37,10 +37,8 @@ Route::post('/contact', function (Request $request) {
       'email' => 'required|email|max:255',
       'message' => 'required|string|max:2000'
   ]);
-
   // Store in database
   GuestMessage::create($validated);
-
   return response()->json(['message' => 'Contact form submitted successfully']);
   
 });
@@ -64,13 +62,14 @@ Route::middleware('auth:sanctum')->group(function () {
       'data' => Auth::user()->toArray()
     ]);
   });
-});
-// Route::get('/users', [UserController::class, 'index']);
+  Route::get('/admin/ad-subcategories', [FrontendController::class, 'getAdSubCategories']);
+  Route::get('/admin/ad-categories', [FrontendController::class, 'getAdCategories']);
+  Route::put('/admin/update-subcategories/rate/{id}', [FrontendController::class, 'updateRate']);
 
+});
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 Route::get('/products/lists', [ProductController::class, 'productsList']);
-
 
 // Google
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);

@@ -42,6 +42,10 @@ import HousingInternationalRentals from './components/Frontend/adCategories/list
 import HousingOtherRentals from './components/Frontend/adCategories/listing/HousingOtherRentals';
 import Payment from './components/Frontend/create/Payment';
 import UserManagement from './components/Backend/users/Index';
+import AdHistory from './components/Backend/ads/AdHistory';
+import AdCategories from './components/Backend/ads/AdCategories';
+import AdminAdSubCategories from './components/Backend/ads/AdSubCategories';
+import AdRates from './components/Backend/ads/AdRates';
 
 function App() {
   const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
@@ -226,6 +230,38 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserManagement/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home/ads/history"
+            element={
+              <ProtectedRoute>
+                <AdHistory/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home/ads/categories"
+            element={
+              <ProtectedRoute>
+                <AdCategories/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home/ads/Subcategories"
+            element={
+              <ProtectedRoute>
+                <AdminAdSubCategories/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home/ads/rates"
+            element={
+              <ProtectedRoute>
+                <AdRates/>
               </ProtectedRoute>
             }
           />

@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaBox, FaUsers, FaChartLine, FaSignOutAlt, FaPlus, FaList, FaChevronLeft, FaChevronRight, FaMoon, FaSun } from 'react-icons/fa';
-import './AdminDashboard.css';
+import { 
+  FaBox, 
+  FaUsers, 
+  FaChartLine, 
+  FaSignOutAlt, 
+  FaPlus, 
+  FaList, 
+  FaChevronLeft, 
+  FaChevronRight, 
+  FaChevronDown, // Add this import
+  FaMoon, 
+  FaSun 
+} from 'react-icons/fa';import './AdminDashboard.css';
 import { useTheme } from './Frontend/src/context/ThemeContext';
 import { Outlet, useLocation } from 'react-router-dom';
 
@@ -103,18 +114,22 @@ const Home = () => {
               </div>
               
               {expandedMenus.ads && isSidebarExpanded && (
-                <div className="nav-children">
-                  <Link to="/ads/categories" className="nav-item child">
+                <div className="nav-children open">
+                  <Link to="/home/ads/history" className="nav-item child">
+                    <FaList className="nav-icon" />
+                    History
+                  </Link>
+                  <Link to="/home/ads/categories" className="nav-item child">
                     <FaList className="nav-icon" />
                     Categories
                   </Link>
-                  <Link to="/ads/subcategories" className="nav-item child">
+                  <Link to="/home/ads/subcategories" className="nav-item child">
                     <FaList className="nav-icon" />
-                    Subcategories
+                    Sub Categories
                   </Link>
-                  <Link to="/ads/main" className="nav-item child">
+                  <Link to="/home/ads/rates" className="nav-item child">
                     <FaList className="nav-icon" />
-                    Main Ads
+                    Rates
                   </Link>
                 </div>
               )}
@@ -188,5 +203,4 @@ const Home = () => {
     
   );
 };
-
 export default Home;

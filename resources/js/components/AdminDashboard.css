@@ -366,3 +366,70 @@
 .sidebar.collapsed .nav-item span {
   display: none;
 }
+
+.admin-dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
+  transition: width 0.3s ease;
+  /* Keep existing sidebar styles */
+}
+
+.main-content {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.expanded {
+  margin-left: 60px; /* Collapsed sidebar width */
+}
+
+.dashboard-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 250px; /* Match sidebar width */
+  z-index: 999;
+  color: #f8baba;
+  font-family: 'Times New Roman', Times, serif;
+  /* background: var(--bg-color); */
+  transition: left 0.3s ease;
+}
+
+.main-content.expanded .dashboard-header {
+  left: 60px; /* Collapsed sidebar width */
+}
+
+.content-container {
+  margin-top: 25px; /* Header height */
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f9fa;
+}
+
+
+
+

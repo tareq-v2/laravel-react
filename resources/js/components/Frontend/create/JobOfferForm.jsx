@@ -638,7 +638,7 @@
                                 className="form-check-label text-dark fw-semibold"
                                 htmlFor="titleCheckbox"
                               >
-                                Armenian Keyboard (Հայերեն Ստեղնաշար)
+                                Հայերեն Ստեղնաշար
                               </label>
                             </div>
                           </div>
@@ -723,7 +723,7 @@
                                 }}
                               />
                               <label className="form-check-label text-dark fw-semibold" htmlFor="descCheckbox">
-                                Armenian Keyboard (Հայերեն Ստեղնաշար)
+                                Հայերեն Ստեղնաշար
                               </label>
                             </div>
                           </div>
