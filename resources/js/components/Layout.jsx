@@ -7,6 +7,7 @@ import Header from './Frontend/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import ScrollToTop from './Frontend/ScrollToTop';
+import ChatWidget from './Frontend/ChatWidget';
 
 export default function Layout({ children }) {
 
@@ -17,6 +18,7 @@ export default function Layout({ children }) {
       <main className="main-content">
         {children}
       </main>
+      <ChatWidget />
       <ScrollToTop/>
       <Footer />
     </div>

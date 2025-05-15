@@ -8,11 +8,21 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\DraftController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ChatController;
 use App\Models\HomeVideo;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
 use App\Models\AdSubCategory;
 use Illuminate\Support\Facades\Auth;
+
+
+Route::get('/test-broadcast', function() {
+    return [
+        'broadcast_provider' => class_exists(\App\Providers\BroadcastServiceProvider::class),
+        'broadcast_driver' => config('broadcasting.default'),
+        'pusher_config' => config('broadcasting.connections.pusher')
+    ];
+});
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -47,6 +57,10 @@ Route::post('/save-draft', [DraftController::class, 'store']);
 Route::get('/get-draft/{ip}', [DraftController::class, 'getDraft']);
 Route::post('/drafts/{id}/confirm', [DraftController::class, 'confirmDraftUsage']);
 // Protected Routes
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthController::class, 'logout']);
   Route::post('/add/products', [ProductController::class, 'store']);
@@ -65,7 +79,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/admin/ad-subcategories', [FrontendController::class, 'getAdSubCategories']);
   Route::get('/admin/ad-categories', [FrontendController::class, 'getAdCategories']);
   Route::put('/admin/update-subcategories/rate/{id}', [FrontendController::class, 'updateRate']);
-
+  Route::post('/send-message', [ChatController::class, 'sendMessage']);
+  Route::get('/messages/{userId}', [ChatController::class, 'getMessages']);
+  Route::get('/active-admins', [ChatController::class, 'getActiveAdmins']);
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
