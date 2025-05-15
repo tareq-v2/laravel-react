@@ -12,6 +12,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import AdminDashboard from './components/AdminDashboard';
+import AdminChat from './components/AdminChat';
 import ProductSuccessView from './components/ProductSuccessView';
 import ProductList from './components/ProductList';
 import ProductDetails from './components/ProductDetails';
@@ -225,46 +226,12 @@ function App() {
               </ProtectedRoute>
             }
           >
-          <Route
-            path="/home/users"
-            element={
-              <ProtectedRoute>
-                <UserManagement/>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home/ads/history"
-            element={
-              <ProtectedRoute>
-                <AdHistory/>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home/ads/categories"
-            element={
-              <ProtectedRoute>
-                <AdCategories/>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home/ads/Subcategories"
-            element={
-              <ProtectedRoute>
-                <AdminAdSubCategories/>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home/ads/rates"
-            element={
-              <ProtectedRoute>
-                <AdRates/>
-              </ProtectedRoute>
-            }
-          />
+            <Route path="users" element={<UserManagement/>} />
+            <Route path="ads/history" element={<AdHistory/>} />
+            <Route path="ads/categories" element={<AdCategories/>} />
+            <Route path="ads/Subcategories" element={<AdminAdSubCategories/>} />
+            <Route path="ads/rates" element={<AdRates/>} />
+            <Route path="chat" element={<AdminChat />} />
           </Route>
           
         </Routes>

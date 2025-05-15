@@ -71,17 +71,29 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/user/create', [UserController::class, 'create']);
   Route::post('/user/edit/{id}', [UserController::class, 'edit']);
   Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
-  Route::get('/currentUser', function(){
-    return response()->json([
-      'data' => Auth::user()->toArray()
-    ]);
-  });
+  // Route::get('/currentUser', function(){
+  //   return response()->json([
+  //     'data' => Auth::user()->toArray()
+  //   ]);
+  // });
   Route::get('/admin/ad-subcategories', [FrontendController::class, 'getAdSubCategories']);
   Route::get('/admin/ad-categories', [FrontendController::class, 'getAdCategories']);
   Route::put('/admin/update-subcategories/rate/{id}', [FrontendController::class, 'updateRate']);
   Route::post('/send-message', [ChatController::class, 'sendMessage']);
   Route::get('/messages/{userId}', [ChatController::class, 'getMessages']);
   Route::get('/active-admins', [ChatController::class, 'getActiveAdmins']);
+
+  Route::get('/admin/conversations', [ChatController::class, 'getConversations']);
+  Route::get('/admin/messages/{userId}', [ChatController::class, 'getAdminMessages']);
+  Route::post('/admin/send-message', [ChatController::class, 'sendAdminMessage']);
+  Route::post('/admin/messages/mark-read/{userId}', [ChatController::class, 'markAsRead']);
+  Route::get('/current-user', function () {
+        return response()->json([
+            'id' => Auth::user()->id,
+            'name' => Auth::user()->name,
+            // other user data you need
+        ]);
+    });
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
