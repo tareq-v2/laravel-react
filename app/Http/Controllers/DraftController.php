@@ -9,41 +9,34 @@ use App\Models\AdDraftAttachment;
 class DraftController extends Controller
 {
     public function store(Request $request) {
-        // dd($request->all());
         $data = [];
-        // if ($request->hasFile('attachments')) {
-        //     foreach ($request->file('attachments') as $file) {
-        //         $path = $file->store('drafts/attachments', 'public');
-        //         $attachments[] = $path;
-        //     }
-        // }
-
-        // $socialSharePath = null;
-        // if ($request->hasFile('socialShare')) {
-        //     $socialSharePath = $request->file('socialShare')->store('drafts/social', 'public');
-        // }
-        // dd($request->formData['attachments']);
-        if ($request->formData['attachments']) {
+        // Handle attachments
+        if (isset($request->formData['attachments']) && is_array($request->formData['attachments'])) {
             foreach ($request->formData['attachments'] as $image) {
-                $fileName = uniqid() . '-' . rand() . '.' . $image->extension();
-                $location = public_path('drafts/attachments');
-                $image->move($location, $fileName);
-                $data['attachment'] = $fileName;
-                AdDraftAttachment::create([
-                    'user_ip' => request()->ip(),
-                    'image' => $fileName,
-                    'type' => 'images'
-                ]);
+                // Add file validation
+                if ($image instanceof \Illuminate\Http\UploadedFile) {
+                    $fileName = uniqid() . '-' . rand() . '.' . $image->extension();
+                    $location = public_path('drafts/attachments');
+                    $image->move($location, $fileName);
+                    
+                    AdDraftAttachment::create([
+                        'user_ip' => $request->ip,
+                        'image' => $fileName,
+                        'type' => 'images'
+                    ]);
+                }
             }
         }
-        $social = $request->formData['socialShare'];
-        if ($social) {
+
+        // Handle social share
+        $social = $request->formData['socialShare'] ?? null;
+        if ($social && $social instanceof \Illuminate\Http\UploadedFile) {
             $fileName = uniqid() . '-' . rand() . '.' . $social->extension();
             $location = public_path('drafts/social');
             $social->move($location, $fileName);
-            $data['socialShare'] = $fileName;
+            
             AdDraftAttachment::create([
-                'user_ip' => request()->ip(),
+                'user_ip' => $request->ip,
                 'image' => $fileName,
                 'type' => 'social'
             ]);
@@ -72,7 +65,7 @@ class DraftController extends Controller
 
         // Create draft post
         $draft = DraftPost::create([
-            'ip_address' => $request->ip(),
+            'ip_address' => $request->ip,
             'data' => json_encode($data),
             'expires_at' => now()->addHours(2)
         ]);
@@ -86,7 +79,6 @@ class DraftController extends Controller
               ->whereNull('retrieved_at')
               ->latest()
               ->first();
-
         if (!$draft) {
             return response()->json(['exists' => false]);
         }

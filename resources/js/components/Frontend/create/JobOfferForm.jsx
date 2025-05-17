@@ -29,6 +29,50 @@
             socialShare: ''
         });
         
+        // In JobOfferForm component
+        const [paymentDetails, setPaymentDetails] = useState({
+          card_holder_name: '',
+          street: '',
+          city: '',
+          state: '',
+          zip: '',
+          country: '',
+          phone: '',
+          email: '',
+          card_number: '',
+          exp_month: '',
+          exp_year: '',
+          cvv: '',
+        });
+
+        const [promoCode, setPromoCode] = useState('');
+        const [promoDiscount, setPromoDiscount] = useState(0);
+        const [promoCodeMsg, setPromoCodeMsg] = useState('');
+
+        const handlePaymentChange = (e) => {
+          const { name, value } = e.target;
+          setPaymentDetails(prev => ({ ...prev, [name]: value }));
+        };
+
+        const applyPromoCode = async () => {
+          try {
+            const response = await axios.post('/api/validate-promo', { code: promoCode });
+            if (response.data.valid) {
+              setPromoDiscount(response.data.discount);
+              setPromoCodeMsg(response.data.message);
+            } else {
+              setPromoCodeMsg('Invalid promo code');
+            }
+          } catch (error) {
+            setPromoCodeMsg('Error applying promo code');
+          }
+        };
+
+        const totalAmount = formData.rate + 
+          (formData.featured === 'Yes' ? formData.rate : 0) +
+          (formData.socialShare ? formData.rate : 0) -
+          promoDiscount;
+
         const [errors, setErrors] = useState({});
         const [titleCheckbox, setTitleCheckbox] = useState(false);
         const [showKeyboard, setShowKeyboard] = useState(false);
@@ -206,6 +250,7 @@
           setFilePreviews(prev => [...prev, ...newPreviews]);
         };
 
+        // Handle remve attachments
         const handleRemoveFile = (index) => {
           setFormData(prev => ({
             ...prev,
@@ -228,6 +273,7 @@
           return () => document.removeEventListener('keydown', handleKeyEvents);
         }, [showKeyboard, keyboardTarget]);
 
+        // Handle input focus
         const handleInputFocus = (inputRef, checkboxState) => {
           if (checkboxState) {
             setKeyboardTarget(inputRef.current);
@@ -387,6 +433,20 @@
           }));
         };
 
+        // Handle feature checkbox
+        const handleFeaturedCheckbox = (e) => {
+          const isChecked = e.target.checked;
+          setFormData(prev => ({
+            ...prev,
+            featured: isChecked ? 'Yes' : 'No'
+          }));
+        };
+
+        // useEffect to verify feature state changes
+        useEffect(() => {
+          console.log('Featured status updated:', formData.featured);
+        }, [formData.featured]);
+
         const handleSubmit = async (e) => {
           e.preventDefault();
           setErrors({});
@@ -531,48 +591,33 @@
                   <div className="card feature-card">
                   <div className="card-header">
                     <h4 className="mb-0">
-                      <strong className='ml-5'>Boost Your Post Visibility</strong>
+                      <strong className='ml-5'>Jobs Offered (Hiring) - {typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate}`}</strong>
                     </h4>
                   </div>
                   
                   <div className="card-body">
+                    <div className="post-duration-info mb-4">
+                      <p>Post active for 30 days. Expires {new Date(new Date().setMonth(new Date().getMonth() + 1)).toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })}.</p>
+                      <p>Includes free 15-day post bump up.</p>
+                    </div>
+
                     <div className="feature-option active">
-                      <div className="option-header">
-                        <h5>Featured Post Duration</h5>
-                        <span className="price-bubble">$49.99</span>
-                      </div>
-                      
-                      <div className="duration-selector">
-                        {[24, 48].map((hours) => (
-                          <label 
-                            key={hours}
-                            className={`duration-card ${
-                              formData.duration === hours ? 'selected' : ''
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="duration"
-                              value={hours}
-                              checked={formData.duration === hours}
-                              onChange={() => setFormData(prev => ({
-                                ...prev,
-                                duration: hours,
-                                featured: 'Yes'
-                              }))}
-                            />
-                            <div className="card-content">
-                              <div className="top-section">
-                                <span className="hours">{hours}h</span>
-                                <span className="badge">🔥 Hot Deal</span>
-                              </div>
-                              <div className="price-section">
-                                <span className="price">${(49.99 * (hours/24)).toFixed(2)}</span>
-                                <span className="per-hour">${(49.99/24).toFixed(2)}/hour</span>
-                              </div>
-                            </div>
+
+                      <div className="form-check">
+                          <input
+                              className="form-check-input single-checkbox2"
+                              type="checkbox"
+                              id="featured_post"
+                              checked={formData.featured === 'Yes'}
+                              onChange={handleFeaturedCheckbox}
+                          />
+                          <label className="form-check-label package_label" htmlFor="featured_post">
+                              <strong>Feature your ad on first page for 24 hours - {typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate}`}</strong>
                           </label>
-                        ))}
                       </div>
 
                     </div>  
@@ -587,7 +632,7 @@
                           onChange={handleSocialPromotionChange}
                         />
                         <label className="form-check-label package_label" htmlFor="social_media">
-                          <strong>Promote your ad on our social media platforms - ${getRate}</strong>
+                          <strong>Promote your ad on our social media platforms - {typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate}`}</strong>
                         </label>
                       </div>
 
@@ -673,7 +718,7 @@
                       <div className="card-header mb-1 d-md-flex justify-content-between align-items-center">
                         <h6 className="mb-0 text-muted"><strong>Create Ad</strong></h6>
                         <h6 className="mb-0 text-muted">
-                          <strong>${getRate} for 30 days</strong>
+                          <strong>{typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate}`} for 30 days</strong>
                         </h6>
                       </div>
 
@@ -1129,7 +1174,11 @@
                       <Link 
                         to="/register" 
                         className="btn btn-primary btn-lg"
-                        onClick={() => setShowAuthModal(false)}
+                        onClick={async () => {
+                          // Save draft before redirect
+                          await saveDraftData();
+                          setShowAuthModal(false);
+                        }}
                       >
                         Register
                       </Link>

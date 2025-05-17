@@ -12,7 +12,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email', // Ensure email is unique
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
         ]);
 
@@ -20,10 +20,20 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
-            'role' => 'customer', // Default role
+            'role' => 'customer',
         ]);
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        // Automatically log in the user after registration
+        Auth::login($user);
+
+        // Create and return authentication token
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        return response()->json([
+            'message' => 'User registered successfully',
+            'token' => $token,
+            'role' => $user->role
+        ], 201);
     }
 
     public function login(Request $request)

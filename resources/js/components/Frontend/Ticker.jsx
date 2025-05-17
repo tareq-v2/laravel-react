@@ -11,7 +11,7 @@ const NewsTicker = () => {
       className="custom-marquee"
     >
       <span style={{ padding: '0 2rem' }}>
-        Tareq 🔥 🚀 ⚛️
+        God is everywhere !! beyond universe 🔥 🚀 ⚛️
       </span>
     </Marquee>
   );

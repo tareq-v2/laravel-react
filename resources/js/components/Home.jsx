@@ -178,23 +178,25 @@ const Home = () => {
           // Dashboard content
           <>
             
-            <div className="stats-grid">
-            <div className="stat-card">
-              <FaList className="stat-icon" />
-              <h3>Total Orders</h3>
-              {/* <p>{stats.totalOrders}</p> */}
+            <div className='admin-analytics'>
+                <div className="stats-grid">
+                <div className="stat-card">
+                  <FaList className="stat-icon" />
+                  <h3>Total Orders</h3>
+                  {/* <p>{stats.totalOrders}</p> */}
+                </div>
+                <div className="stat-card">
+                  <FaUsers className="stat-icon" />
+                  <h3>Total Users</h3>
+                  {/* <p>{stats.totalUsers}</p> */}
+                </div>
+                <div className="stat-card">
+                  <FaChartLine className="stat-icon" />
+                  <h3>Total Revenue</h3>
+                  {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
+                </div>
+              </div>
             </div>
-            <div className="stat-card">
-              <FaUsers className="stat-icon" />
-              <h3>Total Users</h3>
-              {/* <p>{stats.totalUsers}</p> */}
-            </div>
-            <div className="stat-card">
-              <FaChartLine className="stat-icon" />
-              <h3>Total Revenue</h3>
-              {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
-            </div>
-          </div>
           </>
         ) : (
           // Nested route content

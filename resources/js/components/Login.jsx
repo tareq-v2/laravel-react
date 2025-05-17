@@ -9,21 +9,6 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function Login() {
 
-  // const urlParams = new URLSearchParams(window.location.search);
-  // const code = urlParams.get('code');
-
-  // // Send code to your backend API
-  // fetch('auth/google/callback', {
-  //   method: 'POST',
-  //   headers: {'Content-Type': 'application/json'},
-  //   body: JSON.stringify({ code })
-  // })
-  // .then(response => response.json())
-  // .then(data => {
-  //   // Handle token and user data
-  // });
-
-
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -63,14 +48,16 @@ export default function Login() {
 
   const handleLoginSuccess = async () => {
     try {
-      // Check for existing drafts
+      // Get client IP
       const ipResponse = await axios.get('https://api.ipify.org?format=json');
-      const draftResponse = await axios.get(`/get-draft/${ipResponse.data.ip}`);
-      // alert(draftResponse.data)
+      const clientIP = ipResponse.data.ip;
+
+      // Check for existing drafts using the IP
+      const draftResponse = await axios.get(`/get-draft/${clientIP}`);
+      
       if (draftResponse.data.exists) {
-        console.log('Draft found:', draftResponse.data.data);
-        // Navigate to job creation with draft data
-        navigate('/create-job-offer', {
+        // Redirect to payment page with draft data
+        navigate('/payment', {
           state: { 
             draftData: draftResponse.data.data,
             draftId: draftResponse.data.draft_id
@@ -79,9 +66,10 @@ export default function Login() {
       } else {
         // Regular role-based navigation
         const role = localStorage.getItem('role');
-        if (role === 'admin') navigate('/home');
-        else if (role === 'super_admin') navigate('/admin/dashboard');
-        else navigate(fromPath);
+        const redirectPath = role === 'admin' ? '/home' :
+                          role === 'super_admin' ? '/admin/dashboard' :
+                          fromPath;
+        navigate(redirectPath);
       }
     } catch (error) {
       console.error('Draft handling error:', error);
@@ -103,26 +91,85 @@ export default function Login() {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('role', response.data.role);
-
+        
+        // Handle post-login logic including draft check
         await handleLoginSuccess();
-        // Check for draft data
-        // const ipResponse = await axios.get('https://api.ipify.org?format=json');
-        // const draftCheck = await axios.get(`/get-draft/${ipResponse.data.ip}`);
-        // if (draftCheck.data.exists) {
-        //   return navigate('/payment', {
-        //     state: { draftData: draftCheck.data.data }
-        //   });
-        // } else {
-        //   // Existing role-based navigation
-        //   if (response.data.role === 'admin') navigate('/home');
-        //   else if (response.data.role === 'super_admin') navigate('/admin/dashboard');
-        //   else navigate(fromPath);
-        // }
       }
     } catch (error) {
       setError('Invalid email or password. Please try again.');
     }
   };
+  // const handleLoginSuccess = async () => {
+  //   try {
+  //     // Check for existing drafts
+  //     const ipResponse = await axios.get('https://api.ipify.org?format=json');
+  //     const draftResponse = await axios.get(`/get-draft/${ipResponse.data.ip}`);
+  //     // alert(draftResponse.data)
+  //     if (draftResponse.data.exists) {
+  //       console.log('Draft found:', draftResponse.data.data);
+  //       // Navigate to job creation with draft data
+  //       navigate('/create-job-offer', {
+  //         state: { 
+  //           draftData: draftResponse.data.data,
+  //           draftId: draftResponse.data.draft_id
+  //         }
+  //       });
+  //     } else {
+  //       // Regular role-based navigation
+  //       const role = localStorage.getItem('role');
+  //       if (role === 'admin') navigate('/home');
+  //       else if (role === 'super_admin') navigate('/admin/dashboard');
+  //       else navigate(fromPath);
+  //     }
+  //   } catch (error) {
+  //     console.error('Draft handling error:', error);
+  //     navigate(fromPath); // Fallback navigation
+  //   }
+  // };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post('/login', formData, {
+  //       headers: {
+  //         'X-XSRF-TOKEN': getCookie('XSRF-TOKEN'),
+  //         'Content-Type': 'application/json',
+  //       },
+  //       withCredentials: true,
+  //     });
+
+  //     if (response.data.token) {
+  //       localStorage.setItem('token', response.data.token);
+  //       localStorage.setItem('role', response.data.role);
+
+  //       await handleLoginSuccess();
+  //       // Check for draft data
+  //        const getClientIP = async () => {
+  //         try {
+  //           const response = await axios.get('https://api.ipify.org?format=json');
+  //           return response.data.ip;
+  //         } catch (error) {
+  //           console.error('Error fetching IP:', error);
+  //           return 'unknown';
+  //         }
+  //       };
+        
+  //       const draftCheck = await axios.get(`/get-draft/${getClientIP}`);
+  //       if (draftCheck.data.exists) {
+  //         return navigate('/payment', {
+  //           state: { draftData: draftCheck.data.data }
+  //         });
+  //       } else {
+  //         // Existing role-based navigation
+  //         if (response.data.role === 'admin') navigate('/home');
+  //         else if (response.data.role === 'super_admin') navigate('/admin/dashboard');
+  //         else navigate(fromPath);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setError('Invalid email or password. Please try again.');
+  //   }
+  // };
 
   // useEffect(() => {
   //   const checkDraft = async () => {
@@ -145,15 +192,7 @@ export default function Login() {
   //   }
   // }, [navigate]);
 
-  const getClientIP = async () => {
-    try {
-      const response = await axios.get('https://api.ipify.org?format=json');
-      return response.data.ip;
-    } catch (error) {
-      console.error('Error fetching IP:', error);
-      return 'unknown';
-    }
-  };
+ 
   
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
