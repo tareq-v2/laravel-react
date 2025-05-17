@@ -137,10 +137,10 @@ const Home = () => {
             </div>
 
             {/* Users Link */}
-            <Link to="/home/chat" className="nav-item" data-tooltip="Chat">
+            {/* <Link to="/home/chat" className="nav-item" data-tooltip="Chat">
               <FaComments className="nav-icon" />
               {isSidebarExpanded && 'Chat Support'}
-          </Link>
+          </Link> */}
             <Link to="/home/users" className="nav-item" data-tooltip="Users">
               <FaUsers className="nav-icon" />
               {isSidebarExpanded && 'Users'}

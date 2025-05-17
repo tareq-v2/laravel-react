@@ -25,9 +25,10 @@
             captcha: '',
             attachments: [],
             featured: 'No',
-            model: 'JobOffer'
+            model: 'JobOffer',
+            socialShare: ''
         });
-
+        
         const [errors, setErrors] = useState({});
         const [titleCheckbox, setTitleCheckbox] = useState(false);
         const [showKeyboard, setShowKeyboard] = useState(false);
@@ -41,7 +42,7 @@
                 .map(line => line.trim())
                 .filter(Boolean)
             );
-
+            
         const [captchaText, setCaptchaText] = useState('');
         const [captchaInput, setCaptchaInput] = useState('');
         const [captchaError, setCaptchaError] = useState('');
@@ -52,7 +53,11 @@
         const [showAuthModal, setShowAuthModal] = useState(false);
         const [getRate, setRate] = useState();
         const navigate = useNavigate();
-
+        const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
+        // const [socialImage, setSocialImage] = useState(null);
+        // const [socialPreview, setSocialPreview] = useState('');
+        const fileInputRef = useRef(null);
+          
         // Handle checkbox changes
         const handleTitleCheckbox = (e) => {
           const isChecked = e.target.checked;
@@ -113,12 +118,41 @@
         useEffect(() => {
           const rate = async () => {
             const response = await axios.get('job/offer/rate');
-            console.log(response);
             
             setRate(response.data.rate);
           };
           rate();
         }, []);
+
+        // Function to handle file upload
+        const handleSocialPromotionChange = (e) => {
+          setSocialMediaPromotion(e.target.checked);
+        };
+
+        //  Handle social file change
+        const handleSocialFileChange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            setFormData(prev => ({
+              ...prev,
+              socialShare: file
+            }));
+          }
+          console.log(formData);
+        };
+
+        // Update removeSocialImage
+        const removeSocialImage = () => {
+          setFormData(prev => ({
+            ...prev,
+            socialShare: null
+          }));
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          console.log(formData);
+        };
+
         // Caret handling
         useEffect(() => {
           if (keyboardTarget && showKeyboard) {
@@ -245,7 +279,7 @@
           }));
         };
 
-        const formatIndianNumber = (numStr) => {
+        const formatUsNumber = (numStr) => {
           if (!numStr) return '';
           const num = numStr.replace(/,/g, '');
           return Number(num).toLocaleString('en-IN');
@@ -253,10 +287,18 @@
 
         const saveDraftData = async () => {
           try {
-            const response = await axios.post('/save-draft', {
-              formData,
-              ip: await getClientIP()
-            });
+            const response = await axios.post('/save-draft',
+              {
+                formData,
+                ip: await getClientIP()
+              },
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                }
+              }
+            
+            );
             console.log('Draft saved:', response.data);
           } catch (error) {
             console.error('Draft save failed:', error);
@@ -275,7 +317,7 @@
 
         const handleKeyDown = (e) => {
           const key = e.key;
-          const value = e.target.value;
+          const value = e.target.value; 
 
           // Allow navigation and control keys
           if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete', 'Tab'].includes(key)) return;
@@ -320,7 +362,7 @@
 
           // Format integer part
           const formattedInteger = integerPart 
-            ? formatIndianNumber(integerPart.replace(/,/g, ''))
+            ? formatUsNumber(integerPart.replace(/,/g, ''))
             : '';
 
           // Limit decimal part
@@ -378,49 +420,6 @@
             return;
           }
           setShowPreview(true);
-          // try {
-          //   const formPayload = new FormData();
-          //   for (const key in formData) {
-          //       if (key !== 'attachment' && formData[key] !== null) {
-          //       formPayload.append(key, formData[key]);
-          //       }
-          //   }
-          //   if (formData.attachment) {
-          //       formPayload.append('attachment', formData.attachment);
-          //   }
-
-          //   const response = await axios.post('/job-offers-post', formPayload, {
-          //       headers: { 'Content-Type': 'multipart/form-data' }
-          //   });
-
-          //   console.log('Submission successful:', response.data);
-          //   // Reset form
-          //   setFormData({
-          //       title: '',
-          //       city: '',
-          //       category: '',
-          //       description: '',
-          //       businessName: '',
-          //       address: '',
-          //       salary: '',
-          //       name: '',
-          //       telNo: '',
-          //       telExt: '',
-          //       altTelNo: '',
-          //       altTelExt: '',
-          //       email: '',
-          //       website: '',
-          //       keywords: '',
-          //       captcha: '',
-          //       attachment: null
-          //   });
-                
-          // } catch (error) {
-          //   console.error('Submission error:', error);
-          //   if (error.response?.data?.errors) {
-          //       setErrors(error.response.data.errors);
-          //   }
-          // }
           
         };
 
@@ -465,6 +464,7 @@
             }
 
             const formPayload = new FormData();
+
             // Append all form fields including featured
             Object.entries(formData).forEach(([key, value]) => {
               if (key !== 'attachments' && value) {
@@ -472,6 +472,11 @@
               }
             });
 
+            // if (socialMediaPromotion && socialImage) {
+            //   formPayload.append('socialShare', socialImage);
+            // }
+
+            console.log(formData);
             formData.attachments.forEach(file => {
               formPayload.append('attachments[]', file);
             });
@@ -570,6 +575,63 @@
                         ))}
                       </div>
 
+                    </div>  
+
+                    <div className="social-promotion-section mt-4">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input single-checkbox2"
+                          type="checkbox"
+                          id="social_media"
+                          checked={socialMediaPromotion}
+                          onChange={handleSocialPromotionChange}
+                        />
+                        <label className="form-check-label package_label" htmlFor="social_media">
+                          <strong>Promote your ad on our social media platforms - ${getRate}</strong>
+                        </label>
+                      </div>
+
+                      {socialMediaPromotion && (
+                        <div className="social-image-upload mt-3">
+                          <div className="file-upload-wrapper">
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              className="form-control"
+                              accept="image/*"
+                              onChange={handleSocialFileChange}
+                              style={{ display: 'none' }}
+                              id="socialImageUpload"
+                            />
+                            <label 
+                              htmlFor="socialImageUpload" 
+                              className="btn btn-outline-primary btn-sm"
+                            >
+                              Upload Social Media Image
+                            </label>
+                            {formData.socialShare && (
+                              <div className="image-preview mt-2">
+                                <img 
+                                  src={URL.createObjectURL(formData.socialShare)} 
+                                  alt="Social preview" 
+                                  className="img-thumbnail"
+                                  style={{ width: '100px', height: '100px' }}
+                                />
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-sm ms-2"
+                                  onClick={removeSocialImage}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          <small className="text-muted">
+                            (JPG, PNG, GIF, max 2 MB) - This image will be used for social media promotion
+                          </small>
+                        </div>
+                      )}
                     </div>
 
                     <div className="action-buttons mt-3">

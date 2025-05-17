@@ -4,24 +4,80 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DraftPost;
+use App\Models\AdDraftAttachment;
 
 class DraftController extends Controller
 {
     public function store(Request $request) {
-        $data = $request->validate([
-            'formData' => 'required|array',
-            'ip' => 'required|string'
+        // dd($request->all());
+        $data = [];
+        // if ($request->hasFile('attachments')) {
+        //     foreach ($request->file('attachments') as $file) {
+        //         $path = $file->store('drafts/attachments', 'public');
+        //         $attachments[] = $path;
+        //     }
+        // }
+
+        // $socialSharePath = null;
+        // if ($request->hasFile('socialShare')) {
+        //     $socialSharePath = $request->file('socialShare')->store('drafts/social', 'public');
+        // }
+        // dd($request->formData['attachments']);
+        if ($request->formData['attachments']) {
+            foreach ($request->formData['attachments'] as $image) {
+                $fileName = uniqid() . '-' . rand() . '.' . $image->extension();
+                $location = public_path('drafts/attachments');
+                $image->move($location, $fileName);
+                $data['attachment'] = $fileName;
+                AdDraftAttachment::create([
+                    'user_ip' => request()->ip(),
+                    'image' => $fileName,
+                    'type' => 'images'
+                ]);
+            }
+        }
+        $social = $request->formData['socialShare'];
+        if ($social) {
+            $fileName = uniqid() . '-' . rand() . '.' . $social->extension();
+            $location = public_path('drafts/social');
+            $social->move($location, $fileName);
+            $data['socialShare'] = $fileName;
+            AdDraftAttachment::create([
+                'user_ip' => request()->ip(),
+                'image' => $fileName,
+                'type' => 'social'
+            ]);
+        }
+
+        // Prepare data array
+        $data = [
+            'title' => $request->formData['title'],
+            'city' => $request->formData['city'],
+            'category' => $request->formData['category'],
+            'description' => $request->formData['description'],
+            'businessName' => $request->formData['businessName'],
+            'address' => $request->formData['address'],
+            'salary' => $request->formData['salary'],
+            'name' => $request->formData['name'],
+            'telNo' => $request->formData['telNo'],
+            'telExt' => $request->formData['telExt'],
+            'altTelNo' => $request->formData['altTelNo'],
+            'altTelExt' => $request->formData['altTelExt'],
+            'email' => $request->formData['email'],
+            'website' => $request->formData['website'],
+            'keywords' => $request->formData['keywords'],
+            'featured' => $request->formData['featured'],
+            'model' => $request->formData['model'],
+        ];
+
+        // Create draft post
+        $draft = DraftPost::create([
+            'ip_address' => $request->ip(),
+            'data' => json_encode($data),
+            'expires_at' => now()->addHours(2)
         ]);
-        $draft = DraftPost::updateOrCreate(
-            [
-                'ip_address' => $data['ip'],
-                'model' => $data['formData']['model'],
-                'data' => json_encode($data['formData']),
-                'expires_at' => now()->addHours(2)
-            ]
-        );
+
         return response()->json($draft);
-        
     }
 
     public function getDraft($ip) {

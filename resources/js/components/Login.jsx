@@ -61,32 +61,33 @@ export default function Login() {
     axios.get('/sanctum/csrf-cookie', { withCredentials: true });
   }, []);
 
-  // const handleLoginSuccess = async () => {
-  //   try {
-  //     // Check for existing drafts
-  //     const ipResponse = await axios.get('https://api.ipify.org?format=json');
-  //     const draftResponse = await axios.get(`/get-draft/${ipResponse.data.ip}`);
-      
-  //     if (draftResponse.data.exists) {
-  //       // Navigate to job creation with draft data
-  //       navigate('/create-job-offer', {
-  //         state: { 
-  //           draftData: draftResponse.data.data,
-  //           draftId: draftResponse.data.draft_id
-  //         }
-  //       });
-  //     } else {
-  //       // Regular role-based navigation
-  //       const role = localStorage.getItem('role');
-  //       if (role === 'admin') navigate('/home');
-  //       else if (role === 'super_admin') navigate('/admin/dashboard');
-  //       else navigate(fromPath);
-  //     }
-  //   } catch (error) {
-  //     console.error('Draft handling error:', error);
-  //     navigate(fromPath); // Fallback navigation
-  //   }
-  // };
+  const handleLoginSuccess = async () => {
+    try {
+      // Check for existing drafts
+      const ipResponse = await axios.get('https://api.ipify.org?format=json');
+      const draftResponse = await axios.get(`/get-draft/${ipResponse.data.ip}`);
+      // alert(draftResponse.data)
+      if (draftResponse.data.exists) {
+        console.log('Draft found:', draftResponse.data.data);
+        // Navigate to job creation with draft data
+        navigate('/create-job-offer', {
+          state: { 
+            draftData: draftResponse.data.data,
+            draftId: draftResponse.data.draft_id
+          }
+        });
+      } else {
+        // Regular role-based navigation
+        const role = localStorage.getItem('role');
+        if (role === 'admin') navigate('/home');
+        else if (role === 'super_admin') navigate('/admin/dashboard');
+        else navigate(fromPath);
+      }
+    } catch (error) {
+      console.error('Draft handling error:', error);
+      navigate(fromPath); // Fallback navigation
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,46 +104,46 @@ export default function Login() {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('role', response.data.role);
 
-        // await handleLoginSuccess();
+        await handleLoginSuccess();
         // Check for draft data
-        const ipResponse = await axios.get('https://api.ipify.org?format=json');
-        const draftCheck = await axios.get(`/get-draft/${ipResponse.data.ip}`);
-        if (draftCheck.data.exists) {
-          return navigate('/payment', {
-            state: { draftData: draftCheck.data.data }
-          });
-        } else {
-          // Existing role-based navigation
-          if (response.data.role === 'admin') navigate('/home');
-          else if (response.data.role === 'super_admin') navigate('/admin/dashboard');
-          else navigate(fromPath);
-        }
+        // const ipResponse = await axios.get('https://api.ipify.org?format=json');
+        // const draftCheck = await axios.get(`/get-draft/${ipResponse.data.ip}`);
+        // if (draftCheck.data.exists) {
+        //   return navigate('/payment', {
+        //     state: { draftData: draftCheck.data.data }
+        //   });
+        // } else {
+        //   // Existing role-based navigation
+        //   if (response.data.role === 'admin') navigate('/home');
+        //   else if (response.data.role === 'super_admin') navigate('/admin/dashboard');
+        //   else navigate(fromPath);
+        // }
       }
     } catch (error) {
       setError('Invalid email or password. Please try again.');
     }
   };
 
-  useEffect(() => {
-    const checkDraft = async () => {
-      try {
-        const ip = await getClientIP();
-        const response = await axios.get(`/api/get-draft/${ip}`);
+  // useEffect(() => {
+  //   const checkDraft = async () => {
+  //     try {
+  //       const ip = await getClientIP();
+  //       const response = await axios.get(`/api/get-draft/${ip}`);
         
-        if (response.data.exists) {
-          navigate('/create-job-offer', {
-            state: { draftData: response.data.data }
-          });
-        }
-      } catch (error) {
-        console.error('Draft check failed:', error);
-      }
-    };
+  //       if (response.data.exists) {
+  //         navigate('/create-job-offer', {
+  //           state: { draftData: response.data.data }
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error('Draft check failed:', error);
+  //     }
+  //   };
 
-    if (localStorage.getItem('token')) {
-      checkDraft();
-    }
-  }, [navigate]);
+  //   if (localStorage.getItem('token')) {
+  //     checkDraft();
+  //   }
+  // }, [navigate]);
 
   const getClientIP = async () => {
     try {
