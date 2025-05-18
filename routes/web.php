@@ -14,7 +14,9 @@ use Illuminate\Http\Request;
 use App\Models\GuestMessage;
 use App\Models\AdSubCategory;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PaymentController;
 
+Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 
 Route::get('/test-broadcast', function() {
     return [
@@ -37,8 +39,12 @@ Route::get('/job-offer-categories', function() {
 });
 
 Route::get('job/offer/rate', function(){
-  $rate = AdSubCategory::find(1)->rate;
-  return response()->json(['rate' => $rate]);
+    $rates = AdSubCategory::find(1);
+    return response()->json([
+        'base_rate' => $rates->rate,
+        'feature_rate' => $rates->feature_rate,
+        'social_share_rate' => $rates->social_share_rate
+    ]);
 });
 
 Route::post('/contact', function (Request $request) {
@@ -78,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
   // });
   Route::get('/admin/ad-subcategories', [FrontendController::class, 'getAdSubCategories']);
   Route::get('/admin/ad-categories', [FrontendController::class, 'getAdCategories']);
-  Route::put('/admin/update-subcategories/rate/{id}', [FrontendController::class, 'updateRate']);
+  Route::post('/admin/update-subcategories/{type}/{id}', [FrontendController::class, 'updateRate']);
   Route::post('/send-message', [ChatController::class, 'sendMessage']);
   Route::get('/messages/{userId}', [ChatController::class, 'getMessages']);
   Route::get('/active-admins', [ChatController::class, 'getActiveAdmins']);

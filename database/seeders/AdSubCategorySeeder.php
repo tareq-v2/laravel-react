@@ -20,6 +20,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'job/offer/list',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 1
         ]);
         AdSubCategory::create([
@@ -28,7 +30,9 @@ class AdSubCategorySeeder extends Seeder
             'icon' => 'job-seeker.png',
             'active_status' => 'Yes',
             'route' => 'job/wanted/resume',
-            'rate' => 10,
+            'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 2
         ]);
 
@@ -40,6 +44,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/apartment-house-rent',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 3
         ]);
         AdSubCategory::create([
@@ -58,6 +64,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/roommates-shared',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 5
         ]);
         AdSubCategory::create([
@@ -67,6 +75,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/office-commercial-rent',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 6
         ]);
         AdSubCategory::create([
@@ -76,6 +86,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/vacation-rentals',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 7
         ]);
         AdSubCategory::create([
@@ -85,6 +97,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/armenia-rentals',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 8
         ]);
         AdSubCategory::create([
@@ -94,6 +108,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/international-rentals',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 9
         ]);
         AdSubCategory::create([
@@ -103,6 +119,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'housing/other-rentals',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 10
         ]);
 
@@ -114,6 +132,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'cars/sale',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 11
         ]);
         AdSubCategory::create([
@@ -123,6 +143,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'cars/lease-rent',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 12
         ]);
 
@@ -134,6 +156,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/homes-sale',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 13
         ]);
         AdSubCategory::create([
@@ -143,6 +167,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/investment-properties',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 14
         ]);
         AdSubCategory::create([
@@ -152,6 +178,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/land-sale',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 15
         ]);
         AdSubCategory::create([
@@ -161,6 +189,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/commercial',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 16
         ]);
         AdSubCategory::create([
@@ -170,6 +200,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/vacation-homes',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 17
         ]);
         AdSubCategory::create([
@@ -179,6 +211,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/time-share',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 18
         ]);
         AdSubCategory::create([
@@ -188,6 +222,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/armenia',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 19
         ]);
         AdSubCategory::create([
@@ -197,6 +233,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'real-estate/international',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 20
         ]);
 
@@ -208,6 +246,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'events/entertainment',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 22
         ]);
         AdSubCategory::create([
@@ -217,6 +257,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'events/travel',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 21
         ]);
 
@@ -228,6 +270,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'pets/birds',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
         ]);
         
         AdSubCategory::create([
@@ -319,6 +363,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'community/professional-connect',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 33
         ]);
         AdSubCategory::create([
@@ -328,6 +374,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'community/hobbies-interests',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 34
         ]);
 
@@ -339,6 +387,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'local-services/los-angeles',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 35
         ]);
         AdSubCategory::create([
@@ -348,6 +398,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'local-services/armenia',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 36
         ]);
 
@@ -359,6 +411,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'food/delivery-takeout',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 37
         ]);
         AdSubCategory::create([
@@ -368,6 +422,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'food/pastries-catering',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 38
         ]);
         AdSubCategory::create([
@@ -377,6 +433,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'food/restaurants-dining',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 39
         ]);
 
@@ -388,6 +446,8 @@ class AdSubCategorySeeder extends Seeder
             'active_status' => 'Yes',
             'route' => 'cars/parts-accessories',
             'rate' => '10',
+            'feature_rate' => '10',
+            'social_share_rate' => '10',
             'order' => 40
         ]);
     }

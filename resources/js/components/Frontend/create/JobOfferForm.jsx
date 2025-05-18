@@ -3,6 +3,7 @@
     import axios from 'axios';
     import { FaFileAlt, FaRedo } from 'react-icons/fa';
     import VirtualKeyboard from './Frontend/VirtualKeyboard';
+    import AuthModal from './Frontend/AuthModal';
     import './Frontend/JobOfferForm.css';
 
     const JobOfferForm = () => {
@@ -26,52 +27,11 @@
             attachments: [],
             featured: 'No',
             model: 'JobOffer',
-            socialShare: ''
+            socialShare: '',
+            rate: 0,
+            featureRate: 0,
+            socialMediaRate: 0
         });
-        
-        // In JobOfferForm component
-        const [paymentDetails, setPaymentDetails] = useState({
-          card_holder_name: '',
-          street: '',
-          city: '',
-          state: '',
-          zip: '',
-          country: '',
-          phone: '',
-          email: '',
-          card_number: '',
-          exp_month: '',
-          exp_year: '',
-          cvv: '',
-        });
-
-        const [promoCode, setPromoCode] = useState('');
-        const [promoDiscount, setPromoDiscount] = useState(0);
-        const [promoCodeMsg, setPromoCodeMsg] = useState('');
-
-        const handlePaymentChange = (e) => {
-          const { name, value } = e.target;
-          setPaymentDetails(prev => ({ ...prev, [name]: value }));
-        };
-
-        const applyPromoCode = async () => {
-          try {
-            const response = await axios.post('/api/validate-promo', { code: promoCode });
-            if (response.data.valid) {
-              setPromoDiscount(response.data.discount);
-              setPromoCodeMsg(response.data.message);
-            } else {
-              setPromoCodeMsg('Invalid promo code');
-            }
-          } catch (error) {
-            setPromoCodeMsg('Error applying promo code');
-          }
-        };
-
-        const totalAmount = formData.rate + 
-          (formData.featured === 'Yes' ? formData.rate : 0) +
-          (formData.socialShare ? formData.rate : 0) -
-          promoDiscount;
 
         const [errors, setErrors] = useState({});
         const [titleCheckbox, setTitleCheckbox] = useState(false);
@@ -80,12 +40,6 @@
         const titleInputRef = useRef(null);
         const descInputRef = useRef(null);
         const [showPreview, setShowPreview] = useState(false);
-        const [categories] = useState(
-            `Accountant/Bookkeeper Appliance Technician Auto Body Auto Mechanic Auto Sales Babysitter/Nanny Bakery/Pastry Beauty Salon Car Wash Caregiver Cashier Child Care Cleaning Services Construction Delivery Jobs Dental Assistant/Office Dispatcher Driver Dry Cleaning Electrician Financial Services Florist Government Jobs Grocery/Market Housekeeper/Maid In-Home Care Jewelry Sales/Repair Legal/Paralegal Medical/Healthcare Medical Office/Billing Nail Salon No Experience Required Office/Admin Parking Attendant Pet Grooming Pharmacy Pool Cleaning Receptionist/Front Desk Restaurant Jobs Mall Jobs Sales/Marketing Security Guard Smoke Shop Tailor/Alteration Teacher/Education Telemarketing Truck Driver UBER Driver Web/IT Developer Work From Home Other Jobs`
-                .split(' ')
-                .map(line => line.trim())
-                .filter(Boolean)
-            );
             
         const [captchaText, setCaptchaText] = useState('');
         const [captchaInput, setCaptchaInput] = useState('');
@@ -98,10 +52,14 @@
         const [getRate, setRate] = useState();
         const navigate = useNavigate();
         const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
-        // const [socialImage, setSocialImage] = useState(null);
-        // const [socialPreview, setSocialPreview] = useState('');
         const fileInputRef = useRef(null);
-          
+        const [categories] = useState(
+            `Accountant/Bookkeeper Appliance Technician Auto Body Auto Mechanic Auto Sales Babysitter/Nanny Bakery/Pastry Beauty Salon Car Wash Caregiver Cashier Child Care Cleaning Services Construction Delivery Jobs Dental Assistant/Office Dispatcher Driver Dry Cleaning Electrician Financial Services Florist Government Jobs Grocery/Market Housekeeper/Maid In-Home Care Jewelry Sales/Repair Legal/Paralegal Medical/Healthcare Medical Office/Billing Nail Salon No Experience Required Office/Admin Parking Attendant Pet Grooming Pharmacy Pool Cleaning Receptionist/Front Desk Restaurant Jobs Mall Jobs Sales/Marketing Security Guard Smoke Shop Tailor/Alteration Teacher/Education Telemarketing Truck Driver UBER Driver Web/IT Developer Work From Home Other Jobs`
+                .split(' ')
+                .map(line => line.trim())
+                .filter(Boolean)
+            );
+
         // Handle checkbox changes
         const handleTitleCheckbox = (e) => {
           const isChecked = e.target.checked;
@@ -162,7 +120,10 @@
         useEffect(() => {
           const rate = async () => {
             const response = await axios.get('job/offer/rate');
-            
+            setFormData(prev => ({
+              ...prev,
+              rate: response.data.rate
+            }));
             setRate(response.data.rate);
           };
           rate();
@@ -179,7 +140,8 @@
           if (file) {
             setFormData(prev => ({
               ...prev,
-              socialShare: file
+              socialShare: file,
+              socialMediaRate: prev.rate
             }));
           }
           console.log(formData);
@@ -189,12 +151,12 @@
         const removeSocialImage = () => {
           setFormData(prev => ({
             ...prev,
-            socialShare: null
+            socialShare: null,
+            socialMediaRate: 0
           }));
           if (fileInputRef.current) {
             fileInputRef.current.value = '';
           }
-          console.log(formData);
         };
 
         // Caret handling
@@ -343,7 +305,6 @@
                   'Content-Type': 'multipart/form-data',
                 }
               }
-            
             );
             console.log('Draft saved:', response.data);
           } catch (error) {
@@ -438,7 +399,8 @@
           const isChecked = e.target.checked;
           setFormData(prev => ({
             ...prev,
-            featured: isChecked ? 'Yes' : 'No'
+            featured: isChecked ? 'Yes' : 'No',
+            featureRate: isChecked ? prev.rate : 0
           }));
         };
 
@@ -485,31 +447,26 @@
 
         const handleGuestSubmit = async () => {
           try {
-            // Close modal
+            // Save draft and get draft ID
+            const draftId = await saveDraftData();
+            
+            // Close authentication modal
             setShowAuthModal(false);
             
-            // Proceed with guest submission
-            const formPayload = new FormData();
-            
-            Object.entries(formData).forEach(([key, value]) => {
-              if (key !== 'attachments' && value) {
-                formPayload.append(key, value);
+            // Navigate to payment page with draft ID
+            navigate('/payment', {
+              state: { 
+                guestCheckout: true,
+                draftData: {
+                  ...formData,
+                  totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
+                },
+                draftId: draftId
               }
             });
-
-            formData.attachments.forEach(file => {
-              formPayload.append('attachments[]', file);
-            });
-
-            const response = await axios.post('/api/job-offers/guest', formPayload, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            });
-
-            console.log('Guest submission successful:', response.data);
-            navigate('/payment', { state: { draftData: formData } });
-            // Handle successful guest submission
           } catch (error) {
-            console.error('Guest submission error:', error);
+            console.error('Error saving draft:', error);
+            // Handle error (show message to user)
           }
         };
 
@@ -532,52 +489,22 @@
               }
             });
 
-            // if (socialMediaPromotion && socialImage) {
-            //   formPayload.append('socialShare', socialImage);
-            // }
-
             console.log(formData);
             formData.attachments.forEach(file => {
               formPayload.append('attachments[]', file);
             });
 
-            // const response = await axios.post('/api/job-offers', formPayload, {
-            //   headers: { 'Content-Type': 'multipart/form-data' }
-            // });
+            navigate('/payment', { 
+              state: { 
+                draftData: {
+                  ...formData,
+                  totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
+                }
+              } 
+            });
 
-            navigate('/payment', { state: { draftData: formData } });
-            // Redirect or show success message
           } catch (error) {
             console.error('Submission error:', error);
-          }
-        };
-
-        const handleFinalSubmit = async () => {
-          try {
-            const formPayload = new FormData();
-            setShowFeatureSelection(true);
-            setShowPreview(false);
-            // Append all form fields
-            Object.entries(formData).forEach(([key, value]) => {
-              if (key !== 'attachments' && value) {
-                formPayload.append(key, value);
-              }
-            });
-
-            // Append all files
-            formData.attachments.forEach(file => {
-              formPayload.append('attachments[]', file);
-            });
-
-            const response = await axios.post('/api/job-offers', formPayload, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            });
-
-            console.log('Submission successful:', response.data);
-            // Redirect to next page
-          } catch (error) {
-            console.error('Submission error:', error);
-            setShowPreview(false);
           }
         };
 
@@ -623,7 +550,7 @@
                     </div>  
 
                     <div className="social-promotion-section mt-4">
-                      <div className="form-check">
+                      {/* <div className="form-check">
                         <input
                           className="form-check-input single-checkbox2"
                           type="checkbox"
@@ -633,6 +560,18 @@
                         />
                         <label className="form-check-label package_label" htmlFor="social_media">
                           <strong>Promote your ad on our social media platforms - {typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate}`}</strong>
+                        </label>
+                      </div> */}
+                      <div className="form-check">
+                        <input
+                          className="form-check-input single-checkbox2"
+                          type="checkbox"
+                          id="social_media"
+                          checked={socialMediaPromotion}
+                          onChange={handleSocialPromotionChange}
+                        />
+                        <label className="form-check-label package_label" htmlFor="social_media">
+                          <strong>Promote your ad on our social media platforms - ${formData.rate}</strong>
                         </label>
                       </div>
 
@@ -1145,54 +1084,12 @@
           </div>
           {/* Authentication Modal */}
           {showAuthModal && (
-            <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-              <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Authentication Required</h5>
-                    <button 
-                      type="button" 
-                      className="close" 
-                      onClick={() => setShowAuthModal(false)}
-                    >
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div className="modal-body text-center">
-                    <div className="d-flex flex-column gap-3">
-                      <Link 
-                        to="/login" 
-                        className="btn btn-success btn-lg"
-                        onClick={async () => {
-                          // Save draft before redirect
-                          await saveDraftData();
-                          setShowAuthModal(false);
-                        }}
-                      >
-                        Login
-                      </Link>
-                      <Link 
-                        to="/register" 
-                        className="btn btn-primary btn-lg"
-                        onClick={async () => {
-                          // Save draft before redirect
-                          await saveDraftData();
-                          setShowAuthModal(false);
-                        }}
-                      >
-                        Register
-                      </Link>
-                      <button 
-                        className="btn btn-secondary btn-lg"
-                        onClick={handleGuestSubmit}
-                      >
-                        Checkout as Guest
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AuthModal 
+              show={showAuthModal}
+              onHide={() => setShowAuthModal(false)}
+              onGuestSubmit={handleGuestSubmit}
+              saveDraftData={saveDraftData}
+            />
           )}
             <VirtualKeyboard
               isVisible={showKeyboard}
@@ -1210,123 +1107,123 @@
       );
     };
 
-// Preview component
-const Preview = ({ formData, filePreviews, onEdit, onSubmit }) => {
-  const hasBusinessInfo = formData.businessName || formData.address || formData.salary?.length > 1;
-  const hasContactInfo = formData.name || formData.telNo || formData.altTelNo || formData.email || formData.website || formData.keywords;
+    // Preview component
+    const Preview = ({ formData, filePreviews, onEdit, onSubmit }) => {
+      const hasBusinessInfo = formData.businessName || formData.address || formData.salary?.length > 1;
+      const hasContactInfo = formData.name || formData.telNo || formData.altTelNo || formData.email || formData.website || formData.keywords;
 
-  return (
-    <div className="card">
-      <div className="card-header">
-        <h4 className="mb-0"><strong>Preview Your Job Post</strong></h4>
-      </div>
-      <div className="card-body">
-        <div className="row">
-          {/* Left Column */}
-          <div className="col-md-6">
-            <div className="mb-4">
-              <h5>{formData.title}</h5>
-              <p className="text-muted">
-                {formData.city && <><strong>Location:</strong> {formData.city}<br /></>}
-                {formData.category && <><strong>Category:</strong> {formData.category}<br /></>}
-              </p>
+      return (
+        <div className="card">
+          <div className="card-header">
+            <h4 className="mb-0"><strong>Preview Your Job Post</strong></h4>
+          </div>
+          <div className="card-body">
+            <div className="row">
+              {/* Left Column */}
+              <div className="col-md-6">
+                <div className="mb-4">
+                  <h5>{formData.title}</h5>
+                  <p className="text-muted">
+                    {formData.city && <><strong>Location:</strong> {formData.city}<br /></>}
+                    {formData.category && <><strong>Category:</strong> {formData.category}<br /></>}
+                  </p>
+                </div>
+
+                {formData.description && (
+                  <div className="mb-4">
+                    <h6>Description</h6>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{formData.description}</p>
+                  </div>
+                )}
+
+                {hasBusinessInfo && (
+                  <div className="mb-4">
+                    <h6>Business Information</h6>
+                    <p>
+                      {formData.businessName && <><strong>Name:</strong> {formData.businessName}<br /></>}
+                      {formData.address && <><strong>Address:</strong> {formData.address}<br /></>}
+                      {formData.salary?.length > 1 && <><strong>Salary:</strong> {formData.salary}</>}
+                    </p>
+                  </div>
+                )}
+
+                {hasContactInfo && (
+                  <div className="mb-4">
+                    <h6>Contact Information</h6>
+                    <p>
+                      {formData.name && <><strong>Contact Name:</strong> {formData.name}<br /></>}
+                      {formData.telNo && (
+                        <><strong>Phone:</strong> {formData.telNo}
+                        {formData.telExt && ` ext.${formData.telExt}`}<br /></>
+                      )}
+                      {formData.altTelNo && (
+                        <><strong>Alt Phone:</strong> {formData.altTelNo}
+                        {formData.altTelExt && ` ext.${formData.altTelExt}`}<br /></>
+                      )}
+                      {formData.email && <><strong>Email:</strong> {formData.email}<br /></>}
+                      {formData.website && <><strong>Website:</strong> {formData.website}<br /></>}
+                      {formData.keywords && <><strong>Keywords:</strong> {formData.keywords}</>}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column */}
+              <div className="col-md-6">
+                {filePreviews.length > 0 && (
+                  <div className="mb-4">
+                    <h6>Attachments ({filePreviews.length})</h6>
+                    <div className="row">
+                      {filePreviews.map((preview, index) => (
+                        <div key={index} className="col-4 mb-3 position-relative">
+                          {preview.type.startsWith('image') ? (
+                            <img 
+                              src={preview.url} 
+                              alt={`Attachment ${index + 1}`}
+                              className="img-thumbnail"
+                              style={{ height: '100px', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div className="file-preview-icon">
+                              <FaFileAlt size={40} className="text-muted" />
+                              <small className="d-block text-truncate">{preview.name}</small>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {formData.description && (
-              <div className="mb-4">
-                <h6>Description</h6>
-                <p style={{ whiteSpace: 'pre-wrap' }}>{formData.description}</p>
-              </div>
-            )}
-
-            {hasBusinessInfo && (
-              <div className="mb-4">
-                <h6>Business Information</h6>
-                <p>
-                  {formData.businessName && <><strong>Name:</strong> {formData.businessName}<br /></>}
-                  {formData.address && <><strong>Address:</strong> {formData.address}<br /></>}
-                  {formData.salary?.length > 1 && <><strong>Salary:</strong> {formData.salary}</>}
-                </p>
-              </div>
-            )}
-
-            {hasContactInfo && (
-              <div className="mb-4">
-                <h6>Contact Information</h6>
-                <p>
-                  {formData.name && <><strong>Contact Name:</strong> {formData.name}<br /></>}
-                  {formData.telNo && (
-                    <><strong>Phone:</strong> {formData.telNo}
-                    {formData.telExt && ` ext.${formData.telExt}`}<br /></>
-                  )}
-                  {formData.altTelNo && (
-                    <><strong>Alt Phone:</strong> {formData.altTelNo}
-                    {formData.altTelExt && ` ext.${formData.altTelExt}`}<br /></>
-                  )}
-                  {formData.email && <><strong>Email:</strong> {formData.email}<br /></>}
-                  {formData.website && <><strong>Website:</strong> {formData.website}<br /></>}
-                  {formData.keywords && <><strong>Keywords:</strong> {formData.keywords}</>}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column */}
-          <div className="col-md-6">
-            {filePreviews.length > 0 && (
-              <div className="mb-4">
-                <h6>Attachments ({filePreviews.length})</h6>
-                <div className="row">
-                  {filePreviews.map((preview, index) => (
-                    <div key={index} className="col-4 mb-3 position-relative">
-                      {preview.type.startsWith('image') ? (
-                        <img 
-                          src={preview.url} 
-                          alt={`Attachment ${index + 1}`}
-                          className="img-thumbnail"
-                          style={{ height: '100px', objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <div className="file-preview-icon">
-                          <FaFileAlt size={40} className="text-muted" />
-                          <small className="d-block text-truncate">{preview.name}</small>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="action-buttons mt-4 flex gap-4">
+              <button 
+                type="button" 
+                className="btn-back"
+                onClick={onEdit}
+              >
+                <span className="button-content">
+                  <i className="fas fa-edit mr-2"></i>
+                  Edit
+                </span>
+              </button>
+              
+              <button 
+                type="button" 
+                className="btn-submit"
+                onClick={onSubmit}
+              >
+                <span className="button-content">
+                  <i className="fas fa-paper-plane mr-2"></i>
+                  Submit
+                </span>
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="mt-4 flex gap-4">
-          <button 
-            type="button" 
-            className="btn-edit"
-            onClick={onEdit}
-          >
-            <span className="button-content">
-              <i className="fas fa-edit mr-2"></i>
-              Edit
-            </span>
-          </button>
-          
-          <button 
-            type="button" 
-            className="btn-submit"
-            onClick={onSubmit}
-          >
-            <span className="button-content">
-              <i className="fas fa-paper-plane mr-2"></i>
-              Submit
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+      );
+    };
 
 
 

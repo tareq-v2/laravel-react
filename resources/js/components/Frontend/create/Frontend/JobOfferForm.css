@@ -239,12 +239,3 @@
 .interactive-preview:hover {
   border-color: var(--primary-color);
 }
-
-/* .image-preview img{
-  position: relative;
-}
-.image-preview button{
-  position: absolute;
-  right: 0;
-  top: 0;
-} */

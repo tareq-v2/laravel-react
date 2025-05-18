@@ -1,23 +1,41 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
-// export default function ProtectedRoute({ children }) {
-//   const isAuthenticated = !!localStorage.getItem('token'); // Check if user is authenticated
-//   return isAuthenticated ? children : <Navigate to="/login" />; // Redirect to login if not authenticated
-// }
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const ProtectedRoute = ({ children, allowedRoles, allowGuest = false }) => {
+  const location = useLocation();
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
+  const guestData = location.state?.guestCheckout;
 
-  if (!token) return <Navigate to="/login" replace />;
-  
+  // Handle guest access first
+  if (allowGuest) {
+    if (token) {
+      // Regular user - check roles
+      if (allowedRoles && !allowedRoles.includes(role)) {
+        return <Navigate to="/unauthorized" replace />;
+      }
+      return children;
+    }
+    
+    // Guest user - check for guest data
+    if (guestData) {
+      return children;
+    }
+    
+    // No guest data - redirect to form
+    return <Navigate to="/job-offer-form" replace />;
+  }
+
+  // Regular protected route (non-guest)
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
   if (allowedRoles && !allowedRoles.includes(role)) {
-      return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
 };
 
 export default ProtectedRoute;
-
-

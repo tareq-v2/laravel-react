@@ -11,6 +11,7 @@ class FrontendController extends Controller
     public function jobOfferPost(Request $request){
         dd($request->all());
     }
+    
     public function categoryIcons(){
         $categories = AdCategory::all();
     
@@ -79,29 +80,53 @@ class FrontendController extends Controller
         }
     }
 
-    public function updateRate(Request $request, $id)
-    {   
+    public function updateRate(Request $request, $type, $id)
+    {
+        // dd($request->all(), $type, $id);
+        $validTypes = ['rate', 'feature-rate', 'social-rate'];
+        
+        if (!in_array($type, $validTypes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid rate type'
+            ], 400);
+        }
+
         $request->validate([
-            'rate' => 'required|string' // Changed to accept string values
+            'value' => 'required|string|max:255'
         ]);
-        // dd($request->all(), $id);
-        // Convert numeric strings to float, keep 'free' as is
-        $rate = $request->rate;
-        $data = AdSubCategory::find($id);
-        if ($rate !== 'free' && is_numeric($rate)) {
-            $rate = (float)$rate;
+        
+        $fieldMap = [
+            'rate' => 'rate',
+            'feature-rate' => 'feature_rate',
+            'social-rate' => 'social_share_rate'
+        ];
+        
+        $field = $fieldMap[$type];
+        $input = strtolower(trim($request->value));
+        
+        $data = AdSubCategory::findOrFail($id);
+        
+        if ($input === 'free') {
+            $data->$field = 'free';
+        } else {
+            // Validate numeric value
+            if (!is_numeric($input)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid value. Must be numeric or "free"'
+                ], 422);
+            }
             
-            $data->rate = $rate;
-            $data->save();
-        }else{
-            $data->rate = $rate;
-            $data->save();
+            // Store as string but format consistently
+            $data->$field = number_format((float)$input, 2, '.', '');
         }
         
+        $data->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Rate updated successfully',
+            'message' => ucfirst($type).' updated successfully',
             'data' => $data
         ]);
     }

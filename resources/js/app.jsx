@@ -6,7 +6,10 @@ import { LanguageProvider } from './components/Frontend/src/context/LanguageCont
 import { ThemeProvider } from './components/Frontend/src/context/ThemeContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
+const stripePromise = loadStripe('pk_test_51LESvVLGpkKyPO47cnOnhpHss49hbdKg57030xONsKC6F1YtznPyEwvhIqizV0ETgABgE9AoqOSp1NHKkdBGt5V700p3oKzTp7');
 import Layout from './components/Layout';
 import Home from './components/Home';
 import Login from './components/Login';
@@ -65,12 +68,25 @@ function App() {
                   </ProtectedRoute>
               }
           />
-          <Route
+          {/* <Route
             path="/payment"
             element={
               <ProtectedRoute allowedRoles={['customer', 'admin']}>
                 <Layout><Payment /></Layout>
               </ProtectedRoute>
+            }
+          /> */}
+          <Route
+            path="/payment"
+            element={
+              <Elements stripe={stripePromise}>
+              <ProtectedRoute 
+                allowedRoles={['customer', 'admin']} 
+                allowGuest={true}  // Enable guest access
+              >
+                <Layout><Payment /></Layout>
+              </ProtectedRoute>
+              </Elements>
             }
           />
           <Route
