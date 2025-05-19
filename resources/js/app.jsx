@@ -45,6 +45,7 @@ import HousingArmeniaRentals from './components/Frontend/adCategories/listing/Ho
 import HousingInternationalRentals from './components/Frontend/adCategories/listing/HousingInternationalRentals';
 import HousingOtherRentals from './components/Frontend/adCategories/listing/HousingOtherRentals';
 import Payment from './components/Frontend/create/Payment';
+import PostConfirmation from './components/Frontend/create/PostConfirmation';
 import UserManagement from './components/Backend/users/Index';
 import AdHistory from './components/Backend/ads/AdHistory';
 import AdCategories from './components/Backend/ads/AdCategories';
@@ -87,6 +88,17 @@ function App() {
                 <Layout><Payment /></Layout>
               </ProtectedRoute>
               </Elements>
+            }
+          />
+          <Route
+            path="/post-confirmation"
+            element={
+               <ProtectedRoute 
+                  allowedRoles={['customer', 'admin']} 
+                  allowGuest={true}  // Enable guest access
+                >
+                  <Layout><PostConfirmation /></Layout>
+              </ProtectedRoute>
             }
           />
           <Route

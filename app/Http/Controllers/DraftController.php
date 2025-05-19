@@ -41,7 +41,6 @@ class DraftController extends Controller
                 'type' => 'social'
             ]);
         }
-
         // Prepare data array
         $data = [
             'title' => $request->formData['title'],

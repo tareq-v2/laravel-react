@@ -49,11 +49,7 @@
         const [filePreviews, setFilePreviews] = useState([]);
         const [showFeatureSelection, setShowFeatureSelection] = useState(false);
         const [showAuthModal, setShowAuthModal] = useState(false);
-        const [getRate, setRate] = useState({
-          base: 0,
-          feature: 0,
-          social: 0
-        });
+        const [getRate, setRate] = useState([]);
         const navigate = useNavigate();
         const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
         const fileInputRef = useRef(null);
@@ -121,51 +117,49 @@
           if (newState && inputRef.current) inputRef.current.focus();
         };
 
-        // useEffect(() => {
-        //   const rate = async () => {
-        //     const response = await axios.get('job/offer/rate');
-        //     setFormData(prev => ({
-        //       ...prev,
-        //       rate: response.data.rate
-        //     }));
-        //     setRate(response.data.rate);
-        //   };
-        //   rate();
-        // }, []);
-
         useEffect(() => {
           const fetchRate = async () => {
             try {
               const response = await axios.get('/job/offer/rate');
-              // Update both formData and getRate state
+              console.log('Rate response:', response.data);
+              const base = parseFloat(response.data?.base_rate) || 0;
+              const feature = parseFloat(response.data?.feature_rate) || 0;
+              const social = parseFloat(response.data?.social_share_rate) || 0;
+
+              setRate({ base, feature, social });
+              // Initialize form data with base rate only
               setFormData(prev => ({
                 ...prev,
-                rate: response.data.base_rate || 0,
-                featureRate: response.data.feature_rate || 0,
-                socialMediaRate: response.data.social_share_rate || 0
+                rate: base,
+                featureRate: 0,
+                socialMediaRate: 0
               }));
-              setRate({
-                base: response.data.base_rate || 0,
-                feature: response.data.feature_rate || 0,
-                social: response.data.social_share_rate || 0
-              });
             } catch (error) {
               console.error('Error fetching rates:', error);
-              // Set fallback rates
-              setRate({
-                base: 50,
-                feature: 25,
-                social: 15
-              });
+              setRate({ base: 50, feature: 25, social: 15 });
+              setFormData(prev => ({
+                ...prev,
+                rate: 50,
+                featureRate: 0,
+                socialMediaRate: 0
+              }));
             }
           };
-
           fetchRate();
         }, []);
 
         // Function to handle file upload
         const handleSocialPromotionChange = (e) => {
-          setSocialMediaPromotion(e.target.checked);
+          const isChecked = e.target.checked;
+          setSocialMediaPromotion(isChecked);
+          setFormData(prev => ({
+            ...prev,
+            socialMediaRate: isChecked ? getRate.social : 0
+          }));
+          
+          if (!isChecked) {
+            removeSocialImage();
+          }
         };
 
         //  Handle social file change
@@ -175,7 +169,7 @@
             setFormData(prev => ({
               ...prev,
               socialShare: file,
-              socialMediaRate: prev.rate
+              socialMediaRate: getRate.social
             }));
           }
           console.log(formData);
@@ -434,10 +428,10 @@
           setFormData(prev => ({
             ...prev,
             featured: isChecked ? 'Yes' : 'No',
-            featureRate: isChecked ? prev.rate : 0
+            featureRate: isChecked ? getRate.feature : 0
           }));
         };
-
+        
         // useEffect to verify feature state changes
         useEffect(() => {
           console.log('Featured status updated:', formData.featured);
@@ -488,7 +482,7 @@
             setShowAuthModal(false);
             
             // Navigate to payment page with draft ID
-            navigate('/payment', {
+             navigate('/payment', {
               state: { 
                 guestCheckout: true,
                 draftData: {
@@ -583,7 +577,7 @@
                   <div className="card feature-card">
                   <div className="card-header">
                     <h4 className="mb-0">
-                      <strong className='ml-5'>Jobs Offered (Hiring) - {typeof getRate === 'number' ? `$${getRate.rate}` : getRate === 'free' ? 'Free' : `$${getRate.rate}`}</strong>
+                      <strong className='ml-5'>Jobs Offered (Hiring) - {getRate.base === 0 ? 'Free' : `$${getRate.base}`}</strong>
                     </h4>
                   </div>
                   
@@ -608,25 +602,13 @@
                               onChange={handleFeaturedCheckbox}
                           />
                           <label className="form-check-label package_label" htmlFor="featured_post">
-                              <strong>Feature your ad on first page for 24 hours - {typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate.feature}`}</strong>
+                              <strong>Feature your ad on first page for 24 hours - {getRate.feature === 0 ? 'Free' : `$${getRate.feature}`}</strong>
                           </label>
                       </div>
 
                     </div>  
 
                     <div className="social-promotion-section mt-4">
-                      {/* <div className="form-check">
-                        <input
-                          className="form-check-input single-checkbox2"
-                          type="checkbox"
-                          id="social_media"
-                          checked={socialMediaPromotion}
-                          onChange={handleSocialPromotionChange}
-                        />
-                        <label className="form-check-label package_label" htmlFor="social_media">
-                          <strong>Promote your ad on our social media platforms - {typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate}`}</strong>
-                        </label>
-                      </div> */}
                       <div className="form-check">
                         <input
                           className="form-check-input single-checkbox2"
@@ -636,7 +618,7 @@
                           onChange={handleSocialPromotionChange}
                         />
                         <label className="form-check-label package_label" htmlFor="social_media">
-                          <strong>Promote your ad on our social media platforms - ${getRate.social}</strong>
+                          <strong>Promote your ad on our social media platforms - {getRate.social === 0 ? 'Free' : `$${getRate.social}`}</strong>
                         </label>
                       </div>
 
@@ -722,7 +704,7 @@
                       <div className="card-header mb-1 d-md-flex justify-content-between align-items-center">
                         <h6 className="mb-0 text-muted"><strong>Create Ad</strong></h6>
                         <h6 className="mb-0 text-muted">
-                          <strong>{typeof getRate === 'number' ? `$${getRate}` : getRate === 'free' ? 'Free' : `$${getRate.base}`} for 30 days</strong>
+                          <strong>{getRate.base === 0 ? 'Free' : `$${getRate.base}`} for 30 days</strong>
                         </h6>
                       </div>
 
