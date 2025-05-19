@@ -11,7 +11,7 @@ const NewsTicker = () => {
       className="custom-marquee"
     >
       <span style={{ padding: '0 2rem' }}>
-        God is everywhere !! beyond universe 🔥 🚀 ⚛️
+        Joy Bangla 🔥 🚀 ⚛️
       </span>
     </Marquee>
   );

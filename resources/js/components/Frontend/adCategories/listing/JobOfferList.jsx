@@ -13,6 +13,7 @@ const JobOfferList = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
+      localStorage.removeItem('jobOfferFormState');
       try {
         const response = await axios.get('/job-offer-categories');
         // Ensure data is always an array

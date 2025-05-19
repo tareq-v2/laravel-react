@@ -65,7 +65,7 @@ const AdSubCategories = () => {
                                 <td>
                                     {subcat.icon && (
                                         <img 
-                                            src={`http://localhost:8000/storage/${subcat.icon}`}
+                                            src={`http://127.0.0.1:8001/storage/${subcat.icon}`}
                                             alt="icon" 
                                             className="icon-preview"
                                         />
