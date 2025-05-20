@@ -17,7 +17,7 @@ class PaymentController extends Controller
 {
     public function handlePayment(Request $request)
     {
-        Stripe::setApiKey('sk_test_51LESvVLGpkKyPO47ElCFEYUmLkNw8iuzjB7Equ9ZB9tOzWdLxQ6akdTQp3plJmpDQ72AEEjl611uVCmzZqFAudem00BzXM9pN1'); 
+        Stripe::setApiKey(env('STRIPE_SECRET')); 
         DB::beginTransaction();
         try {
             // Validate input
