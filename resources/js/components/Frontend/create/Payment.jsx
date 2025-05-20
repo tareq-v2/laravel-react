@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import './Payment.css';
 
 const Payment = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const draftData = location.state?.draftData || {};
   const stripe = useStripe();
   const elements = useElements();
@@ -183,8 +184,9 @@ const Payment = () => {
   // Payment submission
   const handleSubmitPayment = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setIsSubmitting(true);
-
+  
     if (!validateForm()) {
       setIsSubmitting(false);
       return;
@@ -238,27 +240,35 @@ const Payment = () => {
       const response = await axios.post('/ads/final/post', formPayload);
       
       if (response.data.success) {
-        // Handle successful payment
-        navigate(`/post-confirmation/${response.data.post_id}`);
-        // Clear draft data from local storage if needed
-        localStorage.removeItem('jobOfferFormState');
-        alert('Payment successful!');
-        // Redirect or clear form
-      } else {
-        throw new Error('Payment failed');
-      }
+      // Clear ALL related data
+      localStorage.removeItem('jobOfferFormState');
+      setPaymentDetails(initialState);
+      setDraftData(null);
+
+      // Navigate with history replacement
+      navigate(`/post-confirmation/${response.data.post_id}`, { 
+        replace: true,
+        state: { paymentCompleted: true }
+      });
+    }
       
     } catch (error) {
-      console.error('Payment error:', error);
-      setErrors(prev => ({
-        ...prev, 
-        form: error.response?.data?.error || 'Payment failed'
-      }));
+      if (error.response?.status === 409) {
+        navigate('/', { replace: true });
+        alert('This payment was already processed');
+      } else if (error.response?.status === 410) {
+        navigate('', { replace: true });
+        alert('Session expired. Please start over.');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    if (!draftData || Object.keys(draftData).length === 0) {
+      navigate('/', { replace: true });
+    }
+  }, [draftData, navigate]);
   if (loadingRates) {
     return (
       <div className="loading-container">
@@ -294,7 +304,7 @@ const Payment = () => {
                 </h3>
 
                 <div className="row g-3">
-                  <div className="col-12">
+                  {/* <div className="col-12">
                     <label className="form-label">Name on Card*</label>
                     <input
                       type="text"
@@ -306,7 +316,7 @@ const Payment = () => {
                     />
                     {errors.card_holder_name && 
                       <div className="invalid-feedback">{errors.card_holder_name}</div>}
-                  </div>
+                  </div> */}
 
                   <div className="col-12">
                     <label className="form-label">Billing Address*</label>

@@ -678,7 +678,10 @@
                       
                       <button 
                         className="btn-confirm"
-                        onClick={handleFeaturedSubmit}
+                        onClick={() => {
+                          saveDraftData();
+                          handleFeaturedSubmit();
+                        }}
                         disabled={!formData.featured}
                       >
                         Confirm & Submit

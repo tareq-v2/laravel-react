@@ -1,60 +1,43 @@
-<?php
+// In handleSubmitPayment function:
+const handleSubmitPayment = async (e) => {
+  e.preventDefault();
+  if (isSubmitting) return;
+  setIsSubmitting(true);
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+  try {
+    // ... existing code ...
 
-return new class extends Migration
-{
-    public function up()
-    {
-        Schema::create('job_offers', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedInteger('user_id')->nullable();
-            $table->string('title', 191);
-            $table->string('city', 191)->nullable();
-            $table->string('category', 191)->nullable();
-            $table->text('description')->nullable();
-            $table->string('businessName', 191)->nullable();
-            $table->text('address')->nullable();
-            $table->string('salary', 191)->nullable();
-            $table->string('name', 191)->nullable();
-            $table->string('telNo', 191)->nullable();
-            $table->string('altTelNo', 191)->nullable();
-            $table->string('email', 191)->nullable();
-            $table->string('website', 191)->nullable();
-            $table->string('attachment', 191)->nullable();
-            $table->text('keywords')->collation('utf8mb4_bin')->nullable();
-            $table->integer('status')->nullable();
-            $table->string('unique_id', 191)->nullable()->index();
-            $table->string('feature', 191)->nullable();
-            $table->date('expire_date')->nullable();
-            $table->string('expire_status', 191)->nullable();
-            $table->string('card_holder_name', 191)->nullable();
-            $table->string('companyName', 191)->nullable();
-            $table->string('country', 191)->nullable();
-            $table->string('street', 191)->nullable();
-            $table->string('apartment', 191)->nullable();
-            $table->string('billCity', 191)->nullable();
-            $table->string('state', 191)->nullable();
-            $table->string('zip', 191)->nullable();
-            $table->string('contactName', 191)->nullable();
-            $table->string('contactTelNo', 191)->nullable();
-            $table->string('contactEmail', 191)->nullable();
-            $table->string('tel_ext', 191)->nullable();
-            $table->string('alt_tel_ext', 191)->nullable();
-            $table->string('from_feature', 191)->nullable();
-            $table->text('attachment_original_name')->nullable();
-            $table->text('temp_data')->nullable();
-            $table->text('history')->nullable();
-            $table->string('cancel_status', 191)->nullable();
-            $table->string('delete_status', 191)->nullable();
-            $table->boolean('is_verified')->default(false);
-        });
+    const response = await axios.post('/ads/final/post', formPayload);
+
+    if (response.data.success) {
+      // Clear ALL related data
+      localStorage.removeItem('jobOfferFormState');
+      setPaymentDetails(initialState);
+      setDraftData(null);
+
+      // Navigate with history replacement
+      navigate(`/post-confirmation/${response.data.post_id}`, { 
+        replace: true,
+        state: { paymentCompleted: true }
+      });
     }
-
-    public function down()
-    {
-        Schema::dropIfExists('job_offers');
+    
+  } catch (error) {
+    // Handle specific error codes
+    if (error.response?.status === 409) {
+      navigate('/', { replace: true });
+      alert('This payment was already processed');
+    } else if (error.response?.status === 410) {
+      navigate('/create-post', { replace: true });
+      alert('Session expired. Please start over.');
     }
+    // ... rest of error handling ...
+  }
 };
+
+// Add mount check to prevent access without draft
+useEffect(() => {
+  if (!draftData || Object.keys(draftData).length === 0) {
+    navigate('/create-post', { replace: true });
+  }
+}, [draftData, navigate]);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdCategory;
 use App\Models\AdSubCategory;
+use App\Models\JobOffer;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -128,6 +129,15 @@ class FrontendController extends Controller
             'success' => true,
             'message' => ucfirst($type).' updated successfully',
             'data' => $data
+        ]);
+    }
+
+    public function jobOfferConfirm($id){
+        $post = JobOffer::find($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Job Offer Confirmed',
+            'data' => $post
         ]);
     }
 

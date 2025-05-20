@@ -91,7 +91,7 @@ function App() {
             }
           />
           <Route
-            path="/post-confirmation"
+            path="/post-confirmation/:post_id"
             element={
                <ProtectedRoute 
                   allowedRoles={['customer', 'admin']} 
