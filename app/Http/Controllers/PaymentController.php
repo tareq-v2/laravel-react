@@ -17,8 +17,10 @@ class PaymentController extends Controller
 {
     public function handlePayment(Request $request)
     {
+        // dd($request->all());
+        // Use SECRET KEY from .env
         Stripe::setApiKey(env('STRIPE_SECRET')); 
-        DB::beginTransaction();
+        
         try {
             // Validate input
             $validated = $request->validate([
@@ -27,29 +29,25 @@ class PaymentController extends Controller
                 'email' => 'required|email',
             ]);
 
-            $draft = DraftPost::where('ip_address', $request->clientIP)
-            ->first();
-          
-            if (!$draft) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Invalid or expired payment session'
-                ], 410);
-            }
-            if ($draft->created_at->diffInMinutes(now()) > 30) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Payment session expired'
-                ], 410);
-            }
+            // Create PaymentIntent
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $validated['totalAmount'] * 100,
+                'currency' => 'usd',
+                'payment_method' => $validated['paymentMethodId'],
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
+                'confirm' => true,
+                'metadata' => [
+                    'post_id' => $request->postId,
+                    'email' => $validated['email']
+                ]
+            ]);
 
-            if ($draft->processed) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'This payment has already been processed'
-                ], 409);
-            }
+            $draft = DraftPost::where('ip_address', $request->clientIP)->latest()->first();
             $draftData = json_decode($draft->data, true);
+
             // Create main post based on model type
             switch ($draftData['model']) {
                 case 'JobOffer':
@@ -81,6 +79,7 @@ class PaymentController extends Controller
 
             // Process attachments
             $attachments = AdDraftAttachment::where('user_ip', $draft->ip_address)->get();
+            // dd($attachments);
             foreach ($attachments as $attachment) {
                 JobOfferImage::create([
                     'job_offer_id' => $post->id,
@@ -90,8 +89,8 @@ class PaymentController extends Controller
                 ]);
 
                 // Optional: Move files from drafts directory to permanent storage
-                $oldPath = public_path("drafts/attachments/{$attachment->image}");
-                $newPath = public_path("jobOffers/attachments/{$attachment->image}");
+                $oldPath = public_path("drafts/{$attachment->type}/{$attachment->image}");
+                $newPath = public_path("job-offers/{$post->id}/{$attachment->image}");
                 
                 if (File::exists($oldPath)) {
                     File::move($oldPath, $newPath);
@@ -101,39 +100,18 @@ class PaymentController extends Controller
             // Cleanup
             AdDraftAttachment::where('user_ip', $draft->ip_address)->delete();
             $draft->delete();
-              // Create PaymentIntent
-            $paymentIntent = PaymentIntent::create([
-                'amount' => $validated['totalAmount'] * 100,
-                'currency' => 'usd',
-                'payment_method' => $validated['paymentMethodId'],
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                    'allow_redirects' => 'never',
-                ],
-                'confirm' => true,
-                'metadata' => [
-                    'post_id' => $request->postId,
-                    'email' => $validated['email']
-                ]
-            ]);
-
-            DB::commit();
-
+            
             if ($paymentIntent->status === 'succeeded') {
                 return response()->json([
                     'success' => true,
-                    'post_id' => $post->id,
                     'message' => 'Payment successful!'
                 ]);
             }
 
-
         } catch (ApiErrorException $e) {
-            DB::rollBack();
             return response()->json([
-                'success' => false,
                 'error' => $e->getMessage()
-            ], 500);
+            ], 400);
         }
         
     }
