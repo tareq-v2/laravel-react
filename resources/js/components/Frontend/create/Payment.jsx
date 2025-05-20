@@ -165,6 +165,21 @@ const Payment = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const getClientIP = async () => {
+    try {
+      // Try multiple services for redundancy
+      const responses = await Promise.any([
+        axios.get('https://api.ipify.org?format=json'),
+        axios.get('https://ipapi.co/json'),
+        axios.get('https://ipinfo.io/json')
+      ]);
+      return responses.data.ip;
+    } catch (error) {
+      console.error('All IP services failed:', error);
+      return 'unknown';
+    }
+  };
+
   // Payment submission
   const handleSubmitPayment = async (e) => {
     e.preventDefault();
@@ -180,7 +195,7 @@ const Payment = () => {
       setIsSubmitting(false);
       return;
     }
-
+    const clientIP = await getClientIP();
     try {
       let paymentMethod = null;
       if (totalAmount > 0) {
@@ -216,6 +231,7 @@ const Payment = () => {
         totalAmount,
         paymentMethodId: paymentMethod?.id,
         postId: draftData.id,
+        clientIP,
         type: 'jobOffer'
       };
 

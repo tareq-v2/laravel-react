@@ -17,7 +17,7 @@ class PaymentController extends Controller
 {
     public function handlePayment(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         // Use SECRET KEY from .env
         Stripe::setApiKey(env('STRIPE_SECRET')); 
         
@@ -45,7 +45,7 @@ class PaymentController extends Controller
                 ]
             ]);
 
-            $draft = DraftPost::where('ip_address', $request->ip);
+            $draft = DraftPost::where('ip_address', $request->clientIP)->latest()->first();
             $draftData = json_decode($draft->data, true);
 
             // Create main post based on model type
@@ -56,19 +56,19 @@ class PaymentController extends Controller
                         'city' => $draftData['city'],
                         'category' => $draftData['category'],
                         'description' => $draftData['description'],
-                        'business_name' => $draftData['businessName'],
+                        'businessName' => $draftData['businessName'],
                         'address' => $draftData['address'],
                         'salary' => $draftData['salary'],
-                        'contact_name' => $draftData['name'],
-                        'tel_no' => $draftData['telNo'],
+                        'contactName' => $draftData['name'],
+                        'telNo' => $draftData['telNo'],
                         'tel_ext' => $draftData['telExt'],
-                        'alt_tel_no' => $draftData['altTelNo'],
+                        'altTelNo' => $draftData['altTelNo'],
                         'alt_tel_ext' => $draftData['altTelExt'],
                         'email' => $draftData['email'],
                         'website' => $draftData['website'],
                         'keywords' => $draftData['keywords'],
-                        'featured' => $draftData['featured'],
-                        'user_ip' => $draft->ip_address,
+                        'feature' => $draftData['featured'],
+                        // 'user_ip' => $draft->ip_address,
                     ]);
                     break;
                 
@@ -79,12 +79,12 @@ class PaymentController extends Controller
 
             // Process attachments
             $attachments = AdDraftAttachment::where('user_ip', $draft->ip_address)->get();
-            
+            // dd($attachments);
             foreach ($attachments as $attachment) {
                 JobOfferImage::create([
                     'job_offer_id' => $post->id,
-                    'image_path' => $attachment->image,
-                    'type' => $attachment->type,
+                    'image_path' => $attachment->image ?? 'image',
+                    'type' => 'jobOffer',
                     'original_name' => pathinfo($attachment->image, PATHINFO_FILENAME)
                 ]);
 
