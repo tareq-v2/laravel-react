@@ -78,11 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/user/create', [UserController::class, 'create']);
   Route::post('/user/edit/{id}', [UserController::class, 'edit']);
   Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
-  // Route::get('/currentUser', function(){
-  //   return response()->json([
-  //     'data' => Auth::user()->toArray()
-  //   ]);
-  // });
   Route::get('/admin/ad-subcategories', [FrontendController::class, 'getAdSubCategories']);
   Route::get('/admin/ad-categories', [FrontendController::class, 'getAdCategories']);
   Route::post('/admin/update-subcategories/{type}/{id}', [FrontendController::class, 'updateRate']);
@@ -95,12 +90,40 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/admin/send-message', [ChatController::class, 'sendAdminMessage']);
   Route::post('/admin/messages/mark-read/{userId}', [ChatController::class, 'markAsRead']);
   Route::get('/current-user', function () {
-        return response()->json([
-            'id' => Auth::user()->id,
-            'name' => Auth::user()->name,
-            // other user data you need
-        ]);
+      return response()->json([
+          'id' => Auth::user()->id,
+          'name' => Auth::user()->name,
+          // other user data you need
+      ]);
+  });
+
+  Route::get('/user/posts', function(){
+    $posts = \App\Models\JobOffer::where('user_id', Auth::user()->id)->where('is_verified', 0)->get();
+    return response()->json([
+        'posts' => $posts
+    ]);
+  });
+  Route::get('/user/post/edit/{id}', function($id) {
+    $post = \App\Models\JobOffer::with('images')
+        ->where('user_id', Auth::id())
+        ->where('id', $id)
+        ->where('is_verified', 0)
+        ->firstOrFail();
+
+    // Transform images collection
+    $post->images_url = $post->images->map(function($image) {
+        return [
+            'url' => asset("jobOffers/attachments/{$image->image_path}"),
+            'name' => $image->original_name,
+            'type' => pathinfo($image->image_path, PATHINFO_EXTENSION)
+        ];
     });
+
+    return response()->json([
+        'post' => $post
+    ]);
+  });
+
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);

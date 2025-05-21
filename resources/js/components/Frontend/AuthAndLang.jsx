@@ -8,7 +8,7 @@ const AuthAndLang = (props) => {
   const isAuthenticated = !!localStorage.getItem('token');
   
   const link = localStorage.getItem('role') === 'customer' 
-    ? <Link to="/notFound" className="nav-link">Dashboard</Link>
+    ? <Link to="/user/dashboard" className="nav-link">Dashboard</Link>
     : <Link to="/home" className="nav-link">Dashboard</Link>;
 
   const handleLogout = async () => {

@@ -6,7 +6,33 @@
     import AuthModal from './Frontend/AuthModal';
     import './Frontend/JobOfferForm.css';
 
-    const JobOfferForm = () => {
+    const JobOfferForm = (
+      { 
+        isEditMode = false, 
+        initialData = null,
+        onSubmit: externalSubmit,
+        onCancel 
+      }
+    ) => {
+      useEffect(() => {
+        if (isEditMode && initialData) {
+          setFormData(prev => ({
+            ...prev,
+            ...initialData,
+            postId: initialData.postId // Add postId for edits
+          }));
+
+          // Handle existing attachments previews
+          const initialPreviews = initialData.attachments.map(attachment => ({
+            url: attachment.url,
+            name: attachment.name,
+            type: attachment.type,
+            existing: true // Mark existing files
+          }));
+          
+          setFilePreviews(initialPreviews);
+        }
+      }, [isEditMode, initialData]);
         const [formData, setFormData] = useState({
             title: '',
             city: '',
@@ -242,11 +268,27 @@
 
         // Handle remve attachments
         const handleRemoveFile = (index) => {
+          // setFormData(prev => ({
+          //   ...prev,
+          //   attachments: prev.attachments.filter((_, i) => i !== index)
+          // }));
+          // setFilePreviews(prev => prev.filter((_, i) => i !== index));
+
+
+          const file = filePreviews[index];
+          if (file?.existing) {
+            // Mark existing files for deletion in backend
+            setFormData(prev => ({
+              ...prev,
+              deletedAttachments: [...(prev.deletedAttachments || []), file.url]
+            }));
+          }
+          
+          setFilePreviews(prev => prev.filter((_, i) => i !== index));
           setFormData(prev => ({
             ...prev,
             attachments: prev.attachments.filter((_, i) => i !== index)
           }));
-          setFilePreviews(prev => prev.filter((_, i) => i !== index));
         };
 
         useEffect(() => {
@@ -441,6 +483,7 @@
           e.preventDefault();
           setErrors({});
           setCaptchaError('');
+
           // Basic validation
           const newErrors = {};
           if (!formData.title) newErrors.title = 'Title is required';
@@ -464,12 +507,27 @@
           }
 
           // CAPTCHA validation
-          if (!isReturningFromPreview && captchaInput !== captchaText) {
+          if (!isEditMode && !isReturningFromPreview && captchaInput !== captchaText) {
             setCaptchaError('Invalid CAPTCHA code');
             generateCaptcha();
             return;
           }
-          setShowPreview(true);
+          if (isEditMode) {
+            // Handle edit submission
+            const editPayload = {
+              ...formData,
+              // Separate existing and new attachments
+              existingAttachments: filePreviews
+                .filter(f => f.existing)
+                .map(f => f.url),
+              newAttachments: formData.attachments
+            };
+
+            externalSubmit(editPayload);
+          } else {
+            // Original creation flow
+            setShowPreview(true);
+          }
           
         };
 
@@ -1036,7 +1094,7 @@
                           )}
                         </div>
                         
-                        {!isReturningFromPreview && (
+                        {!isEditMode && !isReturningFromPreview && (
                           <div className="form-group mt-3">
                             <div className="d-flex flex-nowrap align-items-center gap-2">
                               {/* CAPTCHA Display */}
@@ -1090,9 +1148,17 @@
                         {/* Submit Button */}
                         <div className="form-group mt-4">
                           <button type="submit" className="btn btn-primary w-100">
-                            Continue
+                            {isEditMode ? 'Update Post' : 'Continue'}
                           </button>
-
+                            {isEditMode && (
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary mt-3"
+                                  onClick={onCancel}
+                                >
+                                  Cancel
+                                </button>
+                              )}
                           <p style={{ margin: '0.5rem 0 0.5rem 0' }}>
                                 By posting your ad on ArmenianAd.com, you agree to be bound by our {' '}
                               <a 

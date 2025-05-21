@@ -11,6 +11,16 @@ const Payment = () => {
   const stripe = useStripe();
   const elements = useElements();
 
+  const initialState = {
+    card_holder_name: '',
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: '',
+    phone: '',
+    email: draftData.email || '',
+  };
   // Existing state remains the same
   const [rates, setRates] = useState({
     baseRate: draftData.rate || 0,
@@ -238,26 +248,25 @@ const Payment = () => {
       };
 
       const response = await axios.post('/ads/final/post', formPayload);
-      
-      if (response.data.success) {
-      // Clear ALL related data
-      localStorage.removeItem('jobOfferFormState');
-      setPaymentDetails(initialState);
-      setDraftData(null);
+      if (response.data && response.data.success) {
+        // Clear ALL related data
+        localStorage.removeItem('jobOfferFormState');
+        setPaymentDetails(initialState);
 
-      // Navigate with history replacement
-      navigate(`/post-confirmation/${response.data.post_id}`, { 
-        replace: true,
-        state: { paymentCompleted: true }
-      });
-    }
+        console.log('Payment success:', response.data);
+        // Navigate with history replacement
+        navigate(`/post-confirmation/${response.data.post_id}`, { 
+          replace: true,
+          state: { paymentCompleted: true }
+        });
+      }
       
     } catch (error) {
       if (error.response?.status === 409) {
         navigate('/', { replace: true });
         alert('This payment was already processed');
       } else if (error.response?.status === 410) {
-        navigate('', { replace: true });
+        navigate('/', { replace: true });
         alert('Session expired. Please start over.');
       }
     } finally {
