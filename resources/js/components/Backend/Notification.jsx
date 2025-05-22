@@ -1,9 +1,9 @@
-// NotificationBell.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaBell, FaRegBell, FaCheck } from 'react-icons/fa';
-import './NotificationBell.css'; // Create this CSS file
+import './NotificationBell.css';
 
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);
@@ -101,7 +101,7 @@ const NotificationBell = () => {
                             <div
                                 key={notification.id}
                                 className="notification-item"
-                                onClick={() => handleNotificationClick(notification)}
+                                onClick={() => handleNotificationClick(notification.id)}
                             >
                                 <div className="notification-content">
                                     <div className="message">
