@@ -17,6 +17,7 @@ import {
 } from 'react-icons/fa';import './AdminDashboard.css';
 import { useTheme } from './Frontend/src/context/ThemeContext';
 import { Outlet, useLocation } from 'react-router-dom';
+import NotificationBell from './Backend/Notification';
 
 const Home = () => {
   const location = useLocation();
@@ -161,6 +162,7 @@ const Home = () => {
                 </h3>
               </div>
               <div className="quick-actions">
+                <NotificationBell />
               <button 
                 onClick={toggleTheme}
                 className="theme-toggle"

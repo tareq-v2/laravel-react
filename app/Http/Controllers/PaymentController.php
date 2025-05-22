@@ -6,6 +6,7 @@ use App\Models\DraftPost;
 use App\Models\JobOffer;
 use App\Models\AdDraftAttachment;
 use App\Models\JobOfferImage;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
@@ -34,7 +35,6 @@ class PaymentController extends Controller
 
             $draft = DraftPost::where('ip_address', $request->clientIP)
             ->first();
-          
             if (!$draft) {
                 return response()->json([
                     'success' => false,
@@ -105,7 +105,7 @@ class PaymentController extends Controller
 
             // Cleanup
             AdDraftAttachment::where('user_ip', $draft->ip_address)->delete();
-            $draft->delete();
+            
               // Create PaymentIntent
             $paymentIntent = PaymentIntent::create([
                 'amount' => $validated['totalAmount'] * 100,
@@ -131,6 +131,15 @@ class PaymentController extends Controller
                 ];
             });
             Mail::to($validated['email'])->send(new AdOrderMail($post, $paymentIntent->id, $userName));
+            Notification::create([
+                'notification_type' => 'Post Request',
+                'post_type' => $draftData['model'],
+                'data' => json_encode([
+                    'message' => 'New post requires approval',
+                    'post_id' => $post->id
+                ])
+            ]);
+            $draft->delete();
             DB::commit();
 
             if ($paymentIntent->status === 'succeeded') {

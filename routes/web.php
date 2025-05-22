@@ -15,6 +15,8 @@ use App\Models\GuestMessage;
 use App\Models\AdSubCategory;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PostPermissionController;
 
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 
@@ -124,6 +126,9 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
   });
 
+  Route::get('/admin/notifications', [NotificationController::class, 'index']);
+  Route::post('/admin/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+  Route::post('/posts/{post}/verify', [PostPermissionController::class, 'verify']);
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
@@ -135,15 +140,18 @@ Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);
 Route::get('/sanctum/csrf-cookie', function () {
   return response()->noContent();
 });
+
 Route::get('/home-videos', function() {
   $videos = HomeVideo::all();
   return response()->json([
       'data' => $videos
   ]);
 });
+
 Route::get("checkHoroscope", function(Request $request){
   return response()->json(['session' => $request->input('src')]);
 })->name('checkHoroscope');
+
 Route::get('/{any}', function () {
   return view('welcome');
 })->where('any', '.*');

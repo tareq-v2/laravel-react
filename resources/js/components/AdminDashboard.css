@@ -435,4 +435,66 @@ th {
   padding: 0 1.5rem;
 }
 
+/* AdminDashboard.css */
 
+/* AdminDashboard.css */
+.notification-container {
+    position: relative;
+    margin-right: 20px;
+}
+
+.notification-bell {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+}
+
+.notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 35px;
+    width: 300px;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: block;
+    color: #333;
+    text-decoration: none;
+}
+
+.notification-item:hover {
+    background: #f5f5f5;
+}
+
+/* Dark mode support */
+.dark-mode .notification-dropdown {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+.dark-mode .notification-item {
+    color: #cbd5e0;
+    border-color: #4a5568;
+}
+.dark-mode .notification-item:hover {
+    background: #4a5568;
+}
