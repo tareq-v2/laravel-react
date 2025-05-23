@@ -32,7 +32,7 @@ const NotificationBell = () => {
 
     useEffect(() => {
         fetchNotifications();
-        const interval = setInterval(fetchNotifications, 10000);
+        const interval = setInterval(fetchNotifications, 1000000);
         return () => clearInterval(interval);
     }, []);
 
@@ -56,8 +56,11 @@ const NotificationBell = () => {
     };
 
     const handleNotificationClick = (notification) => {
+        console.log(notification.post_id);
         handleMarkAsRead(notification.id);
-        navigate(`/admin/posts/${notification.post_id}`);
+        if (notification.post_id) {
+            navigate(`/admin/posts/${notification.post_id}`);
+        }
         setIsOpen(false);
     };
 
@@ -101,7 +104,7 @@ const NotificationBell = () => {
                             <div
                                 key={notification.id}
                                 className="notification-item"
-                                onClick={() => handleNotificationClick(notification.id)}
+                                onClick={() => handleNotificationClick(notification)}
                             >
                                 <div className="notification-content">
                                     <div className="message">
