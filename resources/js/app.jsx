@@ -51,6 +51,7 @@ import AdHistory from './components/Backend/ads/AdHistory';
 import AdCategories from './components/Backend/ads/AdCategories';
 import AdminAdSubCategories from './components/Backend/ads/AdSubCategories';
 import AdRates from './components/Backend/ads/AdRates';
+import PostVerification from './components/Backend/PostVerification';
 
 function App() {
   const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
@@ -260,6 +261,7 @@ function App() {
             <Route path="ads/Subcategories" element={<AdminAdSubCategories/>} />
             <Route path="ads/rates" element={<AdRates/>} />
             <Route path="chat" element={<AdminChat />} />
+            <Route path="admin/post/verify/:id" element={<PostVerification />} />
           </Route>
           
         </Routes>

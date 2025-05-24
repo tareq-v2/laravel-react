@@ -83,7 +83,6 @@ class PaymentController extends Controller
                 default:
                     throw new \Exception('Unknown model type');
             }
-            // dd($post->id);
             // Process attachments
             $attachments = AdDraftAttachment::where('user_ip', $draft->ip_address)->get();
             foreach ($attachments as $attachment) {
@@ -102,7 +101,6 @@ class PaymentController extends Controller
                     File::move($oldPath, $newPath);
                 }
             }
-
             // Cleanup
             AdDraftAttachment::where('user_ip', $draft->ip_address)->delete();
             

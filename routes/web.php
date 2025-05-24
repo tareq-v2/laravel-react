@@ -128,7 +128,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
   Route::get('/admin/notifications', [NotificationController::class, 'index']);
   Route::post('/admin/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
-  Route::post('/posts/{post}/verify', [PostPermissionController::class, 'verify']);
+  Route::post('/posts/{id}/verify', [PostPermissionController::class, 'verify']);
+  Route::get('/admin/get/un-verified/post/{id}', [PostPermissionController::class, 'getUnVerifiedPost']);
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);

@@ -1,0 +1,543 @@
+.verification-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.verification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.back-button {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-button:hover {
+    background: #e9ecef;
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.label {
+    font-weight: 600;
+    color: #333;
+}
+
+.value {
+    color: #666;
+    text-align: right;
+}
+
+.image-slider-section {
+    margin: 2rem 0;
+}
+
+.slick-slider {
+    position: relative;
+}
+
+.slick-arrow {
+    z-index: 1;
+}
+
+.slick-prev {
+    left: 25px;
+}
+
+.slick-next {
+    right: 25px;
+}
+
+.slick-dots {
+    bottom: 20px;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.image-caption {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.verification-actions {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #eee;
+}
+
+.verify-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.verify-button:hover:not(:disabled) {
+    background: #218838;
+}
+
+.verify-button.verifying {
+    background: #1e7e34;
+    cursor: not-allowed;
+}
+
+.loading-overlay,
+.error-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 1rem;
+}
+
+.error-overlay {
+    color: #dc3545;
+}
+
+/* Add these styles */
+.image-slider-section {
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.image-slider {
+  position: relative;
+}
+
+.slick-track {
+  display: flex !important;
+  align-items: center;
+}
+
+.post-image {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f5f5f5;
+}
+
+.slider-item {
+  padding: 0 10px;
+}
+
+/* Add a loading animation for images */
+.post-image {
+  background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.post-image.loaded {
+  background: none;
+  animation: none;
+}
+
+.back-button{
+    background: #000;
+}
+
+.back-button:hover{
+    background: tomato;
+}
+
+/* Enhanced Slider Styles */
+.image-slider-section {
+    margin: 2rem 0;
+    position: relative;
+}
+
+.slider-item {
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+}
+
+.slider-item:hover {
+    transform: scale(0.98);
+}
+
+.post-image {
+    width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f5f5f5;
+}
+
+.image-caption {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Image Modal Styles */
+.image-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.image-modal {
+    position: relative;
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+}
+
+.modal-close {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 1001;
+}
+
+.modal-close:hover {
+    transform: scale(1.2);
+}
+
+.modal-image-container {
+    position: relative;
+    height: 80vh;
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+.modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+}
+
+.modal-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-nav.prev {
+    left: 20px;
+}
+
+.modal-nav.next {
+    right: 20px;
+}
+
+.image-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.contact-dropdown {
+    position: relative;
+}
+
+.contact-options {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.5rem;
+    display: none;
+    min-width: 200px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.contact-dropdown:hover .contact-options {
+    display: block;
+}
+
+.contact-option {
+    display: block;
+    padding: 0.5rem;
+    color: #333;
+    text-decoration: none;
+}
+
+.contact-option:hover {
+    background: #f8f9fa;
+}
+
+/* Header Styles */
+.verification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.header-content {
+    flex-grow: 1;
+    margin-left: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* Approve Button */
+.approve-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.approve-button:hover:not(:disabled) {
+    background: #218838;
+}
+
+/* Contact Dropdown */
+.contact-dropdown {
+    position: relative;
+}
+
+.contact-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.contact-button:hover {
+    background: #0056b3;
+}
+
+.contact-options {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 200px;
+    z-index: 100;
+    display: none;
+}
+
+.contact-dropdown:hover .contact-options {
+    display: block;
+}
+
+.contact-option {
+    display: block;
+    padding: 0.8rem 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.contact-option:hover {
+    background: #f8f9fa;
+}
+
+.contact-method {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.contact-value {
+    display: block;
+    font-weight: 500;
+    margin-top: 0.2rem;
+}
+
+.button-icon {
+    font-size: 1.1rem;
+}
+
+.verification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    gap: 1rem;
+}
+
+.back-button {
+    background: #000;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-button:hover {
+    background: tomato;
+}
+
+.header-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.header-right-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .verification-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .header-content {
+        justify-content: flex-start;
+    }
+    
+    .header-right-section {
+        align-items: flex-start;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .approve-button,
+    .contact-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

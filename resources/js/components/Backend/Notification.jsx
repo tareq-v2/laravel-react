@@ -19,7 +19,7 @@ const NotificationBell = () => {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            console.log(response.data.notifications);
+            // console.log(response.data.notifications);
             setNotifications(response.data.notifications);
             setError(null);
         } catch (err) {
@@ -32,7 +32,7 @@ const NotificationBell = () => {
 
     useEffect(() => {
         fetchNotifications();
-        const interval = setInterval(fetchNotifications, 1000000);
+        const interval = setInterval(fetchNotifications, 10000);
         return () => clearInterval(interval);
     }, []);
 
@@ -56,11 +56,26 @@ const NotificationBell = () => {
     };
 
     const handleNotificationClick = (notification) => {
-        console.log(notification.post_id);
-        handleMarkAsRead(notification.id);
-        if (notification.post_id) {
-            navigate(`/admin/posts/${notification.post_id}`);
+        console.log('Notification clicked:', notification);
+        try {
+            handleMarkAsRead(notification.id);
+        
+            // Parse the JSON data string
+            const notificationData = JSON.parse(notification.data);
+            
+            // Get the post_id from the parsed data
+            const postId = notificationData.post_id;
+            
+            // Use either the direct post_id from notification or from parsed data
+            const targetPostId = notification.post_id || postId;
+            
+            if (targetPostId) {
+                navigate(`admin/post/verify/${targetPostId}`);
+            }
+        } catch (err) {
+            console.error('Mark read error:', err);
         }
+        
         setIsOpen(false);
     };
 
