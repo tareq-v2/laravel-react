@@ -7,6 +7,8 @@ use App\Models\AdSubCategory;
 use App\Models\JobOffer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 class FrontendController extends Controller
 {
@@ -147,6 +149,17 @@ class FrontendController extends Controller
             'success' => true,
             'message' => 'Ads History',
             'data' => JobOffer::all()
+        ]);
+    }
+    
+    public function getQuote()
+    {
+        $random = now()->timestamp; // Changes every second
+        return response()->json([
+            'quote' => Cache::remember('inspire-quote-'.$random, 1, function () {
+                Artisan::call('inspire');
+                return trim(Artisan::output());
+            })
         ]);
     }
 

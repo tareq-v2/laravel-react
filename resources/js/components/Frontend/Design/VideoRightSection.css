@@ -74,5 +74,32 @@
   color: #fff;
   background: tomato;
 }
+.fw-medium{
+  font-size: 10px;
+}
+
+.horoscope-section img {
+    filter: 
+        invert(24%) 
+        sepia(99%) 
+        saturate(2120%) 
+        hue-rotate(345deg) 
+        brightness(98%) 
+        contrast(101%);
+}
+
+.horoscope-section img:hover {
+    scale: 1.05;
+    filter: 
+        invert(24%) 
+        sepia(99%) 
+        saturate(2120%) 
+        hue-rotate(345deg) 
+        brightness(98%) 
+        contrast(101%);
+    transition: 
+        scale 0.3s ease-in-out,
+        filter 0.3s ease-in-out;
+}
 
   

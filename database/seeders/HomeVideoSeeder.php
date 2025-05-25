@@ -16,8 +16,8 @@ class HomeVideoSeeder extends Seeder
         $videos = [
             [
                 'title' => 'Cartoon One',
-                'video_link' => 'https://www.youtube.com/embed/5oH9Nr3bKfw',
-                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail1.png'
+                'video_link' => 'https://www.youtube.com/embed/mWXrM-OKBNQ',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail5.png'
             ],
             [
                 'title' => 'Cartoon Two',
@@ -36,8 +36,8 @@ class HomeVideoSeeder extends Seeder
             ],
             [
                 'title' => 'Cartoon Five',
-                'video_link' => 'https://www.youtube.com/embed/mWXrM-OKBNQ',
-                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail5.png'
+                'video_link' => 'https://www.youtube.com/embed/5oH9Nr3bKfw',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail1.png'
             ],
             [
                 'title' => 'Cartoon Six',

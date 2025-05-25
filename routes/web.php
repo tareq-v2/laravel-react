@@ -63,7 +63,7 @@ Route::post('/contact', function (Request $request) {
   return response()->json(['message' => 'Contact form submitted successfully']);
   
 });
-
+Route::get('/get/inspire', [FrontendController::class, 'getQuote']);
 Route::get('/get/top-header-banner', [BannerController::class, 'getTopBanner']);
 Route::get('/get/spot-2-banners', [BannerController::class, 'getSpot2Banners']);
 Route::get('/banners/spot-3', [BannerController::class, 'getSpot3Banners']);

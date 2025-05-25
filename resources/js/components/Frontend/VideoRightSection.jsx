@@ -124,38 +124,9 @@ const VideoRightSection = () => {
   };
   return (
     <div className="col-lg-5">
-      {/* Search Section */}
-      <form action="/" onSubmit={(e) => e.preventDefault()} method="get">
-        <div className="row mt-1 g-1">
-          <div className="col-md pe-1">
-            <input
-              type="text"
-              className="form-control search-field business-field px-2 py-1"
-              name="title"
-              placeholder="Business name or category"
-            />
-          </div>
-          <div className="col-md-4 px-0">
-            <input
-              type="text"
-              className="form-control search-field location-field px-2 py-1"
-              name="city"
-              placeholder="Location"
-            />
-          </div>
-          <div className="col-md-auto ps-1">
-            <button
-            //   type="submit" 
-              className="btn search-btn w-100 py-1"
-            >
-              Search
-            </button>
-          </div>
-        </div>
-      </form>
 
       {/* Banner Slider Section */}
-       <div className="mt-3 banner-container-spot2">
+       <div className="banner-container-spot2">
         {bannersLoading ? (
           <div className="text-center py-4">Loading banners...</div>
         ) : spot2Banners.length > 0 ? (
@@ -181,10 +152,10 @@ const VideoRightSection = () => {
       <div>
         {
           loading ?  <div>Loading...</div> : (
-            <div className="mt-4 p-3 bg-light rounded-3 position-relative">
+            <div className="p-3 bg-light rounded-3 position-relative horoscope-section">
             {!showIframe ? (
               <>
-                <div className="text-center mb-3">
+                <div className="text-center mb-2">
                   <h5 className="mb-1">Daily Horoscope</h5>
                   <small className="text-muted">
                     {new Date().toLocaleDateString('en-US', {

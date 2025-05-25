@@ -1,5 +1,5 @@
 .section-spacing {
-  padding: 4rem 0;
+  padding: 1rem 0;
   border-bottom: 1px solid #eee;
 }
 
@@ -34,14 +34,35 @@
   transform: translateY(-5px);
 } */
 
-.category-card img:hover{
+.category-card:hover img {
     scale: 1.05;
-    filter: invert(12%) sepia(73%) saturate(3566%) hue-rotate(229deg) brightness(87%) contrast(123%);
-    transition: scale 0.3s ease-in-out;
+    filter: 
+        invert(24%) 
+        sepia(99%) 
+        saturate(2120%) 
+        hue-rotate(345deg) 
+        brightness(98%) 
+        contrast(101%);
+    transition: 
+        scale 0.3s ease-in-out,
+        filter 0.3s ease-in-out;
+}
+.category-card:hover h6 {
+    scale: 1.05;
+    filter: 
+        invert(24%) 
+        sepia(99%) 
+        saturate(2120%) 
+        hue-rotate(345deg) 
+        brightness(98%) 
+        contrast(101%);
+    transition: 
+        scale 0.3s ease-in-out,
+        filter 0.3s ease-in-out;
 }
 
 .category-card:hover {
-    border: 1px solid #007bff;
+    border: 1px solid tomato;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
@@ -208,7 +229,7 @@
 
 /* Section Styling */
 .section-spacing {
-  margin: 4rem 0;
+  margin: 1rem 0;
 }
 
 .section-header {

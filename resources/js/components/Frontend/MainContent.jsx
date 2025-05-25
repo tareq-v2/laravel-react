@@ -456,7 +456,7 @@ const MainContent = () => {
   return (
     <div className="container">
       {/* Ad Categories Section */}
-      <section className="section-spacing">
+      <section className="section-spacing mt-0 pt-0">
         <div className="row">
           <div className="col-md-2">
             <BannerSpot spotNumber={3} />
@@ -580,7 +580,7 @@ const MainContent = () => {
       </section>
 
       {/* Featured Businesses Section */}
-      <section className="section-spacing">
+      <section className="section-spacing mt-0 pt-0">
         <div className="row">
           <div className="col-md-3">
             <BannerSpot spotNumber={4} />
