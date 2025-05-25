@@ -1,6 +1,8 @@
 .radio-player {
     background: #f5f5f5;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid tomato;
+    border-radius: 3px;
+    padding: 3px;
   }
   
   .player-controls {
@@ -10,11 +12,11 @@
   }
   
   .play-pause-btn {
-    background: #2196f3;
+    background: tomato;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -31,7 +33,7 @@
   .progress-bar {
     flex: 1;
     height: 4px;
-    background: #ddd;
+    background: tomato;
     border-radius: 2px;
     cursor: pointer;
     position: relative;
@@ -61,7 +63,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: tomato;
     padding: 5px;
   }
   

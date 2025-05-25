@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             JobOfferCategorySeeder::class,
             BannerSeeder::class,
             BannerCategorySeeder::class,
+            HomeVideoSeeder::class,
         ]);
     }
 }
