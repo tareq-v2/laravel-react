@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostPermissionController;
+use App\Http\Controllers\JobOfferController;
+use App\Http\Controllers\BannerController;
 
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 
@@ -62,6 +64,11 @@ Route::post('/contact', function (Request $request) {
   
 });
 
+Route::get('/get/top-header-banner', [BannerController::class, 'getTopBanner']);
+Route::get('/get/spot-2-banners', [BannerController::class, 'getSpot2Banners']);
+Route::get('/banners/spot-3', [BannerController::class, 'getSpot3Banners']);
+Route::get('/banners/spot-4', [BannerController::class, 'getSpot4Banners']);
+Route::get('/banners/spot-5', [BannerController::class, 'getSpot5Banners']);
 Route::post('/save-draft', [DraftController::class, 'store']);
 Route::get('/get-draft/{ip}', [DraftController::class, 'getDraft']);
 Route::post('/drafts/{id}/confirm', [DraftController::class, 'confirmDraftUsage']);
@@ -130,6 +137,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/admin/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
   Route::post('/posts/{id}/verify', [PostPermissionController::class, 'verify']);
   Route::get('/admin/get/un-verified/post/{id}', [PostPermissionController::class, 'getUnVerifiedPost']);
+  Route::get('/admin/ads/history', [FrontendController::class, 'adsHistory']);
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
@@ -152,6 +160,8 @@ Route::get('/home-videos', function() {
 Route::get("checkHoroscope", function(Request $request){
   return response()->json(['session' => $request->input('src')]);
 })->name('checkHoroscope');
+
+Route::get('/job-offers-list', [JobOfferController::class, 'getJobOfferslist']);
 
 Route::get('/{any}', function () {
   return view('welcome');

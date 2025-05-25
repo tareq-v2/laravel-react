@@ -6,6 +6,7 @@ use App\Models\AdCategory;
 use App\Models\AdSubCategory;
 use App\Models\JobOffer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FrontendController extends Controller
 {
@@ -138,6 +139,14 @@ class FrontendController extends Controller
             'success' => true,
             'message' => 'Job Offer Confirmed',
             'data' => $post
+        ]);
+    }
+
+    public function adsHistory(){
+        return response()->json([
+            'success' => true,
+            'message' => 'Ads History',
+            'data' => JobOffer::all()
         ]);
     }
 

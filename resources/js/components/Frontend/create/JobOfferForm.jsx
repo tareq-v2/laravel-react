@@ -51,7 +51,7 @@
             keywords: '',
             captcha: '',
             attachments: [],
-            featured: 'No',
+            featured: '',
             model: 'JobOffer',
             socialShare: '',
             rate: 0,
@@ -740,7 +740,7 @@
                           saveDraftData();
                           handleFeaturedSubmit();
                         }}
-                        disabled={!formData.featured}
+                        // disabled={!formData.featured}
                       >
                         Confirm & Submit
                       </button>

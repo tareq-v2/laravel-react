@@ -41,3 +41,48 @@
   .catSearch:hover span {
     transform: scale(1.05);
   }
+
+  .job-meta {
+  border-top: 1px solid #eee;
+  padding-top: 0.8rem;
+  margin-top: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+  font-weight: 500;
+}
+
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.post-btn{
+  color: #fff;
+  background: #000;
+}
+.post-btn:hover{
+  color: #fff;
+  background: tomato;
+}
+
+.post-card-listing .card:hover{
+  border: tomato 1px solid;
+  box-shadow: 1px 1px 5px rgba(255, 99, 71, 0.500);
+}
+.post-card-listing .badge{
+  background: tomato;
+  border: tomato 1px solid;
+  box-shadow: 1px 1px 10px tomato;
+}

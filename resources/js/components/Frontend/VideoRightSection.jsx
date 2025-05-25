@@ -24,12 +24,48 @@ const VideoRightSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isHoroscopeLoading, setIsHoroscopeLoading] = useState(false);
   const [selectedSign, setSelectedSign] = useState(null);
-  // Dummy data with working image URLs
-  const dummyBanners = [
-    { id: 1, image: 'https://media.istockphoto.com/id/2161733236/photo/autumn-or-thanksgiving-decoration-background-with-pumkins-and-fall-leaves-copy-space.jpg?s=1024x1024&w=is&k=20&c=yEoT1NsIJB4qoF_icQvY3IZx4TLr2SCi3fHwMxuFnEs=' },
-    { id: 2, image: 'http://localhost:8001/uploads/categoryIcons/rent.png' },
-    { id: 3, image: 'http://localhost:8001/uploads/categoryIcons/jobs.png' }
-  ];
+
+   const [spot2Banners, setSpot2Banners] = useState([]);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [bannersLoading, setBannersLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSpot2Banners = async () => {
+      try {
+        const response = await axios.get('/get/spot-2-banners');
+        if (response.data.success && response.data.banners.length > 0) {
+          setSpot2Banners(response.data.banners);
+          // Initialize with random banner
+          setCurrentBannerIndex(Math.floor(Math.random() * response.data.banners.length));
+        }
+      } catch (error) {
+        console.error('Error fetching spot 2 banners:', error);
+      } finally {
+        setBannersLoading(false);
+      }
+    };
+    
+    fetchSpot2Banners();
+  }, []);
+
+  useEffect(() => {
+    if (spot2Banners.length > 1) {
+      const interval = setInterval(() => {
+        setFade(false);
+        setTimeout(() => {
+          let newIndex;
+          do {
+            newIndex = Math.floor(Math.random() * spot2Banners.length);
+          } while (newIndex === currentBannerIndex);
+          setCurrentBannerIndex(newIndex);
+          setFade(true);
+        }, 500);
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
+  }, [spot2Banners, currentBannerIndex]);
 
   const zodiacSigns = [
     'Capricorn', 'Aquarius', 'Pisces', 'Aries', 'Taurus', 'Gemini',
@@ -110,7 +146,7 @@ const VideoRightSection = () => {
           <div className="col-md-auto ps-1">
             <button
             //   type="submit" 
-              className="btn btn-primary search-btn w-100 py-1"
+              className="btn search-btn w-100 py-1"
             >
               Search
             </button>
@@ -119,79 +155,25 @@ const VideoRightSection = () => {
       </form>
 
       {/* Banner Slider Section */}
-      {/* <div className="mt-3" style={{ position: 'relative' }}>
-        {loading ? (
+       <div className="mt-3 banner-container-spot2">
+        {bannersLoading ? (
           <div className="text-center py-4">Loading banners...</div>
-        ) : (
-          <Slider {...bannerSliderSettings}>
-            {banners.map(banner => (
-              <div key={banner.id} className="banner-slide">
-                <img
-                    src={banner.image}
-                    alt={`Banner ${banner.id}`}
-                    className="rounded-3"
-                    style={{ objectFit: 'cover' }}
-                  />
-              </div>
-            ))}
-          </Slider>
-        )}
-      </div> */}
-
-      {/* Banner Slider Section */}
-      <div className="mt-3">
-        {loading ? (
-          <div className="text-center py-4">Loading banners...</div>
-        ) : (
-          // <Slider {...bannerSliderSettings}>
-          //   {banners.map(banner => (
-          //     <div key={banner.id} className="banner-slide" style={{ height: '300px', overflow: 'hidden', zIndex: 999 }}>
-          //       <div className="h-100 w-100">
-          //         <img
-          //           src={banner.image }
-          //           alt={`Banner ${banner.id}`}
-          //           className="img-fluid rounded-3 h-100 w-100"
-          //           style={{ 
-          //             objectFit: 'cover',
-          //             objectPosition: 'center'
-          //           }}
-          //         />
-          //       </div>
-          //     </div>
-          //   ))}
-          // </Slider>
-          <Swiper
-              effect={"fade"}
-              spaceBetween={30}
-              centeredSlides={false}
-              autoplay={{
-                duration: 2500,
-                disableOnInteraction: false,
-              }}
-              navigation={false}
-              modules={[EffectFade, Autoplay]}
-              className="mySwiper"
+        ) : spot2Banners.length > 0 ? (
+          <div className={`banner-slide-spot2 ${fade ? 'fade-in' : 'fade-out'}`}>
+            <a 
+              href={spot2Banners[currentBannerIndex]?.url || '#'} 
+              target="_blank" 
+              rel="noopener noreferrer"
             >
-              <SwiperSlide>
-                 <img src="http://localhost:8001/uploads/banner/video_right1_456x307.jpg" alt="" />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src="http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg" alt="" />  
-              </SwiperSlide>
-              <SwiperSlide>
-                 <img src="http://localhost:8001/uploads/banner/video_right1_456x307.jpg" alt="" />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src="http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg" alt="" />  
-              </SwiperSlide>
-              <SwiperSlide>
-                 <img src="http://localhost:8001/uploads/banner/video_right1_456x307.jpg" alt="" />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src="http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg" alt="" />  
-              </SwiperSlide> 
-         
-         </Swiper>
+              <img
+                src={`http://localhost:8000/storage/banners/${spot2Banners[currentBannerIndex]?.images}`}
+                alt={spot2Banners[currentBannerIndex]?.alt_text || `Banner ${currentBannerIndex + 1}`}
+                className="spot2-banner-img"
+              />
+            </a>
+          </div>
+        ) : (
+          <div className="text-center py-4">No active banners available</div>
         )}
       </div>
 

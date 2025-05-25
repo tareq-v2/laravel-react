@@ -1,130 +1,84 @@
-// PostVerification.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import Slider from 'react-slick';
-import { 
-  FaCheckCircle, 
-  FaTimesCircle, 
-  FaSpinner, 
-  FaArrowLeft,
-  FaChevronLeft,
-  FaChevronRight,
-  FaTimes,
-  FaPhone,
-  FaEnvelope
-} from 'react-icons/fa';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import './PostVerification.css';
+import './Design/VideoRightSection.css';
 
-const PostVerification = () => {
-    // ... [Keep all the existing state and logic unchanged] ...
+const VideoRightSection = () => {
+  // ... other state variables
+  const [spot2Banners, setSpot2Banners] = useState([]);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [bannersLoading, setBannersLoading] = useState(true);
 
-    return (
-        <div className="verification-container">
-            <div className="verification-header">
-                <button 
-                    className="back-button" 
-                    onClick={() => navigate(-1)}
-                    aria-label="Go back to posts list"
-                >
-                    <FaArrowLeft aria-hidden="true" /> 
-                    <span className="button-text">Back to List</span>
-                </button>
-                
-                <div className="header-controls">
-                    <h1 className="verification-title">Post Verification - #{post.id}</h1>
-                    <div className="action-buttons">
-                        <button
-                            className={`approve-button ${verifying ? 'verifying' : ''}`}
-                            onClick={handleVerify}
-                            disabled={verifying}
-                            aria-label={verifying ? "Approving post" : "Approve post"}
-                        >
-                            {verifying ? (
-                                <>
-                                    <FaSpinner className="spinner" aria-hidden="true" />
-                                    <span className="button-text">Approving...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <FaCheckCircle aria-hidden="true" />
-                                    <span className="button-text">Approve Post</span>
-                                </>
-                            )}
-                        </button>
+  useEffect(() => {
+    const fetchSpot2Banners = async () => {
+      try {
+        const response = await axios.get('/get/spot-2-banners');
+        if (response.data.success && response.data.banners.length > 0) {
+          setSpot2Banners(response.data.banners);
+          // Initialize with random banner
+          setCurrentBannerIndex(Math.floor(Math.random() * response.data.banners.length));
+        }
+      } catch (error) {
+        console.error('Error fetching spot 2 banners:', error);
+      } finally {
+        setBannersLoading(false);
+      }
+    };
+    
+    fetchSpot2Banners();
+  }, []);
 
-                        <div className="contact-dropdown">
-                            <button 
-                                className="contact-button"
-                                aria-haspopup="true"
-                                aria-expanded="false"
-                                aria-label="Contact seller options"
-                            >
-                                <FaCheckCircle aria-hidden="true" />
-                                <span className="button-text">Contact Seller</span>
-                            </button>
-                            <div 
-                                className="contact-options" 
-                                role="menu"
-                                aria-hidden="true"
-                            >
-                                {post.telNo && (
-                                    <a 
-                                        href={`tel:${post.telNo}`} 
-                                        className="contact-option"
-                                        role="menuitem"
-                                    >
-                                        <FaPhone className="contact-icon" />
-                                        <div className="contact-info">
-                                            <span className="contact-method">Call:</span>
-                                            <span className="contact-value">{post.telNo}</span>
-                                        </div>
-                                    </a>
-                                )}
-                                {post.email && (
-                                    <a 
-                                        href={`mailto:${post.email}`} 
-                                        className="contact-option"
-                                        role="menuitem"
-                                    >
-                                        <FaEnvelope className="contact-icon" />
-                                        <div className="contact-info">
-                                            <span className="contact-method">Email:</span>
-                                            <span className="contact-value">{post.email}</span>
-                                        </div>
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  useEffect(() => {
+    if (spot2Banners.length > 1) {
+      const interval = setInterval(() => {
+        setFade(false);
+        setTimeout(() => {
+          let newIndex;
+          do {
+            newIndex = Math.floor(Math.random() * spot2Banners.length);
+          } while (newIndex === currentBannerIndex);
+          setCurrentBannerIndex(newIndex);
+          setFade(true);
+        }, 500);
+      }, 5000);
 
-            <main className="verification-content">
-                <section className="post-details-section" aria-labelledby="post-details-heading">
-                    <h2 id="post-details-heading" className="visually-hidden">Post Details</h2>
-                    <div className="detail-section">
-                        <h3 className="post-title">{post.title}</h3>
-                        <div className="detail-grid">
-                            {/* Keep existing detail items render */}
-                        </div>
-                    </div>
+      return () => clearInterval(interval);
+    }
+  }, [spot2Banners, currentBannerIndex]);
 
-                    {post.description && (
-                        <section className="description-section" aria-labelledby="description-heading">
-                            <h4 id="description-heading">Description</h4>
-                            <p className="description-content">{post.description}</p>
-                        </section>
-                    )}
-                </section>
+  // ... rest of your existing code
 
-                {renderImageSlider()}
-                {renderImageModal()}
-            </main>
-        </div>
-    );
+  return (
+    <div className="col-lg-5">
+      {/* Search Section */}
+
+      {/* Banner Section */}
+      <div className="mt-3 banner-container-spot2">
+        {bannersLoading ? (
+          <div className="text-center py-4">Loading banners...</div>
+        ) : spot2Banners.length > 0 ? (
+          <div className={`banner-slide-spot2 ${fade ? 'fade-in' : 'fade-out'}`}>
+            <a 
+              href={spot2Banners[currentBannerIndex]?.url || '#'} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`http://localhost:8000/storage/banners/${spot2Banners[currentBannerIndex]?.images}`}
+                alt={spot2Banners[currentBannerIndex]?.alt_text || `Banner ${currentBannerIndex + 1}`}
+                className="spot2-banner-img"
+              />
+            </a>
+          </div>
+        ) : (
+          <div className="text-center py-4">No active banners available</div>
+        )}
+      </div>
+
+      {/* Zodiac Section */}
+      {/* ... rest of your zodiac section code ... */}
+    </div>
+  );
 };
 
-export default PostVerification;
+export default VideoRightSection;

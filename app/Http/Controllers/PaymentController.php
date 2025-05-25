@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -76,6 +77,7 @@ class PaymentController extends Controller
                         'keywords' => $draftData['keywords'],
                         'feature' => $draftData['featured'],
                         'user_id' => Auth::user()->id ?? null,
+                        'expire_date' => Carbon::now()->addDays(30),
                     ]);
                     break;
                 

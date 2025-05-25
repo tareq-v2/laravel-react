@@ -10,6 +10,20 @@ const JobOfferList = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [jobOffers, setJobOffers] = useState([]);
+
+  useEffect(() => {
+    const fetchJobOffers = async () => {
+      try {
+        const response = await axios.get('/job-offers-list');
+        setJobOffers(response.data);
+      } catch (err) {
+        console.error('Error fetching job offers:', err);
+      }
+    };
+    
+    fetchJobOffers();
+  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -47,7 +61,7 @@ const JobOfferList = () => {
             <div className="card mb-4">
               <div className="card-header d-flex justify-content-between align-items-center">
                 <h3 className="card-title">Categories</h3>
-                <Link to="/create-job-offer" className="btn btn-primary">
+                <Link to="/create-job-offer" className="btn post-btn">
                   <FaPlus className="me-2" />Post Your Ad
                 </Link>
               </div>
@@ -60,7 +74,7 @@ const JobOfferList = () => {
                         <ul className="list-unstyled">
                           {column.map(category => (
                             <li key={category.id}>
-                              <button className="btn btn-link text-decoration-none p-0 text-primary catSearch">
+                              <button className="btn btn-link text-decoration-none p-0 catSearch">
                                 <span className="d-inline-block">{category.name}</span>
                               </button>
                             </li>
@@ -78,7 +92,59 @@ const JobOfferList = () => {
             </div>
 
             {/* Job Listings Section */}
-            {/* Add your job listings component here */}
+            <div className="card mt-4">
+            <div className="card-header">
+              <h3 className="card-title">Active Job Offers</h3>
+            </div>
+            <div className="card-body">
+              <div className="row post-card-listing">
+                {jobOffers.length > 0 ? (
+                  jobOffers.map(offer => (
+                    <div key={offer.id} className="col-md-6 mb-4">
+                      <div className="card h-100">
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between align-items-start">
+                            <div>
+                              <h5 className="card-title">{offer.title}</h5>
+                              {offer.is_featured && (
+                                <span className="badge me-2">Featured</span>
+                              )}
+                            </div>
+                          </div>
+                          <p className="card-text text-muted">{offer.description}</p>
+                          <div className="job-meta">
+                            <small className="text-muted">
+                              Posted: {new Date(offer.created_at).toLocaleDateString()}
+                            </small>
+                            <small className="text-muted ms-2">
+                              Expires: {new Date(offer.expiration_date).toLocaleDateString()}
+                            </small>
+                          </div>
+                        </div>
+                        <div className="card-footer bg-transparent">
+                          <Link 
+                            to={`/job-offers/${offer.id}`}
+                            className="btn btn-outline-primary btn-sm"
+                          >
+                            View Details
+                          </Link>
+                          {/* {offer.is_featured && (
+                            <span className="ms-2 text-warning small">
+                              <i className="fas fa-star"></i> Featured
+                            </span>
+                          )} */}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-12 text-center">
+                    No verified job offers available
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
             
           </div>
         </div>

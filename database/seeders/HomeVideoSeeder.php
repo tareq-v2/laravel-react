@@ -15,49 +15,44 @@ class HomeVideoSeeder extends Seeder
     {
         $videos = [
             [
-                'title' => 'Amazing Nature Scenery',
-                'video_link' => 'https://www.youtube.com/embed/kkJjHNKkB98',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/vdieoRight_456x307.jpg'
+                'title' => 'Cartoon One',
+                'video_link' => 'https://www.youtube.com/embed/5oH9Nr3bKfw',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail1.png'
             ],
             [
-                'title' => 'City Time Lapse',
-                'video_link' => 'https://www.youtube.com/embed/T5Yadh-4ikI',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Two',
+                'video_link' => 'https://www.youtube.com/embed/63O7X1BrH7E',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail2.png'
             ],
             [
-                'title' => 'Space Exploration',
-                'video_link' => 'https://www.youtube.com/embed/sKSrBe6wLgI',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Three',
+                'video_link' => 'https://www.youtube.com/embed/pPbf-eVGS6E',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail3.png'
             ],
             [
-                'title' => 'Amazing Nature Scenery',
-                'video_link' => 'https://www.youtube.com/embed/kkJjHNKkB98',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Four',
+                'video_link' => 'https://www.youtube.com/embed/l1JHzFV7ROo',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail4.png'
             ],
             [
-                'title' => 'City Time Lapse',
-                'video_link' => 'https://www.youtube.com/embed/T5Yadh-4ikI',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Five',
+                'video_link' => 'https://www.youtube.com/embed/mWXrM-OKBNQ',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail5.png'
             ],
             [
-                'title' => 'Space Exploration',
-                'video_link' => 'https://www.youtube.com/embed/sKSrBe6wLgI',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Six',
+                'video_link' => 'https://www.youtube.com/embed/4gLFlQUOHJw',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail6.png'
             ],
             [
-                'title' => 'Amazing Nature Scenery',
-                'video_link' => 'https://www.youtube.com/embed/kkJjHNKkB98',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Seven',
+                'video_link' => 'https://www.youtube.com/embed/DgDIrZX0Re8',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail7.png'
             ],
             [
-                'title' => 'City Time Lapse',
-                'video_link' => 'https://www.youtube.com/embed/T5Yadh-4ikI',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
-            ],
-            [
-                'title' => 'Space Exploration',
-                'video_link' => 'https://www.youtube.com/embed/sKSrBe6wLgI',
-                'video_thumbnail' => 'http://localhost:8001/uploads/banner/video_right1_456x307.jpg'
+                'title' => 'Cartoon Eight',
+                'video_link' => 'https://www.youtube.com/embed/kxDd03SJdkM',
+                'video_thumbnail' => 'http://localhost:8000/storage/banners/video_thumbnail8.png'
             ],
         ];
         HomeVideo::truncate(); // Clear the table before seeding
