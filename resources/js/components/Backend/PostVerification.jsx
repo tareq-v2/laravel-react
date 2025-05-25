@@ -77,7 +77,7 @@ const PostVerification = () => {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            navigate('/admin/posts', {
+            navigate('/home/ads/history', {
                 state: { 
                     message: 'Post approved successfully',
                     variant: 'success'
