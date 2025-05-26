@@ -71,7 +71,6 @@ const Payment = () => {
         setLoadingRates(false);
       }
     }, [draftData]);
-
   const [paymentDetails, setPaymentDetails] = useState({
     card_holder_name: '',
     street: '',
@@ -235,6 +234,7 @@ const Payment = () => {
         paymentMethod = pm;
       }
 
+      const sessionId = localStorage.getItem('draft_session');
       const formPayload = {
         ...paymentDetails,
         ...rates,
@@ -244,13 +244,15 @@ const Payment = () => {
         paymentMethodId: paymentMethod?.id,
         postId: draftData.id,
         clientIP,
-        type: 'jobOffer'
+        type: 'jobOffer',
+        sessionId: sessionId
       };
 
       const response = await axios.post('/ads/final/post', formPayload);
       if (response.data && response.data.success) {
         // Clear ALL related data
         localStorage.removeItem('jobOfferFormState');
+         localStorage.removeItem('draft_session');
         setPaymentDetails(initialState);
 
         console.log('Payment success:', response.data);

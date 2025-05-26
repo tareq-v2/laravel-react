@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('ad_draft_attachments', function (Blueprint $table) {
             $table->id();
             $table->string('user_ip')->nullable();
+            $table->string('session_id')->nullable();
             $table->string('image')->nullable();
             $table->string('type')->nullable();
             $table->timestamps();

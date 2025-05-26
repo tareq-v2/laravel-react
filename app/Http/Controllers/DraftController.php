@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DraftPost;
 use App\Models\AdDraftAttachment;
+use Illuminate\Support\Str;
 
 class DraftController extends Controller
 {
@@ -21,6 +22,7 @@ class DraftController extends Controller
                     
                     AdDraftAttachment::create([
                         'user_ip' => $request->ip,
+                        'session_id' => $request->sessionId,
                         'image' => $fileName,
                         'type' => 'images'
                     ]);
@@ -37,6 +39,7 @@ class DraftController extends Controller
             
             AdDraftAttachment::create([
                 'user_ip' => $request->ip,
+                'session_id' => $request->sessionId,
                 'image' => $fileName,
                 'type' => 'social'
             ]);
@@ -65,6 +68,7 @@ class DraftController extends Controller
         // Create draft post
         $draft = DraftPost::create([
             'ip_address' => $request->ip,
+            'session_id' => $request->sessionId,
             'data' => json_encode($data),
             'expires_at' => now()->addHours(2)
         ]);
@@ -99,6 +103,12 @@ class DraftController extends Controller
     {
         DraftPost::where('id', $id)->delete();
         return response()->json(['success' => true]);
+    }
+
+    public function initSession(Request $request)
+    {
+        $sessionId = Str::uuid();
+        return response()->json(['session_id' => $sessionId]);
     }
 
 

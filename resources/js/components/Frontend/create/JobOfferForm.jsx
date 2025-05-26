@@ -14,6 +14,7 @@
         onCancel 
       }
     ) => {
+      const navigate = useNavigate();
       useEffect(() => {
         if (isEditMode && initialData) {
           setFormData(prev => ({
@@ -33,597 +34,634 @@
           setFilePreviews(initialPreviews);
         }
       }, [isEditMode, initialData]);
-        const [formData, setFormData] = useState({
-            title: '',
-            city: '',
-            category: '',
-            description: '',
-            businessName: '',
-            address: '',
-            salary: '$',
-            name: '',
-            telNo: '',
-            telExt: '',
-            altTelNo: '',
-            altTelExt: '',
-            email: '',
-            website: '',
-            keywords: '',
-            captcha: '',
-            attachments: [],
-            featured: '',
-            model: 'JobOffer',
-            socialShare: '',
-            rate: 0,
-            featureRate: 0,
-            socialMediaRate: 0
-        });
-
-        const [errors, setErrors] = useState({});
-        const [titleCheckbox, setTitleCheckbox] = useState(false);
-        const [showKeyboard, setShowKeyboard] = useState(false);
-        const [keyboardTarget, setKeyboardTarget] = useState(null);
-        const titleInputRef = useRef(null);
-        const descInputRef = useRef(null);
-        const [showPreview, setShowPreview] = useState(false);
-            
-        const [captchaText, setCaptchaText] = useState('');
-        const [captchaInput, setCaptchaInput] = useState('');
-        const [captchaError, setCaptchaError] = useState('');
-        const [descCheckbox, setDescCheckbox] = useState(false);
-        const [isReturningFromPreview, setIsReturningFromPreview] = useState(false);
-        const [filePreviews, setFilePreviews] = useState([]);
-        const [showFeatureSelection, setShowFeatureSelection] = useState(false);
-        const [showAuthModal, setShowAuthModal] = useState(false);
-        const [getRate, setRate] = useState([]);
-        const navigate = useNavigate();
-        const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
-        const fileInputRef = useRef(null);
-        const [categories] = useState(
-            `Accountant/Bookkeeper Appliance Technician Auto Body Auto Mechanic Auto Sales Babysitter/Nanny Bakery/Pastry Beauty Salon Car Wash Caregiver Cashier Child Care Cleaning Services Construction Delivery Jobs Dental Assistant/Office Dispatcher Driver Dry Cleaning Electrician Financial Services Florist Government Jobs Grocery/Market Housekeeper/Maid In-Home Care Jewelry Sales/Repair Legal/Paralegal Medical/Healthcare Medical Office/Billing Nail Salon No Experience Required Office/Admin Parking Attendant Pet Grooming Pharmacy Pool Cleaning Receptionist/Front Desk Restaurant Jobs Mall Jobs Sales/Marketing Security Guard Smoke Shop Tailor/Alteration Teacher/Education Telemarketing Truck Driver UBER Driver Web/IT Developer Work From Home Other Jobs`
-                .split(' ')
-                .map(line => line.trim())
-                .filter(Boolean)
-            );
-
-        // Handle checkbox changes
-        const handleTitleCheckbox = (e) => {
-          const isChecked = e.target.checked;
-          setTitleCheckbox(isChecked);
-          setDescCheckbox(false);
-          setShowKeyboard(isChecked);
-          setKeyboardTarget(isChecked ? titleInputRef.current : null);
-          if (isChecked) titleInputRef.current.focus();
-        };
-
-        const handleInputChange = (event) => {
-          const { name, value } = event.target;
-
-          // Clear error for this field
-          if (errors[name]) {
-            setErrors(prev => {
-              const newErrors = { ...prev };
-              delete newErrors[name];
-              return newErrors;
-            });
-          }
-
-          // Add phone number validation for specific fields
-          if (name === 'telNo' || name === 'altTelNo') {
-            const isValid = /^[()+\d\s.-]*$/.test(value);
-            if (!isValid) return; // Don't update state if invalid
-          }
-
-          setFormData(prev => ({
-            ...prev,
-            [name]: value
-          }));
-        };
-
-        const handleDescCheckbox = (e) => {
-          const isChecked = e.target.checked;
-          setDescCheckbox(isChecked);
-          setTitleCheckbox(false);
-          setShowKeyboard(isChecked);
-          setKeyboardTarget(isChecked ? descInputRef.current : null);
-          if (isChecked) descInputRef.current.focus();
-        };
-
-        const handleKeyboardInput = (value) => {
-          setFormData(prev => ({
-            ...prev,
-            [keyboardTarget.name]: value
-          }));
-        };
-
-        const handleKeyboardToggle = (inputRef) => {
-          const newState = !showKeyboard;
-          setShowKeyboard(newState);
-          setKeyboardTarget(newState ? inputRef.current : null);
-          if (newState && inputRef.current) inputRef.current.focus();
-        };
-
-        useEffect(() => {
-          const fetchRate = async () => {
-            try {
-              const response = await axios.get('/job/offer/rate');
-              console.log('Rate response:', response.data);
-              const base = parseFloat(response.data?.base_rate) || 0;
-              const feature = parseFloat(response.data?.feature_rate) || 0;
-              const social = parseFloat(response.data?.social_share_rate) || 0;
-
-              setRate({ base, feature, social });
-              // Initialize form data with base rate only
-              setFormData(prev => ({
-                ...prev,
-                rate: base,
-                featureRate: 0,
-                socialMediaRate: 0
-              }));
-            } catch (error) {
-              console.error('Error fetching rates:', error);
-              setRate({ base: 50, feature: 25, social: 15 });
-              setFormData(prev => ({
-                ...prev,
-                rate: 50,
-                featureRate: 0,
-                socialMediaRate: 0
-              }));
-            }
-          };
-          fetchRate();
-        }, []);
-
-        // Function to handle file upload
-        const handleSocialPromotionChange = (e) => {
-          const isChecked = e.target.checked;
-          setSocialMediaPromotion(isChecked);
-          setFormData(prev => ({
-            ...prev,
-            socialMediaRate: isChecked ? getRate.social : 0
-          }));
+      const [formData, setFormData] = useState({
+          title: '',
+          city: '',
+          category: '',
+          description: '',
+          businessName: '',
+          address: '',
+          salary: '$',
+          name: '',
+          telNo: '',
+          telExt: '',
+          altTelNo: '',
+          altTelExt: '',
+          email: '',
+          website: '',
+          keywords: '',
+          captcha: '',
+          attachments: [],
+          featured: '',
+          model: 'JobOffer',
+          socialShare: '',
+          rate: 0,
+          featureRate: 0,
+          socialMediaRate: 0,
+          sessionId: localStorage.getItem('draft_session'),
+      });
+      const [sessionId, setSessionId] = useState('');
+      const [errors, setErrors] = useState({});
+      const [titleCheckbox, setTitleCheckbox] = useState(false);
+      const [showKeyboard, setShowKeyboard] = useState(false);
+      const [keyboardTarget, setKeyboardTarget] = useState(null);
+      const titleInputRef = useRef(null);
+      const descInputRef = useRef(null);
+      const [showPreview, setShowPreview] = useState(false);
           
-          if (!isChecked) {
-            removeSocialImage();
-          }
-        };
-
-        //  Handle social file change
-        const handleSocialFileChange = (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            setFormData(prev => ({
-              ...prev,
-              socialShare: file,
-              socialMediaRate: getRate.social
-            }));
-          }
-          console.log(formData);
-        };
-
-        // Update removeSocialImage
-        const removeSocialImage = () => {
-          setFormData(prev => ({
-            ...prev,
-            socialShare: null,
-            socialMediaRate: 0
-          }));
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-        };
-
-        // Caret handling
-        useEffect(() => {
-          if (keyboardTarget && showKeyboard) {
-            keyboardTarget.focus();
-            const length = keyboardTarget.value.length;
-            keyboardTarget.setSelectionRange(length, length);
-          }
-        }, [keyboardTarget, showKeyboard]);
-
-        const generateCaptcha = () => {
-          setTimeout(() => {
-            // const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
-            const chars = '1234567890';
-            let captcha = '';
-            for(let i = 0; i < 5; i++) {
-              captcha += chars[Math.floor(Math.random() * chars.length)];
-            }
-            setCaptchaText(captcha);
-            setCaptchaInput('');
-            setCaptchaError('');
-          }, 1000);
-        };
-
-        // Initialize CAPTCHA
-        useEffect(() => {
-          generateCaptcha();
-        }, []);
-
-        // Updated file handling for multiple files
-        const handleFileChange = (e) => {
-          const files = Array.from(e.target.files);
-          if (files.length > 5) { // Limit to 5 files
-            alert('Maximum 5 files allowed');
-            return;
-          }
-
-          const validFiles = files.filter(file => 
-            ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)
+      const [captchaText, setCaptchaText] = useState('');
+      const [captchaInput, setCaptchaInput] = useState('');
+      const [captchaError, setCaptchaError] = useState('');
+      const [descCheckbox, setDescCheckbox] = useState(false);
+      const [isReturningFromPreview, setIsReturningFromPreview] = useState(false);
+      const [filePreviews, setFilePreviews] = useState([]);
+      const [showFeatureSelection, setShowFeatureSelection] = useState(false);
+      const [showAuthModal, setShowAuthModal] = useState(false);
+      const [getRate, setRate] = useState([]);
+     
+      const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
+      const fileInputRef = useRef(null);
+      const [categories] = useState(
+          `Accountant/Bookkeeper Appliance Technician Auto Body Auto Mechanic Auto Sales Babysitter/Nanny Bakery/Pastry Beauty Salon Car Wash Caregiver Cashier Child Care Cleaning Services Construction Delivery Jobs Dental Assistant/Office Dispatcher Driver Dry Cleaning Electrician Financial Services Florist Government Jobs Grocery/Market Housekeeper/Maid In-Home Care Jewelry Sales/Repair Legal/Paralegal Medical/Healthcare Medical Office/Billing Nail Salon No Experience Required Office/Admin Parking Attendant Pet Grooming Pharmacy Pool Cleaning Receptionist/Front Desk Restaurant Jobs Mall Jobs Sales/Marketing Security Guard Smoke Shop Tailor/Alteration Teacher/Education Telemarketing Truck Driver UBER Driver Web/IT Developer Work From Home Other Jobs`
+              .split(' ')
+              .map(line => line.trim())
+              .filter(Boolean)
           );
 
-          const newPreviews = validFiles.map(file => ({
-            url: URL.createObjectURL(file),
-            name: file.name,
-            type: file.type
-          }));
+      useEffect(() => {
+        setFormData(prev => ({
+          ...prev,
+          sessionId: sessionId
+        }));
+      }, [sessionId]);
 
-          setFormData(prev => ({
-            ...prev,
-            attachments: [...prev.attachments, ...validFiles]
-          }));
-          setFilePreviews(prev => [...prev, ...newPreviews]);
-        };
+      // Handle checkbox changes
+      const handleTitleCheckbox = (e) => {
+        const isChecked = e.target.checked;
+        setTitleCheckbox(isChecked);
+        setDescCheckbox(false);
+        setShowKeyboard(isChecked);
+        setKeyboardTarget(isChecked ? titleInputRef.current : null);
+        if (isChecked) titleInputRef.current.focus();
+      };
 
-        // Handle remve attachments
-        const handleRemoveFile = (index) => {
-          // setFormData(prev => ({
-          //   ...prev,
-          //   attachments: prev.attachments.filter((_, i) => i !== index)
-          // }));
-          // setFilePreviews(prev => prev.filter((_, i) => i !== index));
+      const handleInputChange = (event) => {
+        const { name, value } = event.target;
 
+        // Clear error for this field
+        if (errors[name]) {
+          setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors[name];
+            return newErrors;
+          });
+        }
 
-          const file = filePreviews[index];
-          if (file?.existing) {
-            // Mark existing files for deletion in backend
+        // Add phone number validation for specific fields
+        if (name === 'telNo' || name === 'altTelNo') {
+          const isValid = /^[()+\d\s.-]*$/.test(value);
+          if (!isValid) return; // Don't update state if invalid
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      };
+
+      const handleDescCheckbox = (e) => {
+        const isChecked = e.target.checked;
+        setDescCheckbox(isChecked);
+        setTitleCheckbox(false);
+        setShowKeyboard(isChecked);
+        setKeyboardTarget(isChecked ? descInputRef.current : null);
+        if (isChecked) descInputRef.current.focus();
+      };
+
+      const handleKeyboardInput = (value) => {
+        setFormData(prev => ({
+          ...prev,
+          [keyboardTarget.name]: value
+        }));
+      };
+
+      const handleKeyboardToggle = (inputRef) => {
+        const newState = !showKeyboard;
+        setShowKeyboard(newState);
+        setKeyboardTarget(newState ? inputRef.current : null);
+        if (newState && inputRef.current) inputRef.current.focus();
+      };
+
+      useEffect(() => {
+        const fetchRate = async () => {
+          try {
+            const response = await axios.get('/job/offer/rate');
+            console.log('Rate response:', response.data);
+            const base = parseFloat(response.data?.base_rate) || 0;
+            const feature = parseFloat(response.data?.feature_rate) || 0;
+            const social = parseFloat(response.data?.social_share_rate) || 0;
+
+            setRate({ base, feature, social });
+            // Initialize form data with base rate only
             setFormData(prev => ({
               ...prev,
-              deletedAttachments: [...(prev.deletedAttachments || []), file.url]
+              rate: base,
+              featureRate: 0,
+              socialMediaRate: 0
+            }));
+          } catch (error) {
+            console.error('Error fetching rates:', error);
+            setRate({ base: 50, feature: 25, social: 15 });
+            setFormData(prev => ({
+              ...prev,
+              rate: 50,
+              featureRate: 0,
+              socialMediaRate: 0
             }));
           }
-          
-          setFilePreviews(prev => prev.filter((_, i) => i !== index));
-          setFormData(prev => ({
-            ...prev,
-            attachments: prev.attachments.filter((_, i) => i !== index)
-          }));
         };
+        fetchRate();
+      }, []);
 
-        useEffect(() => {
-          const handleKeyEvents = (e) => {
-            if (showKeyboard && keyboardTarget) {
-              const allowedKeys = ['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
-              if (!allowedKeys.includes(e.key)) {
-                e.preventDefault();
-              }
-            }
-          };
-
-          document.addEventListener('keydown', handleKeyEvents);
-          return () => document.removeEventListener('keydown', handleKeyEvents);
-        }, [showKeyboard, keyboardTarget]);
-
-        // Handle input focus
-        const handleInputFocus = (inputRef, checkboxState) => {
-          if (checkboxState) {
-            setKeyboardTarget(inputRef.current);
-            setShowKeyboard(true);
-          }
-          if (showKeyboard) {
-            setKeyboardTarget(inputRef.current);
-            inputRef.current.focus();
-          }
-        }; 
-
-        // Block physical keyboard when Armenian keyboard is active
-        useEffect(() => {
-          const handleKeyDown = (e) => {
-            if (showKeyboard) {
-              const allowedKeys = ['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
-              if (!allowedKeys.includes(e.key)) {
-                e.preventDefault();
-              }
-            }
-          };
-
-          document.addEventListener('keydown', handleKeyDown);
-          return () => document.removeEventListener('keydown', handleKeyDown);
-        }, [showKeyboard]);
+      // Function to handle file upload
+      const handleSocialPromotionChange = (e) => {
+        const isChecked = e.target.checked;
+        setSocialMediaPromotion(isChecked);
+        setFormData(prev => ({
+          ...prev,
+          socialMediaRate: isChecked ? getRate.social : 0
+        }));
         
-        useEffect(() => {
-          const loadDraft = async () => {
-            if (location.state?.draftData) {
-              setFormData(location.state.draftData);
-              setShowPreview(true);
-            }
-          };
-          loadDraft();
-        }, [location.state]);
+        if (!isChecked) {
+          removeSocialImage();
+        }
+      };
 
-        const handleTelInputChange = (event) => {
-          const { name, value } = event.target;
-          
-          // Add phone number validation for specific fields
-          if (name === 'telNo' || name === 'altTelNo') {
-            const isValid = /^[()+\d\s.-]*$/.test(value);
-            if (!isValid) return; // Don't update state if invalid
-          }
-
+      //  Handle social file change
+      const handleSocialFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
           setFormData(prev => ({
             ...prev,
-            [name]: value
+            socialShare: file,
+            socialMediaRate: getRate.social
           }));
-        };
+        }
+        console.log(formData);
+      };
 
-        const formatUsNumber = (numStr) => {
-          if (!numStr) return '';
-          const num = numStr.replace(/,/g, '');
-          return Number(num).toLocaleString('en-IN');
-        };
+      // Update removeSocialImage
+      const removeSocialImage = () => {
+        setFormData(prev => ({
+          ...prev,
+          socialShare: null,
+          socialMediaRate: 0
+        }));
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      };
 
-        const saveDraftData = async () => {
-          try {
-            const response = await axios.post('/save-draft',
-              {
-                formData,
-                ip: await getClientIP()
-              },
-              {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                }
-              }
-            );
-            console.log('Draft saved:', response.data);
-          } catch (error) {
-            console.error('Draft save failed:', error);
+      // Caret handling
+      useEffect(() => {
+        if (keyboardTarget && showKeyboard) {
+          keyboardTarget.focus();
+          const length = keyboardTarget.value.length;
+          keyboardTarget.setSelectionRange(length, length);
+        }
+      }, [keyboardTarget, showKeyboard]);
+
+      const generateCaptcha = () => {
+        setTimeout(() => {
+          // const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*';
+          const chars = '1234567890';
+          let captcha = '';
+          for(let i = 0; i < 5; i++) {
+            captcha += chars[Math.floor(Math.random() * chars.length)];
           }
-        };
+          setCaptchaText(captcha);
+          setCaptchaInput('');
+          setCaptchaError('');
+        }, 1000);
+      };
 
-        const getClientIP = async () => {
-          try {
-            const response = await axios.get('https://api.ipify.org?format=json');
-            return response.data.ip;
-          } catch (error) {
-            console.error('Error fetching IP:', error);
-            return 'unknown';
-          }
-        };
+      // Initialize CAPTCHA
+      useEffect(() => {
+        generateCaptcha();
+      }, []);
 
-        const handleKeyDown = (e) => {
-          const key = e.key;
-          const value = e.target.value; 
+      // Updated file handling for multiple files
+      const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 5) { // Limit to 5 files
+          alert('Maximum 5 files allowed');
+          return;
+        }
 
-          // Allow navigation and control keys
-          if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete', 'Tab'].includes(key)) return;
+        const validFiles = files.filter(file => 
+          ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)
+        );
 
-          // Prevent invalid characters
-          if (!/\d|\./.test(key)) {
-            e.preventDefault();
-            return;
-          }
+        const newPreviews = validFiles.map(file => ({
+          url: URL.createObjectURL(file),
+          name: file.name,
+          type: file.type
+        }));
 
-          // Check decimal limitations
-          if (value.includes('.') && key === '.') {
-            e.preventDefault();
-            return;
-          }
+        setFormData(prev => ({
+          ...prev,
+          attachments: [...prev.attachments, ...validFiles]
+        }));
+        setFilePreviews(prev => [...prev, ...newPreviews]);
+      };
 
-          // Limit to 2 decimal places
-          if (value.includes('.')) {
-            const decimalPart = value.split('.')[1];
-            if (decimalPart && decimalPart.length >= 2) {
+      // Handle remve attachments
+      const handleRemoveFile = (index) => {
+
+        const file = filePreviews[index];
+        if (file?.existing) {
+          // Mark existing files for deletion in backend
+          setFormData(prev => ({
+            ...prev,
+            deletedAttachments: [...(prev.deletedAttachments || []), file.url]
+          }));
+        }
+        
+        setFilePreviews(prev => prev.filter((_, i) => i !== index));
+        setFormData(prev => ({
+          ...prev,
+          attachments: prev.attachments.filter((_, i) => i !== index)
+        }));
+      };
+
+      useEffect(() => {
+        const handleKeyEvents = (e) => {
+          if (showKeyboard && keyboardTarget) {
+            const allowedKeys = ['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+            if (!allowedKeys.includes(e.key)) {
               e.preventDefault();
             }
           }
         };
 
-        const handleSalaryChange = (e) => {
-          let value = e.target.value;
-          
-          // Ensure $ at start and clean invalid characters
-          let cleanedValue = value.startsWith('$') 
-            ? '$' + value.slice(1).replace(/[^\d.]/g, '')
-            : '$' + value.replace(/[^\d.]/g, '');
+        document.addEventListener('keydown', handleKeyEvents);
+        return () => document.removeEventListener('keydown', handleKeyEvents);
+      }, [showKeyboard, keyboardTarget]);
 
-          // Handle multiple decimals
-          const parts = cleanedValue.split('.');
-          if (parts.length > 2) {
-            cleanedValue = `${parts[0]}.${parts[1]}`;
+      // Handle input focus
+      const handleInputFocus = (inputRef, checkboxState) => {
+        if (checkboxState) {
+          setKeyboardTarget(inputRef.current);
+          setShowKeyboard(true);
+        }
+        if (showKeyboard) {
+          setKeyboardTarget(inputRef.current);
+          inputRef.current.focus();
+        }
+      }; 
+
+      // Block physical keyboard when Armenian keyboard is active
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (showKeyboard) {
+            const allowedKeys = ['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+            if (!allowedKeys.includes(e.key)) {
+              e.preventDefault();
+            }
           }
-
-          // Split into components
-          const [integerPart, decimalPart] = cleanedValue.slice(1).split('.');
-
-          // Format integer part
-          const formattedInteger = integerPart 
-            ? formatUsNumber(integerPart.replace(/,/g, ''))
-            : '';
-
-          // Limit decimal part
-          const limitedDecimal = decimalPart 
-            ? decimalPart.slice(0, 2)
-            : '';
-
-          // Construct new value
-          let newValue = `$${formattedInteger}`;
-          if (limitedDecimal) newValue += `.${limitedDecimal}`;
-
-          // Ensure only one decimal point
-          if ((cleanedValue.match(/\./g) || []).length > 1) {
-            const firstDotIndex = newValue.indexOf('.');
-            newValue = newValue.substring(0, firstDotIndex + 1) + 
-                      newValue.substring(firstDotIndex + 1).replace(/\./g, '');
-          }
-
-          setFormData(prev => ({
-            ...prev,
-            salary: newValue
-          }));
         };
 
-        // Handle feature checkbox
-        const handleFeaturedCheckbox = (e) => {
-          const isChecked = e.target.checked;
-          setFormData(prev => ({
-            ...prev,
-            featured: isChecked ? 'Yes' : 'No',
-            featureRate: isChecked ? getRate.feature : 0
-          }));
-        };
-        
-        // useEffect to verify feature state changes
-        useEffect(() => {
-          console.log('Featured status updated:', formData.featured);
-        }, [formData.featured]);
-
-        const handleSubmit = async (e) => {
-          e.preventDefault();
-          setErrors({});
-          setCaptchaError('');
-
-          // Basic validation
-          const newErrors = {};
-          if (!formData.title) newErrors.title = 'Title is required';
-          if (!formData.city) newErrors.city = 'Location is required';
-          if (!formData.category) newErrors.category = 'Category is required';
-          if (!formData.description) newErrors.description = 'Description is required';
-          
-
-          // Telephone validation
-          if (formData.telExt && !formData.telNo) {
-            newErrors.telNo = 'Tel No. is required when Ext. is provided';
-          }
-          if (formData.altTelExt && !formData.altTelNo) {
-            newErrors.altTelNo = 'Alt Tel No. is required when Ext. is provided';
-          }
-
-
-          if (Object.keys(newErrors).length > 0) {
-          setErrors(newErrors);
-          return;
-          }
-
-          // CAPTCHA validation
-          if (!isEditMode && !isReturningFromPreview && captchaInput !== captchaText) {
-            setCaptchaError('Invalid CAPTCHA code');
-            generateCaptcha();
-            return;
-          }
-          if (isEditMode) {
-            // Handle edit submission
-            const editPayload = {
-              ...formData,
-              // Separate existing and new attachments
-              existingAttachments: filePreviews
-                .filter(f => f.existing)
-                .map(f => f.url),
-              newAttachments: formData.attachments
-            };
-
-            externalSubmit(editPayload);
-          } else {
-            // Original creation flow
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+      }, [showKeyboard]);
+      
+      useEffect(() => {
+        const loadDraft = async () => {
+          if (location.state?.draftData) {
+            setFormData(location.state.draftData);
             setShowPreview(true);
           }
-          
         };
+        loadDraft();
+      }, [location.state]);
 
-        const handleGuestSubmit = async () => {
+      const handleTelInputChange = (event) => {
+        const { name, value } = event.target;
+        
+        // Add phone number validation for specific fields
+        if (name === 'telNo' || name === 'altTelNo') {
+          const isValid = /^[()+\d\s.-]*$/.test(value);
+          if (!isValid) return; // Don't update state if invalid
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      };
+
+      const formatUsNumber = (numStr) => {
+        if (!numStr) return '';
+        const num = numStr.replace(/,/g, '');
+        return Number(num).toLocaleString('en-IN');
+      };
+
+      
+
+      useEffect(() => {
+        const initializeSession = async () => {
           try {
-            // Save draft and get draft ID
-            const draftId = await saveDraftData();
-            
-            // Close authentication modal
-            setShowAuthModal(false);
-            
-            // Navigate to payment page with draft ID
-             navigate('/payment', {
-              state: { 
-                guestCheckout: true,
-                draftData: {
-                  ...formData,
-                  totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
-                },
-                draftId: draftId
-              }
-            });
-          } catch (error) {
-            console.error('Error saving draft:', error);
-            // Handle error (show message to user)
-          }
-        };
-
-        const handleFeaturedSubmit = async () => {
-          try {
-            // Check authentication
-            const isAuthenticated = localStorage.getItem('token') !== null;
-
-            if (!isAuthenticated) {
-              setShowAuthModal(true);
-              return;
-            }
-
-            const formPayload = new FormData();
-
-            // Append all form fields including featured
-            Object.entries(formData).forEach(([key, value]) => {
-              if (key !== 'attachments' && value) {
-                formPayload.append(key, value);
-              }
-            });
-
-            console.log(formData);
-            formData.attachments.forEach(file => {
-              formPayload.append('attachments[]', file);
-            });
-
-            navigate('/payment', { 
-              state: { 
-                draftData: {
-                  ...formData,
-                  totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
-                }
-              } 
-            });
-
-          } catch (error) {
-            console.error('Submission error:', error);
-          }
-        };
-
-        useEffect(() => {
-          const savedState = localStorage.getItem('jobOfferFormState');
-          if (savedState) {
-            const parsedState = JSON.parse(savedState);
-            
+            const response = await axios.post('/session/init');
+            const newSessionId = response.data.session_id;
+            localStorage.setItem('draft_session', newSessionId);
+            setSessionId(newSessionId);
+            // Update formData with the new session ID
             setFormData(prev => ({
               ...prev,
-              ...parsedState.formData,
-              attachments: []
+              sessionId: newSessionId
             }));
-            
-            setShowPreview(parsedState.showPreview);
-            setShowFeatureSelection(parsedState.showFeatureSelection);
-            setSocialMediaPromotion(parsedState.socialMediaPromotion);
+          } catch (error) {
+            console.error('Session initialization failed:', error);
           }
-        }, []);
+        };
 
-        useEffect(() => {
-          const stateToSave = {
-            formData: {
-              ...formData,
-              attachments: []
+        if (!localStorage.getItem('draft_session')) {
+          initializeSession();
+        } else {
+          const existingSession = localStorage.getItem('draft_session');
+          setSessionId(existingSession);
+          // Ensure formData has the existing session ID
+          setFormData(prev => ({
+            ...prev,
+            sessionId: existingSession
+          }));
+        }
+      }, []);
+              
+      const saveDraftData = async () => {
+        try {
+          const response = await axios.post('/save-draft',
+            {
+              formData,
+              sessionId: sessionId,
+              ip: await getClientIP()
             },
-            showPreview,
-            showFeatureSelection,
-            socialMediaPromotion
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              }
+            }
+          );
+          console.log('Draft saved:', response.data);
+        } catch (error) {
+          console.error('Draft save failed:', error);
+        }
+      };
+
+      const getClientIP = async () => {
+        try {
+          const response = await axios.get('https://api.ipify.org?format=json');
+          return response.data.ip;
+        } catch (error) {
+          console.error('Error fetching IP:', error);
+          return 'unknown';
+        }
+      };
+
+      const handleKeyDown = (e) => {
+        const key = e.key;
+        const value = e.target.value; 
+
+        // Allow navigation and control keys
+        if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete', 'Tab'].includes(key)) return;
+
+        // Prevent invalid characters
+        if (!/\d|\./.test(key)) {
+          e.preventDefault();
+          return;
+        }
+
+        // Check decimal limitations
+        if (value.includes('.') && key === '.') {
+          e.preventDefault();
+          return;
+        }
+
+        // Limit to 2 decimal places
+        if (value.includes('.')) {
+          const decimalPart = value.split('.')[1];
+          if (decimalPart && decimalPart.length >= 2) {
+            e.preventDefault();
+          }
+        }
+      };
+
+      const handleSalaryChange = (e) => {
+        let value = e.target.value;
+        
+        // Ensure $ at start and clean invalid characters
+        let cleanedValue = value.startsWith('$') 
+          ? '$' + value.slice(1).replace(/[^\d.]/g, '')
+          : '$' + value.replace(/[^\d.]/g, '');
+
+        // Handle multiple decimals
+        const parts = cleanedValue.split('.');
+        if (parts.length > 2) {
+          cleanedValue = `${parts[0]}.${parts[1]}`;
+        }
+
+        // Split into components
+        const [integerPart, decimalPart] = cleanedValue.slice(1).split('.');
+
+        // Format integer part
+        const formattedInteger = integerPart 
+          ? formatUsNumber(integerPart.replace(/,/g, ''))
+          : '';
+
+        // Limit decimal part
+        const limitedDecimal = decimalPart 
+          ? decimalPart.slice(0, 2)
+          : '';
+
+        // Construct new value
+        let newValue = `$${formattedInteger}`;
+        if (limitedDecimal) newValue += `.${limitedDecimal}`;
+
+        // Ensure only one decimal point
+        if ((cleanedValue.match(/\./g) || []).length > 1) {
+          const firstDotIndex = newValue.indexOf('.');
+          newValue = newValue.substring(0, firstDotIndex + 1) + 
+                    newValue.substring(firstDotIndex + 1).replace(/\./g, '');
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          salary: newValue
+        }));
+      };
+
+      // Handle feature checkbox
+      const handleFeaturedCheckbox = (e) => {
+        const isChecked = e.target.checked;
+        setFormData(prev => ({
+          ...prev,
+          featured: isChecked ? 'Yes' : 'No',
+          featureRate: isChecked ? getRate.feature : 0
+        }));
+      };
+      
+      // useEffect to verify feature state changes
+      useEffect(() => {
+        console.log('Featured status updated:', formData.featured);
+      }, [formData.featured]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrors({});
+        setCaptchaError('');
+
+        // Basic validation
+        const newErrors = {};
+        if (!formData.title) newErrors.title = 'Title is required';
+        if (!formData.city) newErrors.city = 'Location is required';
+        if (!formData.category) newErrors.category = 'Category is required';
+        if (!formData.description) newErrors.description = 'Description is required';
+        
+
+        // Telephone validation
+        if (formData.telExt && !formData.telNo) {
+          newErrors.telNo = 'Tel No. is required when Ext. is provided';
+        }
+        if (formData.altTelExt && !formData.altTelNo) {
+          newErrors.altTelNo = 'Alt Tel No. is required when Ext. is provided';
+        }
+
+
+        if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+        }
+
+        // CAPTCHA validation
+        if (!isEditMode && !isReturningFromPreview && captchaInput !== captchaText) {
+          setCaptchaError('Invalid CAPTCHA code');
+          generateCaptcha();
+          return;
+        }
+        if (isEditMode) {
+          // Handle edit submission
+          const editPayload = {
+            ...formData,
+            // Separate existing and new attachments
+            existingAttachments: filePreviews
+              .filter(f => f.existing)
+              .map(f => f.url),
+            newAttachments: formData.attachments
           };
+
+          externalSubmit(editPayload);
+        } else {
+          // Original creation flow
+          setShowPreview(true);
+        }
+        
+      };
+
+      const handleGuestSubmit = async () => {
+        try {
+          // Save draft and get draft ID
+          const draftId = await saveDraftData();
           
-          localStorage.setItem('jobOfferFormState', JSON.stringify(stateToSave));
-        }, [formData, showPreview, showFeatureSelection, socialMediaPromotion]);
+          // Close authentication modal
+          setShowAuthModal(false);
+          
+          // Navigate to payment page with draft ID
+            navigate('/payment', {
+            state: { 
+              guestCheckout: true,
+              draftData: {
+                ...formData,
+                totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
+              },
+              draftId: draftId
+            }
+          });
+        } catch (error) {
+          console.error('Error saving draft:', error);
+          // Handle error (show message to user)
+        }
+      };
+
+      const handleFeaturedSubmit = async () => {
+        try {
+          // Check authentication
+          const isAuthenticated = localStorage.getItem('token') !== null;
+
+          if (!isAuthenticated) {
+            setShowAuthModal(true);
+            return;
+          }
+
+          const formPayload = new FormData();
+
+          // Append session ID
+          formPayload.append('sessionId', sessionId);
+          // Append all form fields including featured
+          Object.entries(formData).forEach(([key, value]) => {
+            if (key !== 'attachments' && value) {
+              formPayload.append(key, value);
+            }
+          });
+
+          console.log(formData);
+          formData.attachments.forEach(file => {
+            formPayload.append('attachments[]', file);
+          });
+
+          navigate('/payment', { 
+            state: { 
+              draftData: {
+                ...formData,
+                totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
+              }
+            } 
+          });
+
+        } catch (error) {
+          console.error('Submission error:', error);
+        }
+      };
+
+      useEffect(() => {
+        const savedState = localStorage.getItem('jobOfferFormState');
+        if (savedState) {
+          const parsedState = JSON.parse(savedState);
+          
+          setFormData(prev => ({
+            ...prev,
+            ...parsedState.formData,
+            attachments: []
+          }));
+          
+          setShowPreview(parsedState.showPreview);
+          setShowFeatureSelection(parsedState.showFeatureSelection);
+          setSocialMediaPromotion(parsedState.socialMediaPromotion);
+        }
+      }, []);
+
+      useEffect(() => {
+        const stateToSave = {
+          formData: {
+            ...formData,
+            attachments: []
+          },
+          showPreview,
+          showFeatureSelection,
+          socialMediaPromotion
+        };
+        
+        localStorage.setItem('jobOfferFormState', JSON.stringify(stateToSave));
+      }, [formData, showPreview, showFeatureSelection, socialMediaPromotion]);
 
       return (
         <section className="sptb pt-5">

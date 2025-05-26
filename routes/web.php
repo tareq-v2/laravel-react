@@ -72,6 +72,7 @@ Route::get('/banners/spot-5', [BannerController::class, 'getSpot5Banners']);
 Route::post('/save-draft', [DraftController::class, 'store']);
 Route::get('/get-draft/{ip}', [DraftController::class, 'getDraft']);
 Route::post('/drafts/{id}/confirm', [DraftController::class, 'confirmDraftUsage']);
+Route::post('/session/init', [DraftController::class, 'initSession']);
 // Protected Routes
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

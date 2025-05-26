@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import './css/JobOfferList.css';
 // Add this CSS (could be in a separate CSS file)
 
@@ -11,19 +11,54 @@ const JobOfferList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [jobOffers, setJobOffers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [perPage] = useState(15);
 
   useEffect(() => {
     const fetchJobOffers = async () => {
       try {
-        const response = await axios.get('/job-offers-list');
-        setJobOffers(response.data);
+        const response = await axios.get(`/job-offers-list?page=${currentPage}`);
+        setJobOffers(response.data.data);
+        setTotalPages(response.data.last_page);
       } catch (err) {
         console.error('Error fetching job offers:', err);
       }
     };
     
     fetchJobOffers();
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (jobOffers.length > 0) {
+      // Scroll to top smoothly when results are available
+      window.scrollTo({
+        top: 730,
+        behavior: 'smooth'
+      });
+    }
+  }, [jobOffers]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/job-offer-categories');
+        setCategories(Array.isArray(response.data) ? response.data : []);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
   }, []);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -94,12 +129,12 @@ const JobOfferList = () => {
             {/* Job Listings Section */}
             <div className="card mt-4">
             <div className="card-header">
-              <h3 className="card-title">Active Job Offers</h3>
+              <h3 className="card-title text-center">Current Offers</h3>
             </div>
             <div className="card-body">
               <div className="row post-card-listing">
                 {jobOffers.length > 0 ? (
-                  jobOffers.map(offer => (
+                  jobOffers.filter(offer => !offer.is_expired).map(offer => (
                     <div key={offer.id} className="col-md-6 mb-4">
                       <div className="card h-100">
                         <div className="card-body">
@@ -142,6 +177,47 @@ const JobOfferList = () => {
                     No verified job offers available
                   </div>
                 )}
+              </div>
+              {/* Pagination Controls */}
+              <div className="d-flex justify-content-center mt-5">
+                <nav>
+                  <ul className="pagination pagination-custom">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        aria-label="Previous"
+                      >
+                        <FaArrowLeft />
+                      </button>
+                    </li>
+                    
+                    {/* Dynamic page numbers with ellipsis */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <li
+                        key={page}
+                        className={`page-item ${currentPage === page ? 'active' : ''}`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(page)}
+                        >
+                          {page}
+                        </button>
+                      </li>
+                    ))}
+
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        aria-label="Next"
+                      >
+                        <FaArrowRight />
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

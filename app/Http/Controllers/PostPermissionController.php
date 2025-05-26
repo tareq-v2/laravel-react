@@ -14,7 +14,7 @@ class PostPermissionController extends Controller
     public function verify($id)
     {
         $post = JobOffer::find($id);
-        $post->update(['is_verified' => 1]);
+        $post->update(['is_verified' => 1, 'created_at' => now(), 'expire_date' => now()->addDays(30)]);
         $notification = Notification::where('post_type', 'jobOffer')->where('data->post_id', $id)->first();
         if($notification) {
             $notification->read_at = now();

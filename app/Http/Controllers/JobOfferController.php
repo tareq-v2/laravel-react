@@ -8,25 +8,58 @@ use Carbon\Carbon;
 
 class JobOfferController extends Controller
 {
-    public function getJobOfferslist()
+    public function getJobOfferslist(Request $request)
     {
-        $offers = JobOffer::where('is_verified', 1)
-        ->orderByRaw("CASE WHEN feature = 'Yes' THEN 0 ELSE 1 END") // Featured first
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($offer) {
+        $now = Carbon::now();
+        $featureCutoff = $now->copy()->subHours(24);
+        $perPage = 15;
+
+        $query = JobOffer::where('is_verified', true)
+            ->where('expire_date', '>', $now)
+            ->orderByRaw(
+                "CASE 
+                    WHEN feature = 'Yes' AND featured_at >= '{$featureCutoff->toDateTimeString()}'
+                    THEN 1 
+                    ELSE 0 
+                END DESC"
+            )
+            ->orderByRaw(
+                "CASE 
+                    WHEN feature = 'Yes' AND featured_at >= '{$featureCutoff->toDateTimeString()}'
+                    THEN UNIX_TIMESTAMP(featured_at) 
+                    ELSE UNIX_TIMESTAMP(created_at) 
+                END DESC"
+            );
+
+        $paginator = $query->paginate($perPage);
+
+        $transformed = $paginator->getCollection()->map(function (JobOffer $offer) use ($now, $featureCutoff) {
             return [
                 'id' => $offer->id,
                 'title' => $offer->title,
                 'description' => $offer->description,
-                'created_at' => $offer->created_at,
-                'expiration_date' => $offer->expire_date,
-                'is_expired' => Carbon::parse($offer->expire_date)->isPast(),
-                'is_featured' => $offer->feature === 'Yes',
-                'feature' => $offer->feature
+                'created_at' => $offer->created_at->toIso8601String(),
+                'expiration_date' => $offer->expire_date->toIso8601String(),
+                'is_expired' => $now->gt($offer->expire_date),
+                'is_featured' => $this->isFeatured($offer, $featureCutoff),
+                'feature' => $offer->feature,
+                'featured_at' => $offer->featured_at?->toIso8601String()
             ];
         });
 
-        return response()->json($offers);
+        return response()->json([
+            'current_page' => $paginator->currentPage(),
+            'data' => $transformed,
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+        ]);
+    }
+
+    protected function isFeatured(JobOffer $offer, Carbon $cutoff): bool
+    {
+        return $offer->feature === 'Yes' 
+            && $offer->featured_at 
+            && $offer->featured_at->gte($cutoff);
     }
 }

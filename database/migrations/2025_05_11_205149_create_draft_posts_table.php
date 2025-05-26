@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('model')->nullable();
             $table->string('ip_address')->nullable();
+            $table->string('session_id')->nullable();
             $table->text('data')->nullable();
             $table->timestamp('expires_at');
             $table->timestamps();

@@ -27,14 +27,17 @@ class PaymentController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET')); 
         DB::beginTransaction();
         try {
+            // dd($request->all());
             // Validate input
             $validated = $request->validate([
                 'paymentMethodId' => 'required',
+                'sessionId' => 'required|uuid',
                 'totalAmount' => 'required|numeric|min:0.5',
                 'email' => 'required|email',
             ]);
 
-            $draft = DraftPost::where('ip_address', $request->clientIP)
+
+            $draft = DraftPost::where('session_id', $validated['sessionId'])
             ->first();
             if (!$draft) {
                 return response()->json([
@@ -78,6 +81,7 @@ class PaymentController extends Controller
                         'feature' => $draftData['featured'],
                         'user_id' => Auth::user()->id ?? null,
                         'expire_date' => Carbon::now()->addDays(30),
+                        'featured_at' => Carbon::now()
                     ]);
                     break;
                 

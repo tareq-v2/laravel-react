@@ -86,3 +86,33 @@
   border: tomato 1px solid;
   box-shadow: 1px 1px 10px tomato;
 }
+
+/* Pagination Custom Styles */
+.pagination-custom .page-item {
+  margin: 0 3px;
+}
+
+.pagination-custom .page-link {
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  color: #2450a0;
+  min-width: 40px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.pagination-custom .page-item.active .page-link {
+  background-color: #2450a0;
+  border-color: #2450a0;
+  color: white;
+}
+
+.pagination-custom .page-link:hover {
+  background-color: #f8f9fa;
+  color: #1a3a73;
+}
+
+.pagination-custom .page-item.disabled .page-link {
+  color: #6c757d;
+  opacity: 0.6;
+}
