@@ -108,7 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
   });
 
   Route::get('/user/posts', function(){
-    $posts = \App\Models\JobOffer::where('user_id', Auth::user()->id)->where('is_verified', 0)->get();
+    $posts = \App\Models\JobOffer::where('user_id', Auth::user()->id)->where('is_verified', 1)->get();
     return response()->json([
         'posts' => $posts
     ]);
@@ -117,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
     $post = \App\Models\JobOffer::with('images')
         ->where('user_id', Auth::id())
         ->where('id', $id)
-        ->where('is_verified', 0)
+        ->where('is_verified', 1)
         ->firstOrFail();
 
     // Transform images collection

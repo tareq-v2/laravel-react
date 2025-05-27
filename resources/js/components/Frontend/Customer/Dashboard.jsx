@@ -298,7 +298,7 @@ const Dashboard = () => {
           className={activeTab === 'dashboard' ? 'active' : ''}
           onClick={() => setActiveTab('dashboard')}
         >
-          <FiHome className="nav-icon" />
+          <FiHome className="nav-icon mr-0" />
           <span>Dashboard</span>
         </button>
         <button 
