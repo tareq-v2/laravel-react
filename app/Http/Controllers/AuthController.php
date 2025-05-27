@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Container\Attributes\Storage;
 
 class AuthController extends Controller
 {
@@ -64,5 +65,49 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully',
         ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        dd($request->all());
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'avatar' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        try {
+            $updateData = [
+                'name' => $validated['name'],
+                'email' => $validated['email']
+            ];
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            if ($request->hasFile('avatar') && $request->file('avatar') instanceof \Illuminate\Http\UploadedFile) {
+                $fileName = uniqid() . '-' . rand() . '.' . $request->file('avatar')->extension();
+                $location = public_path('users');
+                $request->file('avatar')->move($location, $fileName);
+                $user->avatar = $fileName;
+            }
+
+            $user->save();
+
+            return response()->json([
+                'message' => 'Profile updated successfully',
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'avatar_url' => $user->avatar ? Storage::url($user->avatar) : null
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Profile update failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -1,131 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { FaPlus, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import './css/JobOfferList.css';
-
-const JobOfferList = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [jobOffers, setJobOffers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [perPage] = useState(15);
+// 1. Update the ProfileImage component
+const ProfileImage = ({ src }) => {
+  const imgRef = useRef(null);
+  const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0.1)');
 
   useEffect(() => {
-    const fetchJobOffers = async () => {
-      try {
-        const response = await axios.get(`/job-offers-list?page=${currentPage}`);
-        setJobOffers(response.data.data);
-        setTotalPages(response.data.last_page);
-      } catch (err) {
-        console.error('Error fetching job offers:', err);
-      }
-    };
+    const currentImgRef = imgRef.current;
     
-    fetchJobOffers();
-  }, [currentPage]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
+    const updateShadow = () => {
       try {
-        const response = await axios.get('/job-offer-categories');
-        setCategories(Array.isArray(response.data) ? response.data : []);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        const colorThief = new ColorThief();
+        const dominantColor = colorThief.getColor(currentImgRef);
+        const [r, g, b] = dominantColor;
+        setShadowColor(`rgba(${r},${g},${b},0.4)`);
+      } catch (error) {
+        setShadowColor('rgba(255,99,71,0.4)');
       }
     };
 
-    fetchCategories();
-  }, []);
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+    if (currentImgRef && src) {
+      if (currentImgRef.complete) {
+        updateShadow();
+      } else {
+        currentImgRef.addEventListener('load', updateShadow);
+      }
     }
-  };
 
-  if (loading) {
-    return <div className="text-center my-5">Loading categories...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-danger my-5">Error: {error}</div>;
-  }
+    return () => {
+      if (currentImgRef) {
+        currentImgRef.removeEventListener('load', updateShadow);
+      }
+    };
+  }, [src]);
 
   return (
-    <div className="directory-grid">
-      <section className="sptb">
-        <div className="container">
-          <div className="container w-85">
-            {/* Categories card remains same */}
-
-            {/* Job Listings Section */}
-            <div className="card mt-4">
-              <div className="card-header">
-                <h3 className="card-title text-center">Current Offers</h3>
-              </div>
-              <div className="card-body">
-                <div className="row post-card-listing">
-                  {jobOffers.length > 0 ? (
-                    jobOffers.filter(offer => !offer.is_expired).map(offer => (
-                      <div key={offer.id} className="col-md-6 mb-4">
-                        {/* Job offer card remains same */}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-12 text-center">
-                      No verified job offers available
-                    </div>
-                  )}
-                </div>
-
-                {/* Pagination Controls */}
-                <div className="d-flex justify-content-center mt-4">
-                  <nav>
-                    <ul className="pagination">
-                      <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button 
-                          className="page-link" 
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          <FaArrowLeft />
-                        </button>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <li 
-                          key={page} 
-                          className={`page-item ${currentPage === page ? 'active' : ''}`}
-                        >
-                          <button 
-                            className="page-link" 
-                            onClick={() => handlePageChange(page)}
-                          >
-                            {page}
-                          </button>
-                        </li>
-                      ))}
-                      <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button 
-                          className="page-link" 
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          <FaArrowRight />
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <img
+      ref={imgRef}
+      src={src}
+      alt="Profile"
+      className="profile-image-small"
+      crossOrigin="anonymous"
+      style={{ 
+        boxShadow: `0 8px 20px ${shadowColor}`,
+        transition: 'box-shadow 0.3s ease-in-out'
+      }}
+    />
   );
 };
 
-export default JobOfferList;
+// 2. Update the handleProfileUpdate function
+const handleProfileUpdate = async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData();
+  formData.append('name', profileForm.name);
+  formData.append('email', profileForm.email);
+  
+  if (profileForm.profileImage instanceof File) {
+    formData.append('avatar', profileForm.profileImage);
+  }
+
+  try {
+    const response = await axios.put('/update-profile', formData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    // Update user data with fresh image URL
+    setUserData(prev => ({
+      ...prev,
+      name: response.data.user.name,
+      email: response.data.user.email,
+      profileImage: `${response.data.user.avatar_url}?ts=${Date.now()}`
+    }));
+
+    // Reset form only after successful update
+    setProfileForm(prev => ({
+      name: response.data.user.name,
+      email: response.data.user.email,
+      profileImage: null
+    }));
+
+    alert('Profile updated successfully!');
+
+  } catch (error) {
+    console.error('Profile update error:', error.response?.data);
+    alert(error.response?.data?.message || 'Update failed');
+  }
+};
+
+// 3. Update the profile image rendering in the top section
+<div className="profile-summary tomato-border d-flex my-3 position-relative">
+  <div className="profile-image-small mr-3">
+    {userData.profileImage ? (
+      <ProfileImage key={userData.profileImage} src={userData.profileImage} />
+    ) : (
+      <div className="profile-initials-small">
+        {userData.name.charAt(0)}
+      </div>
+    )}
+  </div>
+  <div className="profile-info-small">
+    <h3>{userData.name}</h3>
+    <p>{userData.email}</p>
+  </div>
+</div>

@@ -32,7 +32,7 @@ const NewsTicker = () => {
       pauseOnHover={true}
       className="custom-marquee"
     >
-      <span style={{ padding: '0 2rem' }}>
+      <span style={{ padding: '0 2rem', color: 'tomato' }}>
         {quote}
       </span>
     </Marquee>

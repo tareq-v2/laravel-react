@@ -12,7 +12,7 @@ class JobOfferController extends Controller
     {
         $now = Carbon::now();
         $featureCutoff = $now->copy()->subHours(24);
-        $perPage = 15;
+        $perPage = 16;
 
         $query = JobOffer::where('is_verified', true)
             ->where('expire_date', '>', $now)

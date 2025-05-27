@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import '../Design/CustomerDashboard.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FiHome, FiFileText, FiUser, FiShoppingBag, FiSettings, FiX, FiEdit } from 'react-icons/fi';
+import { FiHome, FiFileText, FiUser, FiShoppingBag, FiSettings, FiX, FiEdit, FiLock, FiImage } from 'react-icons/fi';
 import JobOfferForm from '../../Frontend/create/JobOfferForm';
+import ColorThief from 'colorthief';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -13,6 +14,88 @@ const Dashboard = () => {
   const [editingPost, setEditingPost] = useState(null);
   const [editFormData, setEditFormData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+   const [userData, setUserData] = useState({
+    name: 'John Doe',
+    email: 'john@example.com',
+    joinDate: 'January 2023',
+    profileImage: null
+  });
+  const ProfileImage = ({ src }) => {
+    const imgRef = useRef(null);
+    const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0.1)');
+  
+    useEffect(() => {
+      if (imgRef.current && src) {
+        const colorThief = new ColorThief();
+        
+        const updateShadow = () => {
+          try {
+            const dominantColor = colorThief.getColor(imgRef.current);
+            const [r, g, b] = dominantColor;
+            setShadowColor(`rgba(${r},${g},${b},0.4)`);
+          } catch (error) {
+            setShadowColor('rgba(255,99,71,0.4)'); // Fallback to tomato color
+          }
+        };
+  
+        if (imgRef.current.complete) {
+          updateShadow();
+        } else {
+          imgRef.current.addEventListener('load', updateShadow);
+        }
+  
+        return () => {
+          imgRef.current?.removeEventListener('load', updateShadow);
+        };
+      }
+    }, [src]);
+  
+    return (
+      <img
+        ref={imgRef}
+        src={src}
+        alt="Profile"
+        className="profile-image-small"
+        style={{ 
+          boxShadow: `0 8px 20px ${shadowColor}`,
+          transition: 'box-shadow 0.3s ease-in-out'
+        }}
+      />
+    );
+  };
+
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  const [profileForm, setProfileForm] = useState({
+    name: 'John Doe',
+    email: 'john@example.com',
+    profileImage: null
+  });
+
+  const handlePasswordChange = (e) => {
+    setPasswordForm({
+      ...passwordForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleProfileChange = (e) => {
+    if (e.target.name === 'profileImage') {
+      setProfileForm({
+        ...profileForm,
+        profileImage: URL.createObjectURL(e.target.files[0])
+      });
+    } else {
+      setProfileForm({
+        ...profileForm,
+        [e.target.name]: e.target.value
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -109,7 +192,7 @@ const Dashboard = () => {
         }
       });
 
-      fetchPosts(); // Refresh the posts list
+      // fetchPosts(); 
       setIsEditing(false);
       setEditingPost(null);
     } catch (error) {
@@ -144,6 +227,139 @@ const Dashboard = () => {
       </div>
     );
   };
+
+    // Profile Section JSX
+  const renderProfileInfo = () => (
+    <div className="profile-section">
+      <div className="profile-header">
+        <div className="profile-image">
+          {profileForm.profileImage ? (
+            <img src={profileForm.profileImage} alt="Profile" />
+          ) : (
+            <div className="profile-initials">
+              {userData.name.charAt(0)}
+            </div>
+          )}
+        </div>
+        <div className="profile-meta">
+          <h2>{userData.name}</h2>
+          <p>Member since {userData.joinDate}</p>
+        </div>
+      </div>
+      
+      <div className="profile-details">
+        <div className="detail-item">
+          <label>Full Name:</label>
+          <p>{userData.name}</p>
+        </div>
+        <div className="detail-item">
+          <label>Email Address:</label>
+          <p>{userData.email}</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Change Password JSX
+  const renderChangePassword = () => (
+    <div className="password-section">
+      <h2>Change Password</h2>
+      <form className="password-form">
+        <div className="form-group">
+          <label>
+            <FiLock /> Old Password
+          </label>
+          <input 
+            type="password" 
+            name="oldPassword"
+            value={passwordForm.oldPassword}
+            onChange={handlePasswordChange}
+          />
+        </div>
+        
+        <div className="form-group">
+          <label>
+            <FiLock /> New Password
+          </label>
+          <input 
+            type="password" 
+            name="newPassword"
+            value={passwordForm.newPassword}
+            onChange={handlePasswordChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>
+            <FiLock /> Confirm New Password
+          </label>
+          <input 
+            type="password" 
+            name="confirmPassword"
+            value={passwordForm.confirmPassword}
+            onChange={handlePasswordChange}
+          />
+        </div>
+
+        <button type="submit" className="tomato-button">
+          Update Password
+        </button>
+      </form>
+    </div>
+  );
+
+  // Edit Profile JSX
+  const renderEditProfile = () => (
+    <div className="edit-profile-section">
+      <h2>Edit Profile</h2>
+      <form className="edit-profile-form">
+        <div className="form-group">
+          <label>
+            <FiUser /> Full Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={profileForm.name}
+            onChange={handleProfileChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>
+            <FiImage /> Profile Picture
+          </label>
+          <input
+            type="file"
+            name="profileImage"
+            onChange={handleProfileChange}
+            accept="image/*"
+          />
+          {/* {profileForm.profileImage && (
+            <div className="image-preview">
+              <img src={profileForm.profileImage} alt="Preview" />
+            </div>
+          )} */}
+        </div>
+
+        <div className="form-group">
+          <label>
+            <FiUser /> Email Address
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={profileForm.email}
+            onChange={handleProfileChange}
+          />
+        </div>
+
+        <button type="submit" className="tomato-button">
+          Save Changes
+        </button>
+      </form>
+    </div>
+  );
 
   const renderPostsContent = () => (
       <div className="posts-content">
@@ -202,138 +418,107 @@ const Dashboard = () => {
     const publishedCount = posts.filter(post => post.is_verified == 1).length;
 
     switch(activeTab) {
-      case 'dashboard':
-        return (
-          <div className="dashboard-content">
-            <h2>Overview</h2>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <h3>Recent Posts</h3>
-                <p>{processingCount} in progress</p>
-              </div>
-              <div className="stat-card">
-                <h3>Active Posts</h3>
-                <p>{publishedCount} published</p>
-              </div>
-              <div className="stat-card">
-                <h3>Account Status</h3>
-                <p>Verified ✓</p>
-              </div>
-            </div>
-            
-            <div className="recent-posts">
-              <h3>Recent Posts</h3>
-              <div className="post-list">
-                {posts.length > 0 ? (
-                  posts.map(post => (
-                    <div key={post.id} className="post-item">
-                      <div className="post-info">
-                        <h4>{post.title}</h4>
-                        <span className={`status-badge ${post.is_verified}`}>
-                          {post.is_verified == 0 ? 'In Progress' : 'Published'}
-                        </span>
-                      </div>
-                      <div className="post-meta">
-                        <span className="post-date">
-                          {new Date(post.created_at).toLocaleDateString()}
-                        </span>
-                        <button className="post-action">View Details</button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-posts">No posts found</div>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      case 'posts':
+      case 'Profile':
+        return renderProfileInfo();
+      case 'editProfile':
+        return renderEditProfile();
+      case 'changePassword':
+        return renderChangePassword();
+      case 'ads':
         return renderPostsContent();
-      case 'profile':
+      case 'directory':
         return (
-          <div className="profile-content">
-            <h2>Profile Settings</h2>
-            <form className="profile-form">
-              <label>Name:</label>
-              <input type="text" defaultValue="John Doe" />
-              <label>Email:</label>
-              <input type="email" defaultValue="john@example.com" />
-              <button type="submit">Update Profile</button>
-            </form>
+          <div className="dummy-section">
+            <h2>Directories</h2>
+            <p>Directory management coming soon</p>
+            <div className="dummy-box tomato-border"></div>
           </div>
         );
-      case 'orders':
+      case 'banner':
         return (
-          <div className="orders-content">
-            <h2>Order History</h2>
-            <div className="order-list">
-              <div className="order-item">
-                <p>Order #12345 - $99.99 - Shipped</p>
-              </div>
-              <div className="order-item">
-                <p>Order #12346 - $149.99 - Delivered</p>
-              </div>
-            </div>
+          <div className="dummy-section">
+            <h2>Banners</h2>
+            <p>Banner management coming soon</p>
+            <div className="dummy-box tomato-border"></div>
           </div>
         );
-      case 'settings':
-        return (
-          <div className="settings-content">
-            <h2>Account Settings</h2>
-            <div className="security-settings">
-              <button>Change Password</button>
-            </div>
-          </div>
-        );
+      
       default:
         return null;
     }
   };
 
   return (
-    <div className="dashboard">
-       <nav className="tab-nav">
+    <>
+    <div className="profile-summary tomato-border d-flex my-3 positon-relative">
+          <div className="profile-image-small mr-3">
+            {profileForm.profileImage ? (
+              <ProfileImage src={profileForm.profileImage} />
+            ) : (
+              <div className="profile-initials-small">
+                {/* {userData.name.charAt(0)} */}
+              </div>
+            )}
+          </div>
+          <div className="profile-info-small position-absolute">
+            <h3>{userData.name}</h3>
+            <p>{userData.email}</p>
+          </div>
+        </div>
+     <div className="dashboard">
+      <nav className="tab-nav tomato-nav">
+
+        {/* Keep existing nav buttons with updated styling */}
         <button 
-          className={activeTab === 'dashboard' ? 'active' : ''}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          <FiHome className="nav-icon mr-0" />
-          <span>Dashboard</span>
-        </button>
-        <button 
-          className={activeTab === 'posts' ? 'active' : ''}
-          onClick={() => setActiveTab('posts')}
-        >
-          <FiFileText className="nav-icon" />
-          <span>Posts</span>
-        </button>
-        <button 
-          className={activeTab === 'profile' ? 'active' : ''}
+          className={activeTab === 'profile' ? 'active tomato-button' : ''}
           onClick={() => setActiveTab('profile')}
         >
           <FiUser className="nav-icon" />
           <span>Profile</span>
         </button>
+        
         <button 
-          className={activeTab === 'orders' ? 'active' : ''}
-          onClick={() => setActiveTab('orders')}
+          className={activeTab === 'editProfile' ? 'active' : ''}
+          onClick={() => setActiveTab('editProfile')}
+        >
+          <FiFileText className="nav-icon" />
+          <span>Edit Profile</span>
+        </button>
+        <button 
+          className={activeTab === 'changePassword' ? 'active' : ''}
+          onClick={() => setActiveTab('changePassword')}
+        >
+          <FiFileText className="nav-icon" />
+          <span>Change Password</span>
+        </button>
+        <button 
+          className={activeTab === 'ads' ? 'active' : ''}
+          onClick={() => setActiveTab('ads')}
         >
           <FiShoppingBag className="nav-icon" />
-          <span>Orders</span>
+          <span>Ads</span>
         </button>
         <button 
-          className={activeTab === 'settings' ? 'active' : ''}
-          onClick={() => setActiveTab('settings')}
+          className={activeTab === 'directory' ? 'active' : ''}
+          onClick={() => setActiveTab('directory')}
         >
-          <FiSettings className="nav-icon" />
-          <span>Settings</span>
+          <FiShoppingBag className="nav-icon" />
+          <span>Directories</span>
+        </button>
+        <button 
+          className={activeTab === 'banner' ? 'active' : ''}
+          onClick={() => setActiveTab('banner')}
+        >
+          <FiShoppingBag className="nav-icon" />
+          <span>Banners</span>
         </button>
       </nav>
+
       <div className="dashboard-main">
         {renderContent()}
       </div>
     </div>
+    </>
   );
 };
 
