@@ -17,21 +17,13 @@ const Dashboard = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
     email: '',
     joinDate: '',
     profileImage: null
   });
-
-  // const [formData, setFormData] = useState({
-  //     title: '',
-  //     city: '',
-  //     category: '',
-  //     description: '',
-  //     businessName: '',
-  //     address: '',
-  // });
 
   const ProfileImage = ({ src }) => {
     const imgRef = useRef(null);
@@ -93,30 +85,43 @@ const Dashboard = () => {
   const handleProfileChange = (e) => {
     if (e.target.name === 'profileImage') {
       const file = e.target.files[0];
-      setProfileForm({
-        ...profileForm,
+      const imageUrl = URL.createObjectURL(file);
+      
+      // Update both form state AND user data for immediate UI update
+      setProfileForm(prev => ({
+        ...prev,
         profileImageFile: file,
-        profileImage: URL.createObjectURL(e.target.files[0])
-      });
+        profileImage: imageUrl
+      }));
+      
+      setUserData(prev => ({
+        ...prev,
+        profileImage: imageUrl
+      }));
     } else {
-      setProfileForm({
-        ...profileForm,
-        [e.target.name]: e.target.value
-      });
+      const { name, value } = e.target;
+      
+      setProfileForm(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      
+      // Also update userData for immediate UI update
+      setUserData(prev => ({
+        ...prev,
+        [name]: value
+      }));
     }
   };
 
-  const handlePasswordChange = (e) => {
-    setPasswordForm({
-      ...passwordForm,
-      [e.target.name]: e.target.value
-    });
-  };
-
-
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    console.log(profileForm);
+    
+    // Store the current blob URL for cleanup
+    const tempImageUrl = profileForm.profileImage;
+    
+    // Show loading state
+    setIsSaving(true);
     
     const formData = new FormData();
     formData.append('name', profileForm.name);
@@ -134,64 +139,100 @@ const Dashboard = () => {
         }
       });
 
-       // Create a fresh image URL with cache busting
-      const newAvatarUrl = response.data.user.avatar_url 
-        ? `${response.data.user.avatar_url}?ts=${Date.now()}`
-        : null;
+      // Handle different response structures
+      const userDataFromResponse = response.data.user || response.data;
+      const name = userDataFromResponse.name || profileForm.name;
+      const email = userDataFromResponse.email || profileForm.email;
+      const avatarUrl = userDataFromResponse.avatar_url || userDataFromResponse.avatarUrl;
 
-      // Update both userData and profileForm
+      // Create a fresh image URL with cache busting
+      const newAvatarUrl = response.data?.avatar_url 
+  ? `${response.data.avatar_url}${response.data.avatar_url.includes('?') ? '&' : '?'}ts=${Date.now()}`
+  : response.data.avatar_url 
+    ? `${response.data.avatar_url}${response.data.avatar_url.includes('?') ? '&' : '?'}ts=${Date.now()}`
+    : null;
+
+      // Update both userData and profileForm with the final URL
       setUserData(prev => ({
         ...prev,
-        name: response.data.user.name,
-        email: response.data.user.email,
+        name,
+        email,
         profileImage: newAvatarUrl
       }));
 
       setProfileForm(prev => ({
         ...prev,
-        name: response.data.user.name,
-        email: response.data.user.email,
+        name,
+        email,
         profileImageFile: null,
-        profileImage: newAvatarUrl  // Keep the image URL here too
+        profileImage: newAvatarUrl
       }));
 
       alert('Profile updated successfully!');
 
     } catch (error) {
-      console.error('Profile update error:', error.response?.data);
+      console.error('Profile update error:', error);
       alert(error.response?.data?.message || 'Update failed');
+      
+      // Revert to the blob URL if update fails
+      setUserData(prev => ({
+        ...prev,
+        profileImage: tempImageUrl
+      }));
+    } finally {
+      setIsSaving(false);
+      
+      // Revoke the blob URL only after new image is set
+      if (tempImageUrl && tempImageUrl.startsWith('blob:')) {
+        setTimeout(() => {
+          URL.revokeObjectURL(tempImageUrl);
+        }, 1000); // Give time for new image to load
+      }
     }
   };
 
+  const handlePasswordChange = (e) => {
+    setPasswordForm({
+      ...passwordForm,
+      [e.target.name]: e.target.value
+    });
+  };
+
+
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get('/user/profile', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        setUserData({
-          name: response.data.name,
-          email: response.data.email,
-          joinDate: new Date(response.data.created_at).toLocaleDateString(),
-          profileImage: response.data.avatar_url
-        });
-        
-        setProfileForm({
-          name: response.data.name,
-          email: response.data.email,
-          // profileImageFile: null,
-          profileImage: response.data.avatar_url
-        });
-      } catch (error) {
-        console.error('Failed to load user profile:', error);
-      }
-    };
-    
-    fetchUserData();
-  }, []);
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get('/user/profile', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      // Add cache busting to initial image load
+      const avatarUrl = response.data.avatar_url 
+        ? `${response.data.avatar_url}?ts=${Date.now()}`
+        : null;
+      
+      setUserData({
+        name: response.data.name,
+        email: response.data.email,
+        joinDate: new Date(response.data.created_at).toLocaleDateString(),
+        profileImage: response.data.avatar_url  // Should already be full URL
+      });
+      
+      setProfileForm({
+        name: response.data.name,
+        email: response.data.email,
+        profileImage: avatarUrl
+      });
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+    }
+  };
+  
+  fetchUserData();
+}, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -324,13 +365,13 @@ const Dashboard = () => {
     );
   };
 
-  useEffect(() => {
-    return () => {
-      if (profileForm.profileImage && profileForm.profileImage.startsWith('blob:')) {
-        URL.revokeObjectURL(profileForm.profileImage);
-      }
-    };
-  }, [profileForm.profileImage]);
+  // useEffect(() => {
+  //   return () => {
+  //     if (profileForm.profileImage && profileForm.profileImage.startsWith('blob:')) {
+  //       URL.revokeObjectURL(profileForm.profileImage);
+  //     }
+  //   };
+  // }, [profileForm.profileImage]);
 
     // Profile Section JSX
   // const renderProfileInfo = () => (
@@ -509,8 +550,9 @@ const Dashboard = () => {
           <button 
             className="tomato-button"
             onClick={handleProfileUpdate}
+            disabled={isSaving}
           >
-            Save Changes
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>
