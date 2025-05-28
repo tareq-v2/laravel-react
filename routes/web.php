@@ -80,7 +80,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthController::class, 'logout']);
-  Route::put('/update-profile', [AuthController::class, 'updateProfile']);
+  Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+  Route::get('/user/profile', [AuthController::class, 'getProfile']);
   Route::post('/add/products', [ProductController::class, 'store']);
   Route::get('/products', [ProductController::class, 'products']);
   Route::get('/product/{id}', [ProductController::class, 'show']);

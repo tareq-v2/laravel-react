@@ -367,3 +367,106 @@
   justify-content: center;
   border-radius: 50%;
 }
+
+
+
+
+
+
+
+/* Profile Image Styles */
+.profile-image-wrapper {
+  position: relative;
+  cursor: pointer;
+  width: 150px;
+  height: 150px;
+}
+
+.profile-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s;
+}
+
+.edit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: 50%;
+}
+
+.profile-image-wrapper:hover .edit-overlay {
+  opacity: 1;
+}
+
+.profile-image-wrapper:hover .profile-image {
+  opacity: 0.8;
+}
+
+/* Inline Editing Styles */
+.name-field, .email-field {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.inline-edit {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  width: 100%;
+  max-width: 300px;
+  transition: border-color 0.3s;
+}
+
+.inline-edit:focus {
+  border-color: #ff6347;
+  outline: none;
+}
+
+.edit-icon {
+  margin-left: 10px;
+  color: #777;
+  cursor: pointer;
+  transition: color 0.3s;
+  vertical-align: middle;
+}
+
+.edit-icon:hover {
+  color: #ff6347;
+}
+
+/* Profile Actions */
+.profile-actions {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+/* Small profile in header */
+.profile-image-small {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.profile-image-small:hover {
+  transform: scale(1.05);
+}

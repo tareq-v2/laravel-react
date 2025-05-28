@@ -1,108 +1,177 @@
-// 1. Update the ProfileImage component
-const ProfileImage = ({ src }) => {
-  const imgRef = useRef(null);
-  const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0.1)');
+// ... (previous imports and code)
 
-  useEffect(() => {
-    const currentImgRef = imgRef.current;
-    
-    const updateShadow = () => {
-      try {
-        const colorThief = new ColorThief();
-        const dominantColor = colorThief.getColor(currentImgRef);
-        const [r, g, b] = dominantColor;
-        setShadowColor(`rgba(${r},${g},${b},0.4)`);
-      } catch (error) {
-        setShadowColor('rgba(255,99,71,0.4)');
-      }
-    };
+const Dashboard = () => {
+  // ... (previous state declarations)
+  
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
 
-    if (currentImgRef && src) {
-      if (currentImgRef.complete) {
-        updateShadow();
-      } else {
-        currentImgRef.addEventListener('load', updateShadow);
-      }
+  // ... (ProfileImage component and other code)
+
+  // Profile Section JSX with inline editing
+  const renderProfileInfo = () => (
+    <div className="profile-section">
+      <div className="profile-header">
+        <div 
+          className="profile-image-wrapper"
+          onClick={() => document.getElementById('avatarInput').click()}
+        >
+          {userData.profileImage ? (
+            <div className="profile-image-container">
+              <img 
+                src={userData.profileImage} 
+                alt="Profile" 
+                className="profile-image"
+              />
+              <div className="edit-overlay">
+                <FiCamera size={20} />
+              </div>
+            </div>
+          ) : (
+            <div className="profile-initials">
+              {userData.name.charAt(0)}
+              <div className="edit-overlay">
+                <FiCamera size={20} />
+              </div>
+            </div>
+          )}
+          <input
+            id="avatarInput"
+            type="file"
+            name="profileImage"
+            style={{ display: 'none' }}
+            onChange={handleProfileChange}
+            accept="image/*"
+          />
+        </div>
+        
+        <div className="profile-meta">
+          <div className="name-field">
+            {isEditingName ? (
+              <input
+                type="text"
+                name="name"
+                value={profileForm.name}
+                onChange={handleProfileChange}
+                className="inline-edit"
+                autoFocus
+                onBlur={() => setIsEditingName(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setIsEditingName(false)
+                }}
+              />
+            ) : (
+              <h2 onClick={() => setIsEditingName(true)}>
+                {userData.name}
+                <FiEdit className="edit-icon" />
+              </h2>
+            )}
+          </div>
+          
+          <div className="email-field">
+            {isEditingEmail ? (
+              <input
+                type="email"
+                name="email"
+                value={profileForm.email}
+                onChange={handleProfileChange}
+                className="inline-edit"
+                autoFocus
+                onBlur={() => setIsEditingEmail(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setIsEditingEmail(false)
+                }}
+              />
+            ) : (
+              <p onClick={() => setIsEditingEmail(true)}>
+                {userData.email}
+                <FiEdit className="edit-icon" />
+              </p>
+            )}
+          </div>
+          
+          <p>Member since {userData.joinDate}</p>
+        </div>
+      </div>
+      
+      <div className="profile-actions">
+        <button 
+          className="tomato-button"
+          onClick={handleProfileUpdate}
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  );
+
+  // ... (rest of the code remains the same until renderContent)
+
+  const renderContent = () => {
+    // ... (loading and error handling)
+
+    switch(activeTab) {
+      case 'Profile':
+        return renderProfileInfo();
+      // Remove the 'editProfile' case
+      case 'changePassword':
+        return renderChangePassword();
+      case 'ads':
+        return renderPostsContent();
+      // ... other cases
     }
-
-    return () => {
-      if (currentImgRef) {
-        currentImgRef.removeEventListener('load', updateShadow);
-      }
-    };
-  }, [src]);
+  };
 
   return (
-    <img
-      ref={imgRef}
-      src={src}
-      alt="Profile"
-      className="profile-image-small"
-      crossOrigin="anonymous"
-      style={{ 
-        boxShadow: `0 8px 20px ${shadowColor}`,
-        transition: 'box-shadow 0.3s ease-in-out'
-      }}
-    />
+    <>
+      <div className="profile-summary tomato-border d-flex my-3 position-relative">
+        <div 
+          className="profile-image-small mr-3"
+          onClick={() => document.getElementById('avatarInput').click()}
+        >
+          {userData.profileImage ? (
+            <ProfileImage src={userData.profileImage} />
+          ) : (
+            <div className="profile-initials-small">
+              {userData.name.charAt(0)}
+            </div>
+          )}
+        </div>
+        <div className="profile-info-small position-absolute">
+          <h3>{userData.name}</h3>
+          <p>{userData.email}</p>
+        </div>
+      </div>
+      
+      <div className="dashboard">
+        <nav className="tab-nav tomato-nav">
+          {/* Updated Profile tab */}
+          <button 
+            className={activeTab === 'Profile' ? 'active tomato-button' : ''}
+            onClick={() => setActiveTab('Profile')}
+          >
+            <FiUser className="nav-icon" />
+            <span>Profile</span>
+          </button>
+          
+          {/* Remove Edit Profile tab */}
+          <button 
+            className={activeTab === 'changePassword' ? 'active' : ''}
+            onClick={() => setActiveTab('changePassword')}
+          >
+            <FiLock className="nav-icon" />
+            <span>Change Password</span>
+          </button>
+          
+          {/* ... other tabs */}
+        </nav>
+
+        <div className="dashboard-main">
+          {renderContent()}
+        </div>
+      </div>
+    </>
   );
 };
 
-// 2. Update the handleProfileUpdate function
-const handleProfileUpdate = async (e) => {
-  e.preventDefault();
-  
-  const formData = new FormData();
-  formData.append('name', profileForm.name);
-  formData.append('email', profileForm.email);
-  
-  if (profileForm.profileImage instanceof File) {
-    formData.append('avatar', profileForm.profileImage);
-  }
-
-  try {
-    const response = await axios.put('/update-profile', formData, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    // Update user data with fresh image URL
-    setUserData(prev => ({
-      ...prev,
-      name: response.data.user.name,
-      email: response.data.user.email,
-      profileImage: `${response.data.user.avatar_url}?ts=${Date.now()}`
-    }));
-
-    // Reset form only after successful update
-    setProfileForm(prev => ({
-      name: response.data.user.name,
-      email: response.data.user.email,
-      profileImage: null
-    }));
-
-    alert('Profile updated successfully!');
-
-  } catch (error) {
-    console.error('Profile update error:', error.response?.data);
-    alert(error.response?.data?.message || 'Update failed');
-  }
-};
-
-// 3. Update the profile image rendering in the top section
-<div className="profile-summary tomato-border d-flex my-3 position-relative">
-  <div className="profile-image-small mr-3">
-    {userData.profileImage ? (
-      <ProfileImage key={userData.profileImage} src={userData.profileImage} />
-    ) : (
-      <div className="profile-initials-small">
-        {userData.name.charAt(0)}
-      </div>
-    )}
-  </div>
-  <div className="profile-info-small">
-    <h3>{userData.name}</h3>
-    <p>{userData.email}</p>
-  </div>
-</div>
+export default Dashboard;

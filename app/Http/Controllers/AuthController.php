@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Container\Attributes\Storage;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -69,25 +69,21 @@ class AuthController extends Controller
 
     public function updateProfile(Request $request)
     {
-        dd($request->all());
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,'.$user->id,
             'avatar' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         try {
-            $updateData = [
-                'name' => $validated['name'],
-                'email' => $validated['email']
-            ];
             $user->name = $validated['name'];
             $user->email = $validated['email'];
+            // dd($request->file('avatar'));
             if ($request->hasFile('avatar') && $request->file('avatar') instanceof \Illuminate\Http\UploadedFile) {
-                $fileName = uniqid() . '-' . rand() . '.' . $request->file('avatar')->extension();
-                $location = public_path('users');
+                $fileName = uniqid() . 'Tareq-' . rand() . '.' . $request->file('avatar')->extension();
+                $location = public_path('uploads/users');
                 $request->file('avatar')->move($location, $fileName);
                 $user->avatar = $fileName;
             }
@@ -99,6 +95,7 @@ class AuthController extends Controller
                 'user' => [
                     'name' => $user->name,
                     'email' => $user->email,
+                    // Generate URL using Storage facade
                     'avatar_url' => $user->avatar ? Storage::url($user->avatar) : null
                 ]
             ]);
@@ -109,5 +106,17 @@ class AuthController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+    
+    public function getProfile()
+    {
+        $user = Auth::user();
+
+        return response()->json([
+            'name' => $user->name,
+            'email' => $user->email,
+            'created_at' => $user->created_at,
+            'avatar_url' => $user->avatar ? asset('uploads/users/' . $user->avatar) : null
+        ]);
     }
 }
