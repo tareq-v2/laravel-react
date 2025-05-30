@@ -1,7 +1,7 @@
     import React, { useState, useEffect, useRef } from 'react';
     import { Link, useNavigate } from 'react-router-dom';
     import axios from 'axios';
-    import { FaFileAlt, FaRedo } from 'react-icons/fa';
+    import { FaFileAlt, FaRedo, FaCloudUploadAlt, FaTimes } from 'react-icons/fa';
     import VirtualKeyboard from './Frontend/VirtualKeyboard';
     import AuthModal from './Frontend/AuthModal';
     import './Frontend/JobOfferForm.css';
@@ -78,15 +78,53 @@
       const [showFeatureSelection, setShowFeatureSelection] = useState(false);
       const [showAuthModal, setShowAuthModal] = useState(false);
       const [getRate, setRate] = useState([]);
-     
       const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
       const fileInputRef = useRef(null);
+      const [dragActive, setDragActive] = useState(false);
+      const [fileError, setFileError] = useState('');
       const [categories] = useState(
           `Accountant/Bookkeeper Appliance Technician Auto Body Auto Mechanic Auto Sales Babysitter/Nanny Bakery/Pastry Beauty Salon Car Wash Caregiver Cashier Child Care Cleaning Services Construction Delivery Jobs Dental Assistant/Office Dispatcher Driver Dry Cleaning Electrician Financial Services Florist Government Jobs Grocery/Market Housekeeper/Maid In-Home Care Jewelry Sales/Repair Legal/Paralegal Medical/Healthcare Medical Office/Billing Nail Salon No Experience Required Office/Admin Parking Attendant Pet Grooming Pharmacy Pool Cleaning Receptionist/Front Desk Restaurant Jobs Mall Jobs Sales/Marketing Security Guard Smoke Shop Tailor/Alteration Teacher/Education Telemarketing Truck Driver UBER Driver Web/IT Developer Work From Home Other Jobs`
               .split(' ')
               .map(line => line.trim())
               .filter(Boolean)
-          );
+      );
+
+      // Handle drag events
+      const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (e.type === 'dragenter' || e.type === 'dragover') {
+          setDragActive(true);
+        } else if (e.type === 'dragleave') {
+          setDragActive(false);
+        }
+      };
+
+      // Handle file drop
+      const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // if (e.type === 'dragenter' || e.type === 'dragover') {
+        //   setDragActive(true);
+        // } else if (e.type === 'dragleave') {
+        //   setDragActive(false);
+        // }
+        
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          handleFileChange({ target: { files: e.dataTransfer.files } });
+        }
+      };
+
+      // Trigger file input
+      const handleClick = () => {
+        if (filePreviews.length >= 5) {
+          setFileError('Maximum 5 files allowed');
+          return;
+        }
+        fileInputRef.current.click();
+      };
 
       useEffect(() => {
         setFormData(prev => ({
@@ -137,6 +175,34 @@
         setKeyboardTarget(isChecked ? descInputRef.current : null);
         if (isChecked) descInputRef.current.focus();
       };
+      
+      const handleKeyboardToggle = (inputRef) => {
+        const newState = !showKeyboard;
+        setShowKeyboard(newState);
+        setKeyboardTarget(newState ? inputRef.current : null);
+        if (newState && inputRef.current) inputRef.current.focus();
+      };
+
+      // Invalidate error handling
+      useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+          setTimeout(() => {
+            // Find the first invalid field name
+            const firstErrorField = Object.keys(errors)[0];
+            
+            // Focus on the first invalid field
+            const inputElement = document.querySelector(`[name="${firstErrorField}"]`);
+            if (inputElement) {
+              inputElement.focus();
+              inputElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+              });
+            }
+          }, 50); // Short delay to allow DOM update
+        }
+      }, [errors]);
 
       const handleKeyboardInput = (value) => {
         setFormData(prev => ({
@@ -145,12 +211,6 @@
         }));
       };
 
-      const handleKeyboardToggle = (inputRef) => {
-        const newState = !showKeyboard;
-        setShowKeyboard(newState);
-        setKeyboardTarget(newState ? inputRef.current : null);
-        if (newState && inputRef.current) inputRef.current.focus();
-      };
 
       useEffect(() => {
         const fetchRate = async () => {
@@ -252,15 +312,30 @@
 
       // Updated file handling for multiple files
       const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 5) { // Limit to 5 files
-          alert('Maximum 5 files allowed');
+        const files = Array.from(e.target.files || e.dataTransfer.files);
+        setFileError('');
+        
+        // Check total file count
+        if (filePreviews.length + files.length > 5) {
+        setFileError('Maximum 5 files allowed');
           return;
         }
 
-        const validFiles = files.filter(file => 
-          ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)
-        );
+        const validFiles = files.filter(file => {
+          const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+          const isValidType = validTypes.includes(file.type);
+          const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+          
+          if (!isValidType) {
+            setFileError('Only JPG, PNG, and PDF files are allowed');
+          } else if (!isValidSize) {
+            setFileError('File size must be less than 5MB');
+          }
+          
+          return isValidType && isValidSize;
+        });
+        
+        if (validFiles.length === 0) return;
 
         const newPreviews = validFiles.map(file => ({
           url: URL.createObjectURL(file),
@@ -364,9 +439,7 @@
         if (!numStr) return '';
         const num = numStr.replace(/,/g, '');
         return Number(num).toLocaleString('en-IN');
-      };
-
-      
+      };   
 
       useEffect(() => {
         const initializeSession = async () => {
@@ -812,27 +885,23 @@
                         {/* Title Input */}
                         <div className="form-group">
                           <div className="d-flex justify-content-between align-items-center">
-                            <label className="form-label text-dark fw-semibold">
+                            <label className="form-label mb-0 text-dark fw-semibold">
                               Ad Title <span className="text-danger">*</span>
                             </label>
-                            <div className="form-check form-switch">
-                              <input
-                                type="checkbox"
-                                id="titleCheckbox"
-                                className="form-check-input keyboard-toggle"
-                                checked={showKeyboard && keyboardTarget === titleInputRef.current || titleCheckbox}
-                                onChange={() => {
-                                    handleKeyboardToggle(titleInputRef); handleTitleCheckbox
-                                  }
-                                }
-                              />
-                              <label 
-                                className="form-check-label text-dark fw-semibold"
-                                htmlFor="titleCheckbox"
-                              >
-                                Հայերեն Ստեղնաշար
-                              </label>
-                            </div>
+                            <button
+                              type="button"
+                              className={`keyboard-toggle-btn mb-2 ${titleCheckbox ? 'active' : ''}`}
+                              onClick={() => {
+                                const newState = !titleCheckbox;
+                                setTitleCheckbox(newState);
+                                setDescCheckbox(false);
+                                setShowKeyboard(newState);
+                                setKeyboardTarget(newState ? titleInputRef.current : null);
+                                if (newState) titleInputRef.current.focus();
+                              }}
+                            >
+                              Հայերեն Ստեղնաշար
+                            </button>
                           </div>
                           <input
                             ref={titleInputRef}
@@ -852,7 +921,7 @@
                               // setShowKeyboard(true);
                               handleInputFocus(titleInputRef, titleCheckbox);
                             }}
-                            className={`form-control ${errors.title ? 'is-invalid' : ''}`}
+                            className={`form-control ${showKeyboard && keyboardTarget === titleInputRef.current ? 'keyboard-active' : ''} ${errors.title ? 'is-invalid' : ''}`}
                           />
                           {errors.title && <div className="invalid-feedback">{errors.title}</div>}
                           <p className="mb-1 text-muted">
@@ -870,7 +939,7 @@
                             name="city"
                             value={formData.city}
                             onChange={handleInputChange}
-                            className={`form-control ${errors.city ? 'is-invalid' : ''}`}
+                            className={`form-control ${errors.city ? 'is-invalid error-highlight' : ''}`}
                           />
                           {errors.city && <div className="invalid-feedback">{errors.city}</div>}
                         </div>
@@ -898,26 +967,24 @@
 
                         {/* Description Input */}
                         <div className="form-group mt-3">
-                          <div className="d-flex justify-content-between align-items-center mb-2">
+                          <div className="d-flex justify-content-between align-items-center">
                             <label className="form-label text-dark fw-semibold mb-0">
                               Job Description/Requirements <span className="text-danger">*</span>
                             </label>
-                            
-                            <div className="form-check form-switch">
-                              <input
-                                type="checkbox"
-                                id='descCheckbox'
-                                className="form-check-input keyboard-toggle"
-                                checked={showKeyboard && keyboardTarget === descInputRef.current}
-                                onChange={(e) => {
-                                  handleKeyboardToggle(descInputRef);
-                                  handleDescCheckbox(e);
-                                }}
-                              />
-                              <label className="form-check-label text-dark fw-semibold" htmlFor="descCheckbox">
-                                Հայերեն Ստեղնաշար
-                              </label>
-                            </div>
+                            <button
+                              type="button"
+                              className={`keyboard-toggle-btn mb-2 ${descCheckbox ? 'active' : ''}`}
+                              onClick={() => {
+                                const newState = !descCheckbox;
+                                setDescCheckbox(newState);
+                                setTitleCheckbox(false);
+                                setShowKeyboard(newState);
+                                setKeyboardTarget(newState ? descInputRef.current : null);
+                                if (newState) descInputRef.current.focus();
+                              }}
+                            >
+                              Հայերեն Ստեղնաշար
+                            </button>
                           </div>
                           <textarea
                             ref={descInputRef}
@@ -930,7 +997,7 @@
                               // setShowKeyboard(false);
                               handleInputFocus(descInputRef, descCheckbox);
                             }}
-                            className={`form-control ${errors.description ? 'is-invalid' : ''}`}
+                            className={`form-control ${showKeyboard && keyboardTarget === descInputRef.current ? 'keyboard-active' : ''} ${errors.description ? 'is-invalid' : ''}`}
                             rows="7"
                           />
                           {errors.description && <div className="invalid-feedback">{errors.description}</div>}
@@ -1082,52 +1149,106 @@
 
                         {/* File Upload */}
                         <div className="form-group mt-3">
-                          <label className="form-label text-dark fw-semibold">Attachments (max 5)</label>
-                          <div className="custom-file">
-                              <input
-                                type="file"
-                                multiple
-                                name="attachments"
-                                onChange={handleFileChange}
-                                className="form-control w-100 custom-file-input"
-                                id="offerPost"
-                                // ref={fileInputRef}
-                                accept="image/*,.pdf"
-                              />
-                              <label className="custom-file-label" htmlFor="offerPost">
-                                {filePreviews.length > 0 
-                                  ? `${filePreviews.length} files selected` 
-                                  : ''}
-                              </label>
+                          <label className="form-label text-dark fw-semibold">
+                            Attachments (max 5)
+                            {filePreviews.length > 0 && (
+                              <span className="text-muted ms-2">
+                                ({filePreviews.length}/5 files)
+                              </span>
+                            )}
+                          </label>
+                          
+                          <div 
+                            className={`dropzone ${dragActive ? 'drag-active' : ''} ${filePreviews.length >= 5 ? 'dropzone-full' : ''}`}
+                            onClick={handleClick}
+                            onDragEnter={handleDrag}
+                            onDragOver={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDrop={handleDrop}
+                          >
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              multiple
+                              name="attachments"
+                              onChange={handleFileChange}
+                              className="d-none"
+                              accept="image/*,.pdf"
+                            />
+                            
+                            <div className="dropzone-content">
+                              <FaCloudUploadAlt size={42} className="text-danger mb-3" />
+                              <p className="mb-1">
+                                <strong>
+                                  {filePreviews.length >= 5 
+                                    ? 'Maximum files reached' 
+                                    : 'Drag & drop files here'}
+                                </strong>
+                              </p>
+                              <p className="text-muted mb-3">
+                                {filePreviews.length >= 5 
+                                  ? 'Remove files to add more' 
+                                  : 'or click to browse'}
+                              </p>
+                              
+                              {filePreviews.length < 5 && (
+                                <button 
+                                  type="button" 
+                                  className="btn btn-outline-primary"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleClick();
+                                    }
+                                  }
+                                >
+                                  Select Files
+                                </button>
+                              )}
+                              
+                              <p className="text-muted mt-2 mb-0">
+                                Supports JPG, PNG, PDF (Max 5MB each)
+                              </p>
                             </div>
+                          </div>
+                          
+                          {fileError && (
+                            <div className="text-danger mt-2">{fileError}</div>
+                          )}
                           
                           {filePreviews.length > 0 && (
-                            <div className="row mt-3">
-                              {filePreviews.map((preview, index) => (
-                                <div key={index} className="col-2 position-relative">
-                                  {preview.type.startsWith('image') ? (
-                                    <img 
-                                      src={preview.url} 
-                                      alt="preview" 
-                                      className="img-thumbnail" 
-                                      style={{ height: '100px', objectFit: 'cover' }}
-                                    />
-                                  ) : (
-                                    <div className="file-preview-icon">
-                                      {/* <FaFileAlt size={40} className="text-muted" /> */}
-                                      <small className="d-block text-truncate">{preview.name}</small>
+                            <div className="previews-container mt-3">
+                              <div className="row">
+                                {filePreviews.map((preview, index) => (
+                                  <div key={index} className="col-6 col-md-4 col-lg-3 position-relative mb-3">
+                                    <div className="preview-thumbnail">
+                                      {preview.type.startsWith('image') ? (
+                                        <img 
+                                          src={preview.url} 
+                                          alt="preview" 
+                                          className="img-fluid"
+                                        />
+                                      ) : (
+                                        <div className="file-preview">
+                                          <FaFileAlt size={24} className="text-muted" />
+                                          <small className="d-block text-truncate mt-1">
+                                            {preview.name}
+                                          </small>
+                                        </div>
+                                      )}
+                                      <button
+                                        type="button"
+                                        className="btn-remove"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleRemoveFile(index);
+                                        }}
+                                      >
+                                        <FaTimes />
+                                      </button>
                                     </div>
-                                  )}
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger btn-sm rounded-circle position-absolute"
-                                    style={{ top: '-10px', right: '-10px' }}
-                                    onClick={() => handleRemoveFile(index)}
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           )}
                         </div>
@@ -1378,7 +1499,5 @@
         </div>
       );
     };
-
-
 
 export default JobOfferForm;

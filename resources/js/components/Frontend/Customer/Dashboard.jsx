@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [editFormData, setEditFormData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [userData, setUserData] = useState({
@@ -198,41 +198,41 @@ const Dashboard = () => {
     });
   };
 
-
-
   useEffect(() => {
-  const fetchUserData = async () => {
-    try {
-      const response = await axios.get('/user/profile', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      // Add cache busting to initial image load
-      const avatarUrl = response.data.avatar_url 
-        ? `${response.data.avatar_url}?ts=${Date.now()}`
-        : null;
-      
-      setUserData({
-        name: response.data.name,
-        email: response.data.email,
-        joinDate: new Date(response.data.created_at).toLocaleDateString(),
-        profileImage: response.data.avatar_url  // Should already be full URL
-      });
-      
-      setProfileForm({
-        name: response.data.name,
-        email: response.data.email,
-        profileImage: avatarUrl
-      });
-    } catch (error) {
-      console.error('Failed to load user profile:', error);
-    }
-  };
-  
-  fetchUserData();
-}, []);
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/profile', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        // Add cache busting to initial image load
+        const avatarUrl = response.data.avatar_url 
+          ? `${response.data.avatar_url}?ts=${Date.now()}`
+          : null;
+        
+        setUserData({
+          name: response.data.name,
+          email: response.data.email,
+          joinDate: new Date(response.data.created_at).toLocaleDateString(),
+          profileImage: response.data.avatar_url  // Should already be full URL
+        });
+        
+        setProfileForm({
+          name: response.data.name,
+          email: response.data.email,
+          profileImage: avatarUrl
+        });
+      } catch (error) {
+        console.error('Failed to load user profile:', error);
+      }
+    };
+    
+    fetchUserData();
+    },
+    []
+  );
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -365,198 +365,102 @@ const Dashboard = () => {
     );
   };
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (profileForm.profileImage && profileForm.profileImage.startsWith('blob:')) {
-  //       URL.revokeObjectURL(profileForm.profileImage);
-  //     }
-  //   };
-  // }, [profileForm.profileImage]);
-
-    // Profile Section JSX
-  // const renderProfileInfo = () => (
-  // <div className="profile-section">
-  //   <div className="profile-header">
-  //     <div className="profile-image" onClick={() => isEditingProfile && document.getElementById('avatarInput').click()}>
-  //       {userData.profileImage ? (
-  //         <img 
-  //           src={userData.profileImage} 
-  //           alt="Profile" 
-  //           className={isEditingProfile ? "editable" : ""}
-  //         />
-  //       ) : (
-  //         <div className="profile-initials">
-  //           {userData.name.charAt(0)}
-  //         </div>
-  //       )}
-  //       {isEditingProfile && (
-  //         <div className="edit-overlay">
-  //           <FiEdit size={20} />
-  //           <input
-  //             id="avatarInput"
-  //             type="file"
-  //             name="profileImage"
-  //             style={{ display: 'none' }}
-  //             onChange={handleProfileChange}
-  //             accept="image/*"
-  //           />
-  //         </div>
-  //       )}
-  //     </div>
-  //     <div className="profile-meta">
-  //       <h2>
-  //         {isEditingProfile ? (
-  //           <input
-  //             type="text"
-  //             name="name"
-  //             value={profileForm.name}
-  //             onChange={handleProfileChange}
-  //             className="inline-edit"
-  //           />
-  //         ) : (
-  //           userData.name
-  //         )}
-  //         {!isEditingProfile && (
-  //           <button 
-  //             className="edit-icon"
-  //             onClick={() => setIsEditingProfile(true)}
-  //           >
-  //             <FiEdit size={16} />
-  //           </button>
-  //         )}
-  //       </h2>
-  //       <p>
-  //         {isEditingProfile ? (
-  //           <input
-  //             type="email"
-  //             name="email"
-  //             value={profileForm.email}
-  //             onChange={handleProfileChange}
-  //             className="inline-edit"
-  //           />
-  //         ) : (
-  //           userData.email
-  //         )}
-  //       </p>
-  //       <p>Member since {userData.joinDate}</p>
-  //     </div>
-  //   </div>
-    
-  //   {isEditingProfile && (
-  //     <div className="profile-actions">
-  //       <button 
-  //         className="tomato-button"
-  //         onClick={handleProfileUpdate}
-  //       >
-  //         Save Changes
-  //       </button>
-  //       <button 
-  //         className="cancel-button"
-  //         onClick={() => setIsEditingProfile(false)}
-  //       >
-  //         Cancel
-  //       </button>
-  //     </div>
-  //   )}
-  // </div>
-  // );
-
-    const renderProfileInfo = () => (
-      <div className="profile-section">
-        <div className="profile-header">
-          <div 
-            className="profile-image-wrapper"
-            onClick={() => document.getElementById('avatarInput').click()}
-          >
-            {userData.profileImage ? (
-              <div className="profile-image-container">
-                <img 
-                  src={userData.profileImage} 
-                  alt="Profile" 
-                  className="profile-image"
-                />
-                <div className="edit-overlay">
-                  <FiCamera size={20} />
-                </div>
+  const renderProfileInfo = () => (
+    <div className="profile-section">
+      <div className="profile-header">
+        <div 
+          className="profile-image-wrapper"
+          onClick={() => document.getElementById('avatarInput').click()}
+        >
+          {userData.profileImage ? (
+            <div className="profile-image-container">
+              <img 
+                src={userData.profileImage} 
+                alt="Profile" 
+                className="profile-image"
+              />
+              <div className="edit-overlay">
+                <FiCamera size={20} />
               </div>
-            ) : (
-              <div className="profile-initials">
-                {userData.name.charAt(0)}
-                <div className="edit-overlay">
-                  <FiCamera size={20} />
-                </div>
+            </div>
+          ) : (
+            <div className="profile-initials">
+              {userData.name.charAt(0)}
+              <div className="edit-overlay">
+                <FiCamera size={20} />
               </div>
-            )}
-            <input
-              id="avatarInput"
-              type="file"
-              name="profileImage"
-              style={{ display: 'none' }}
-              onChange={handleProfileChange}
-              accept="image/*"
-            />
-          </div>
-          
-          <div className="profile-meta">
-            <div className="name-field">
-              {isEditingName ? (
-                <input
-                  type="text"
-                  name="name"
-                  value={profileForm.name}
-                  onChange={handleProfileChange}
-                  className="inline-edit"
-                  autoFocus
-                  onBlur={() => setIsEditingName(false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') setIsEditingName(false)
-                  }}
-                />
-              ) : (
-                <h2 onClick={() => setIsEditingName(true)}>
-                  {userData.name}
-                  <FiEdit className="edit-icon" />
-                </h2>
-              )}
             </div>
-            
-            <div className="email-field">
-              {isEditingEmail ? (
-                <input
-                  type="email"
-                  name="email"
-                  value={profileForm.email}
-                  onChange={handleProfileChange}
-                  className="inline-edit"
-                  autoFocus
-                  onBlur={() => setIsEditingEmail(false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') setIsEditingEmail(false)
-                  }}
-                />
-              ) : (
-                <p onClick={() => setIsEditingEmail(true)}>
-                  {userData.email}
-                  <FiEdit className="edit-icon" />
-                </p>
-              )}
-            </div>
-            
-            <p>Member since {userData.joinDate}</p>
-          </div>
+          )}
+          <input
+            id="avatarInput"
+            type="file"
+            name="profileImage"
+            style={{ display: 'none' }}
+            onChange={handleProfileChange}
+            accept="image/*"
+          />
         </div>
         
-        <div className="profile-actions">
-          <button 
-            className="tomato-button"
-            onClick={handleProfileUpdate}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
+        <div className="profile-meta">
+          <div className="name-field">
+            {isEditingName ? (
+              <input
+                type="text"
+                name="name"
+                value={profileForm.name}
+                onChange={handleProfileChange}
+                className="inline-edit"
+                autoFocus
+                onBlur={() => setIsEditingName(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setIsEditingName(false)
+                }}
+              />
+            ) : (
+              <h2 onClick={() => setIsEditingName(true)}>
+                {userData.name}
+                <FiEdit className="edit-icon" />
+              </h2>
+            )}
+          </div>
+          
+          <div className="email-field">
+            {isEditingEmail ? (
+              <input
+                type="email"
+                name="email"
+                value={profileForm.email}
+                onChange={handleProfileChange}
+                className="inline-edit"
+                autoFocus
+                onBlur={() => setIsEditingEmail(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') setIsEditingEmail(false)
+                }}
+              />
+            ) : (
+              <p onClick={() => setIsEditingEmail(true)}>
+                {userData.email}
+                <FiEdit className="edit-icon" />
+              </p>
+            )}
+          </div>
+          
+          <p>Member since {userData.joinDate}</p>
         </div>
       </div>
-    );
+      
+      <div className="profile-actions">
+        <button 
+          className="tomato-button"
+          onClick={handleProfileUpdate}
+          disabled={isSaving}
+        >
+          {isSaving ? 'Saving...' : 'Save Changes'}
+        </button>
+      </div>
+    </div>
+  );
 
   // Change Password JSX
   const renderChangePassword = () => (
@@ -659,6 +563,7 @@ const Dashboard = () => {
     </div>
   );
 
+  // Render post content
   const renderPostsContent = () => (
       <div className="posts-content">
         <div className="posts-header">
@@ -701,7 +606,7 @@ const Dashboard = () => {
         </div>
         <EditModal />
       </div>
-    );
+  );
 
   const renderContent = () => {
     if (loading) {
@@ -748,77 +653,77 @@ const Dashboard = () => {
 
   return (
     <>
-     <div className="profile-summary tomato-border d-flex my-3 position-relative">
-        <div 
-          className="profile-image-small mr-3"
-          onClick={() => document.getElementById('avatarInput').click()}
-        >
-          {userData.profileImage ? (
-            <ProfileImage src={userData.profileImage} />
-          ) : (
-            <div className="profile-initials-small">
-              {userData.name.charAt(0)}
-            </div>
-          )}
-        </div>
-        <div className="profile-info-small position-absolute">
-          <h3>{userData.name}</h3>
-          <p>{userData.email}</p>
+      <div className="profile-summary tomato-border d-flex my-3 position-relative">
+          <div 
+            className="profile-image-small mr-3"
+            onClick={() => document.getElementById('avatarInput').click()}
+          >
+            {userData.profileImage ? (
+              <ProfileImage src={userData.profileImage} />
+            ) : (
+              <div className="profile-initials-small">
+                {userData.name.charAt(0)}
+              </div>
+            )}
+          </div>
+          <div className="profile-info-small position-absolute">
+            <h3>{userData.name}</h3>
+            <p>{userData.email}</p>
+          </div>
+      </div>
+      <div className="dashboard">
+        <nav className="tab-nav tomato-nav">
+
+          {/* Keep existing nav buttons with updated styling */}
+          <button 
+            className={activeTab === 'Profile' ? 'active tomato-button' : ''}
+            onClick={() => setActiveTab('Profile')}
+          >
+            <FiUser className="nav-icon" />
+            <span>Profile</span>
+          </button>
+          
+          {/* <button 
+            className={activeTab === 'editProfile' ? 'active' : ''}
+            onClick={() => setActiveTab('editProfile')}
+          >
+            <FiFileText className="nav-icon" />
+            <span>Edit Profile</span>
+          </button> */}
+          <button 
+            className={activeTab === 'changePassword' ? 'active' : ''}
+            onClick={() => setActiveTab('changePassword')}
+          >
+            <FiFileText className="nav-icon" />
+            <span>Change Password</span>
+          </button>
+          <button 
+            className={activeTab === 'ads' ? 'active' : ''}
+            onClick={() => setActiveTab('ads')}
+          >
+            <FiShoppingBag className="nav-icon" />
+            <span>Ads</span>
+          </button>
+          <button 
+            className={activeTab === 'directory' ? 'active' : ''}
+            onClick={() => setActiveTab('directory')}
+          >
+            <FiShoppingBag className="nav-icon" />
+            <span>Directories</span>
+          </button>
+          <button 
+            className={activeTab === 'banner' ? 'active' : ''}
+            onClick={() => setActiveTab('banner')}
+          >
+            <FiShoppingBag className="nav-icon" />
+            <span>Banners</span>
+          </button>
+        </nav>
+
+        <div className="dashboard-main">
+          {renderContent()}
         </div>
       </div>
-    <div className="dashboard">
-      <nav className="tab-nav tomato-nav">
-
-        {/* Keep existing nav buttons with updated styling */}
-        <button 
-          className={activeTab === 'Profile' ? 'active tomato-button' : ''}
-          onClick={() => setActiveTab('Profile')}
-        >
-          <FiUser className="nav-icon" />
-          <span>Profile</span>
-        </button>
-        
-        {/* <button 
-          className={activeTab === 'editProfile' ? 'active' : ''}
-          onClick={() => setActiveTab('editProfile')}
-        >
-          <FiFileText className="nav-icon" />
-          <span>Edit Profile</span>
-        </button> */}
-        <button 
-          className={activeTab === 'changePassword' ? 'active' : ''}
-          onClick={() => setActiveTab('changePassword')}
-        >
-          <FiFileText className="nav-icon" />
-          <span>Change Password</span>
-        </button>
-        <button 
-          className={activeTab === 'ads' ? 'active' : ''}
-          onClick={() => setActiveTab('ads')}
-        >
-          <FiShoppingBag className="nav-icon" />
-          <span>Ads</span>
-        </button>
-        <button 
-          className={activeTab === 'directory' ? 'active' : ''}
-          onClick={() => setActiveTab('directory')}
-        >
-          <FiShoppingBag className="nav-icon" />
-          <span>Directories</span>
-        </button>
-        <button 
-          className={activeTab === 'banner' ? 'active' : ''}
-          onClick={() => setActiveTab('banner')}
-        >
-          <FiShoppingBag className="nav-icon" />
-          <span>Banners</span>
-        </button>
-      </nav>
-
-      <div className="dashboard-main">
-        {renderContent()}
-      </div>
-    </div>
     </>
   );
 };

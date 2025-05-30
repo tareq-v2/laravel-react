@@ -1,6 +1,172 @@
-.form-control:focus{
-    box-shadow: none;
+/* Remove all previous CSS and replace with this */
+:root {
+  --tomato-primary: #ff6347;
+  --tomato-secondary: #ff7f6a;
+  --tomato-light: #ffece9;
+  --tomato-dark: #cc4e38;
+  --border-focus: 1px solid var(--tomato-primary);
 }
+
+/* Reset default styles */
+.form-control, 
+.form-select,
+.custom-file-input,
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="number"] {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.card{
+  border-color: var(--tomato-light);
+}
+.card-header{
+  background-color: var(--tomato-light);
+}
+.card:hover{
+  box-shadow: 0 4px 15px var(--tomato-dark);
+}
+/* Remove all focus effects */
+.form-control:focus,
+.form-select:focus,
+.custom-file-input:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus {
+  box-shadow: none !important;
+  border: var(--border-focus) !important;
+  outline: none !important;
+}
+
+/* Hover effects */
+.form-control:hover, 
+.form-select:hover,
+.custom-file-input:hover {
+  border-color: #aaa !important;
+}
+
+/* Tomato-themed elements */
+.is-invalid, 
+.is-invalid:focus {
+  border-color: var(--tomato-dark) !important;
+}
+
+.invalid-feedback {
+  color: var(--tomato-dark) !important;
+  font-size: 0.85rem !important;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--tomato-primary) !important;
+  border-color: var(--tomato-primary) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--tomato-dark) !important;
+  border-color: var(--tomato-dark) !important;
+  transform: translateY(-2px) !important;
+}
+
+.btn-outline-primary {
+  color: var(--tomato-primary) !important;
+  border-color: var(--tomato-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--tomato-light) !important;
+  border-color: var(--tomato-dark) !important;
+  color: var(--tomato-dark) !important;
+}
+
+/* Keyboard toggle button */
+.keyboard-toggle-btn {
+  background: white !important;
+  border: 1px solid var(--tomato-primary) !important;
+  border-radius: 4px !important;
+  padding: 4px 12px !important;
+  font-size: 0.875rem !important;
+  color: var(--tomato-primary) !important;
+  transition: all 0.2s !important;
+}
+
+.keyboard-toggle-btn:hover {
+  background: var(--tomato-light) !important;
+}
+
+.keyboard-toggle-btn.active {
+  background: var(--tomato-primary) !important;
+  color: white !important;
+}
+
+/* File preview remove button */
+.btn-danger {
+  background-color: var(--tomato-primary) !important;
+  border-color: var(--tomato-primary) !important;
+}
+
+.btn-danger:hover {
+  background-color: var(--tomato-dark) !important;
+  border-color: var(--tomato-dark) !important;
+}
+
+/* CAPTCHA refresh button */
+.btn-outline-dark:hover {
+  background-color: var(--tomato-light) !important;
+  border-color: var(--tomato-primary) !important;
+  color: var(--tomato-primary) !important;
+}
+
+/* Preview action buttons */
+.btn-back {
+  background-color: #f8f9fa !important;
+  border: 1px solid #ddd !important;
+  color: #333 !important;
+}
+
+.btn-back:hover {
+  background-color: #e9ecef !important;
+}
+
+.btn-submit {
+  background-color: var(--tomato-primary) !important;
+  color: white !important;
+}
+
+.btn-submit:hover {
+  background-color: var(--tomato-dark) !important;
+  color: white !important;
+}
+
+/* Feature selection styling */
+.feature-card {
+  border: 1px solid #eee !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.feature-card .card-header {
+  background-color: var(--tomato-light) !important;
+  border-bottom: 1px solid #eee !important;
+}
+
+.single-checkbox2:checked {
+  background-color: var(--tomato-primary) !important;
+  border-color: var(--tomato-primary) !important;
+}
+
+/* Add focus indicator for keyboard-active fields */
+.keyboard-active {
+  box-shadow: 0 0 0 2px var(--tomato-primary) !important;
+  border-color: transparent !important;
+}
+
 .captcha-display {
   background: #f8f9fa;
   padding: 3px 15px;
@@ -16,226 +182,180 @@
   text-align: center;
 }
 
-.refresh-icon {
-  font-size: 1rem;
-  transition: transform 0.3s ease;
+
+.btn-outline-dark:hover {
+  background-color: var(--tomato-light);
+  border-color: var(--tomato-primary);
+  color: var(--tomato-primary);
 }
 
-.btn-success:hover .refresh-icon {
-  transform: rotate(360deg);
-}
-.refresh-icon {
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
+
+.is-invalid, 
+.is-invalid:focus {
+  border-color: var(--tomato-dark) !important;
+  /* box-shadow: 0 0 0 0.2rem rgba(204, 78, 56, 0.25) !important; */
 }
 
-.btn-refresh {
-    height: 38px;
-    display: flex;
-    align-items: center;
-}
-.file-preview-icon {
-    width: 150px;
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
+.invalid-feedback {
+  color: var(--tomato-dark) !important;
+  font-size: 0.85rem !important;
+  display: block !important;
+  margin-top: 0.25rem !important;
 }
 
-.custom-file-input:focus ~ .custom-file-label {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-.virtual-keyboard-container {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-}
-.keyboard-toggle:checked + label {
-    color: #2450a0;
-}
-.shift-active {
-    background-color: #2450a0;
-    color: white;
+/* Add animation for invalid fields */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
-.virtual-keyboard-container {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.is-invalid {
+  animation: shake 0.4s ease-in-out !important;
 }
 
-[data-armenian-input]:focus {
-  caret-color: #2450a0;
-  box-shadow: 0 0 0 2px #2450a055;
+/* Make the keyboard toggle button more visible when active */
+.keyboard-toggle-btn.active {
+  background: var(--tomato-primary) !important;
+  color: white !important;
+  /* box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.5) !important; */
 }
 
-[data-armenian-input] {
-    caret-color: #2450a0;
-    caret-shape: block !important;
+/* .error-highlight {
+  border: 1px solid #cc4e38 !important;
+  border-color: #cc4e38 !important;
+  box-shadow: 0 0 0 0.2rem rgba(204, 78, 56, 0.25) !important;
+} */
+
+/* Styles to override Bootstrap */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #cc4e38 !important;
+  /* box-shadow: 0 0 0 0.2rem rgba(204, 78, 56, 0.25) !important; */
 }
 
-.keyboard-active {
-    box-shadow: 0 0 0 2px #2450a0;
+/* Make sure our custom error styles take precedence */
+.invalid-feedback {
+  color: #cc4e38 !important;
+  display: block !important;
 }
 
-.virtual-keyboard-container button {
-  min-width: 50px;
-  padding: 8px 12px;
+/* Add animation for invalid fields */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
-.btn-edit, .btn-submit {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 2px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transform: translateY(0);
+.is-invalid {
+  animation: shake 0.4s ease-in-out !important;
 }
 
-.btn-edit {
-    margin-right: 1rem;
-    background: #605e5a;
-    color: #fff;
+.btn-primary {
+  background-color: var(--tomato-primary) !important;
+  border-color: var(--tomato-primary) !important;
 }
 
-.btn-submit {
-    background: #3f88ff;
-    color: #fff;
+.btn-primary:hover {
+  background-color: var(--tomato-dark) !important;
+  border-color: var(--tomato-dark) !important;
 }
 
-.button-content {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
+.btn-danger {
+  background-color: var(--tomato-primary) !important;
+  border-color: var(--tomato-primary) !important;
 }
 
-/* Hover Effects */
-.btn-edit:hover, .btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.btn-danger:hover {
+  background-color: var(--tomato-dark) !important;
+  border-color: var(--tomato-dark) !important;
 }
 
-/* Active State */
-.btn-edit:active, .btn-submit:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* Gradient Overlay */
-.btn-edit::after, .btn-submit::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.1) 50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.btn-edit:hover::after, .btn-submit:hover::after {
-    opacity: 1;
-}
-
-/* Focus State */
-.btn-edit:focus, .btn-submit:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(63, 136, 255, 0.4);
-}
-
-/* Pulse Animation on Submit */
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-.btn-submit:hover {
-    animation: pulse 1.5s infinite;
-}
-.feature-card {
-  transition: transform 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--primary-color);
-}
-
-.duration-card {
+/* Drag & Drop Styling */
+.dropzone {
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid #eee;
-  border-radius: 10px;
-  padding: 1rem;
-  margin-right: 10px;
+  background-color: var(--tomato-light);
+  position: relative;
 }
 
-.duration-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+.dropzone:hover:not(.dropzone-full) {
+  border-color: var(--tomato-dark);
+  background-color: rgba(13, 110, 253, 0.05);
 }
 
-.duration-card.selected {
-  border-color: var(--primary-color);
-  background: rgba(100, 200, 100, 0.1);
+.dropzone.drag-active {
+  border-color: var(--tomato-primary);
+  background-color: rgba(13, 110, 253, 0.1);
+  transform: scale(1.01);
 }
 
-.price-bubble {
-  background: var(--gradient);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.btn-confirm:disabled {
-  opacity: 0.6;
+.dropzone.dropzone-full {
+  background-color: #f8f9fa;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 3px solid rgba(255,255,255,0.3);
-  border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 1s ease-in-out infinite;
+.dropzone-content {
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* Preview Styling */
+.previews-container {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
 }
 
-.interactive-preview {
-  border: 2px dashed #ddd;
+.preview-thumbnail {
+  position: relative;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eee;
   border-radius: 8px;
-  padding: 1rem;
-  transition: border-color 0.3s ease;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  padding: 8px;
 }
 
-.interactive-preview:hover {
-  border-color: var(--primary-color);
+.preview-thumbnail img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.file-preview {
+  padding: 0.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.btn-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--tomato-primary);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.btn-remove:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }

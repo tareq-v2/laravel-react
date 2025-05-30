@@ -93,7 +93,7 @@ const JobOfferList = () => {
       <section className="sptb">
         <div className="container">
           <div className="container w-85">
-            <div className="card mb-4">
+            <div className="card my-4">
               <div className="card-header d-flex justify-content-between align-items-center">
                 <h3 className="card-title">Categories</h3>
                 <Link to="/create-job-offer" className="btn post-btn">

@@ -93,9 +93,9 @@
 }
 
 /* Uniform spacing for all inputs */
-.mb-4, .form-label, .expiration-group {
+/* .mb-4, .form-label, .expiration-group {
   margin-bottom: 1rem !important;
-}
+} */
 
 /* Focus States */
 .form-control-lg:focus,
