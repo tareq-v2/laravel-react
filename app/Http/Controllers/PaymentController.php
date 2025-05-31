@@ -36,9 +36,19 @@ class PaymentController extends Controller
                 'email' => 'required|email',
             ]);
 
-
+            $expiredThreshold = Carbon::now()->subHours(config('drafts.expiration_hours'));
+            DraftPost::where('session_id', $validated['sessionId'])
+                ->where('created_at', '<', $expiredThreshold)
+                ->delete();
+                
             $draft = DraftPost::where('session_id', $validated['sessionId'])
             ->first();
+            if ($draft->created_at->lt($expiredThreshold)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Draft session expired'
+                ], 410);
+            }
             if (!$draft) {
                 return response()->json([
                     'success' => false,

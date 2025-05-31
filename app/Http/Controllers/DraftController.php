@@ -76,27 +76,54 @@ class DraftController extends Controller
         return response()->json($draft);
     }
 
-    public function getDraft($ip) {
-        $draft = DraftPost::where('ip_address', $ip)
-              ->where('expires_at', '>', now())
-              ->whereNull('retrieved_at')
-              ->latest()
-              ->first();
-        if (!$draft) {
-            return response()->json(['exists' => false]);
+    public function getDraft(Request $request) {
+        // $draft = DraftPost::where('ip_address', $ip)
+        //       ->where('expires_at', '>', now())
+        //       ->whereNull('retrieved_at')
+        //       ->latest()
+        //       ->first();
+        // if (!$draft) {
+        //     return response()->json(['exists' => false]);
+        // }
+
+        // // Mark as retrieved but keep the record
+        // $draft->update([
+        //     'retrieved_at' => now(),
+        //     'expires_at' => now()->addMinutes(15) // Extended window for completion
+        // ]);
+
+        // return response()->json([
+        //     'exists' => true,
+        //     'data' => json_decode($draft->data, true),
+        //     'draft_id' => $draft->id
+        // ]);
+
+        $ip = $request->input('ip');
+        $sessionId = $request->input('session_id');
+        
+        $query = DraftPost::query();
+        
+        if ($sessionId) {
+            $query->where('session_id', $sessionId);
+        } else {
+            $query->where('ip_address', $ip);
         }
-
-        // Mark as retrieved but keep the record
-        $draft->update([
-            'retrieved_at' => now(),
-            'expires_at' => now()->addMinutes(15) // Extended window for completion
-        ]);
-
-        return response()->json([
-            'exists' => true,
-            'data' => json_decode($draft->data, true),
-            'draft_id' => $draft->id
-        ]);
+        
+        $draft = $query->first();
+        
+        if ($draft) {
+            $draft->update([
+                'retrieved_at' => now(),
+                'expires_at' => now()->addMinutes(15) // Extended window for completion
+            ]);
+            return response()->json([
+                'exists' => true,
+                'data' => json_decode($draft->data, true),
+                'draft_id' => $draft->id
+            ]);
+        }
+        
+        return response()->json(['exists' => false]);
     }
 
     public function confirmDraftUsage($id)

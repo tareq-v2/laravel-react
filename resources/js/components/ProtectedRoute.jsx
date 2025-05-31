@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, allowedRoles, allowGuest = false }) => {
     }
     
     // No guest data - redirect to form
-    return <Navigate to="/job-offer-form" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Regular protected route (non-guest)

@@ -11,15 +11,25 @@ const AdSubCategories = () => {
   const { id } = useParams();
   const [adSubCategories, setAdSubCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Changed from array to null
+  const [error, setError] = useState(null);
+  const [containerClass, setContainerClass] = useState('');
 
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
         const response = await axios.get(`/ad/sub/category/icons/${id}`);
-        console.log(response.data.data);
         if (response.data) {
           setAdSubCategories(response.data.data);
+          
+          // Set container class based on item count
+          const count = response.data.data.length;
+          if (count === 1) {
+            setContainerClass('justify-content-center single-item');
+          } else if (count === 2 || count === 3) {
+            setContainerClass('justify-content-center few-items');
+          } else {
+            setContainerClass('');
+          }
         } else {
           throw new Error('Invalid data structure');
         }
@@ -31,18 +41,16 @@ const AdSubCategories = () => {
       }
     };
     fetchSubCategories();
-  }, []);
+  }, [id]);
 
   return (
     <div className="container">
       <section className="section-spacing">
         <div className="row">
-          <div className="col-md-2">
-          </div>
+          <div className="col-md-2"></div>
 
           <div className="col-md-8">
             <div className='ad-categories'>
-
               {loading ? (
                 <div className="text-center py-5">
                   <div className="spinner-border text-primary" role="status">
@@ -52,7 +60,7 @@ const AdSubCategories = () => {
               ) : error ? (
                 <div className="alert alert-danger text-center">{error}</div>
               ) : adSubCategories.length > 0 ? (
-                <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                <div className={`row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 ${containerClass}`}>
                   {adSubCategories.map((subCategory) => (
                     <div key={subCategory.id} className="col">
                       <Link 
@@ -61,7 +69,7 @@ const AdSubCategories = () => {
                       >
                         <div className="card-body text-center d-flex flex-column justify-content-center p-3">
                           <img
-                            src={`http://localhost:8000/storage/${subCategory.icon}`} // Fixed port to 8001
+                            src={`http://localhost:8000/storage/${subCategory.icon}`}
                             alt={subCategory.name}
                             className="img-fluid mb-3 mx-auto"
                             style={{ maxWidth: '80px', height: '80px', objectFit: 'contain' }}
@@ -85,8 +93,7 @@ const AdSubCategories = () => {
             </div>
           </div>
 
-          <div className="col-md-2">
-          </div>
+          <div className="col-md-2"></div>
         </div>
       </section>
     </div>

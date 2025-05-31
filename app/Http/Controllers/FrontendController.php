@@ -155,6 +155,7 @@ class FrontendController extends Controller
     public function getQuote()
     {
         Artisan::call('app:demote-expired-featured-posts');
+        Artisan::call('drafts:clean');
         $random = now()->timestamp;
         return response()->json([
             'quote' => Cache::remember('inspire-quote-'.$random, 1, function () {
