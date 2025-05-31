@@ -14,7 +14,8 @@ const AuthModal = ({ show, onHide, onGuestSubmit, saveDraftData }) => {
       <div className="modal-dialog modal-dialog-centered modal-sm">
         <div className="modal-content" style={{
           borderRadius: '12px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+          border: '1px solid rgba(255, 99, 71, 0.48)',
+          boxShadow: '0 4px 10px rgba(255, 99, 71, 0.48)'
         }}>
           <div className="modal-header border-0 pb-0">
             <h5 className="modal-title w-100 text-center text-dark">
@@ -59,7 +60,9 @@ const AuthModal = ({ show, onHide, onGuestSubmit, saveDraftData }) => {
                     <i className="bi bi-box-arrow-in-right fs-5"></i>
                   </div>
                   <div>
-                    <div className="text-dark fw-medium">Login</div>
+                    <div className="text-dark fw-medium">
+                      <h4>Login</h4>
+                    </div>
                     <small className="text-muted">Login to your account</small>
                   </div>
                 </div>
@@ -80,7 +83,9 @@ const AuthModal = ({ show, onHide, onGuestSubmit, saveDraftData }) => {
                     <i className="bi bi-person-plus fs-5"></i>
                   </div>
                   <div>
-                    <div className="text-dark fw-medium">Create account</div>
+                    <div className="text-dark fw-medium">
+                      <h5>Create account</h5>
+                    </div>
                     <small className="text-muted">Create new account</small>
                   </div>
                 </div>
@@ -100,15 +105,21 @@ const AuthModal = ({ show, onHide, onGuestSubmit, saveDraftData }) => {
                     <i className="bi bi-person fs-5"></i>
                   </div>
                   <div>
-                    <div className="text-dark fw-medium">Checkout as guest</div>
-                    <small className="text-muted">Continue without account</small>
+                    <div className="text-dark fw-medium">
+                      <h6>
+                        Checkout as guest
+                      </h6>
+                    </div>
+                  <small className="text-muted">Continue without account</small>
                   </div>
                 </div>
               </button>
             </div>
 
             <div className="text-center mt-4 mb-2">
-              <small className="text-muted">
+              <small style={{
+                color: 'rgb(255, 99, 71, 0.75)'
+              }}>
                 Draft will be saved automatically
               </small>
             </div>

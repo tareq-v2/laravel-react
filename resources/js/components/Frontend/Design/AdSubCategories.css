@@ -56,3 +56,39 @@
     max-width: 25%;
   }
 }
+
+/* Add these styles to your existing AdSubCategories.css */
+.subCategory-card {
+  border: 1px solid transparent;
+  transition: 
+    border 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
+}
+
+.subCategory-card:hover {
+  border: 1px solid tomato;
+  box-shadow: 0 4px 8px tomato;
+}
+
+.subCategory-card img,
+.subCategory-card h6 {
+  transition: 
+    transform 0.3s ease-in-out,
+    filter 0.3s ease-in-out;
+}
+
+.subCategory-card:hover img {
+  transform: scale(1.05);
+  filter: 
+    invert(24%) 
+    sepia(99%) 
+    saturate(2120%) 
+    hue-rotate(345deg) 
+    brightness(98%) 
+    contrast(101%);
+}
+
+.subCategory-card:hover h6 {
+  transform: scale(1.05);
+  color: tomato !important;
+}

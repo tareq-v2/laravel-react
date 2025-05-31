@@ -30,7 +30,7 @@ class JobOfferController extends Controller
                     ELSE UNIX_TIMESTAMP(created_at) 
                 END DESC"
             );
-
+        $query->with('images');
         $paginator = $query->paginate($perPage);
 
         $transformed = $paginator->getCollection()->map(function (JobOffer $offer) use ($now, $featureCutoff) {
@@ -43,8 +43,11 @@ class JobOfferController extends Controller
                 'is_expired' => $now->gt($offer->expire_date),
                 'is_featured' => $this->isFeatured($offer, $featureCutoff),
                 'feature' => $offer->feature,
-                'featured_at' => $offer->featured_at?->toIso8601String()
-            ];
+                'featured_at' => $offer->featured_at?->toIso8601String(),
+                'attachments' => $offer->images->map(function($image) {
+                    return ['image_path' => $image->image_path];
+                })->toArray()
+                ];
         });
 
         return response()->json([

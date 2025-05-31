@@ -65,19 +65,26 @@ const AdSubCategories = () => {
                     <div key={subCategory.id} className="col">
                       <Link 
                         to={`/${subCategory.route}`} 
-                        className="subCategory-card card h-100 border-0 shadow-sm text-decoration-none"
+                        className="subCategory-card card h-100 text-decoration-none"
+                        style={{
+                          borderRadius: '8px',
+                          background: 'white',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
                       >
                         <div className="card-body text-center d-flex flex-column justify-content-center p-3">
                           <img
                             src={`http://localhost:8000/storage/${subCategory.icon}`}
                             alt={subCategory.name}
                             className="img-fluid mb-3 mx-auto"
-                            style={{ maxWidth: '80px', height: '80px', objectFit: 'contain' }}
-                            onError={(e) => {
-                              e.target.src = '/default-icon.png';
+                            style={{ 
+                              maxWidth: '80px', 
+                              height: '80px', 
+                              objectFit: 'contain',
+                              transition: 'all 0.3s ease-in-out' // Ensures smooth transition
                             }}
                           />
-                          <h6 className="mb-0 text-dark fw-semibold">
+                          <h6 className="mb-0 text-dark fw-semibold" style={{ transition: 'all 0.3s ease-in-out' }}>
                             {subCategory.name || 'Unnamed Category'}
                           </h6>
                         </div>

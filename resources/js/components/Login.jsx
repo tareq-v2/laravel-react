@@ -60,7 +60,8 @@ export default function Login() {
     if (sessionId) {
       requestData.session_id = sessionId;
     }
-
+    
+    console.log(requestData);
     // Check for existing drafts using IP and/or session ID
     const draftResponse = await axios.post('/get-draft', requestData);
     
@@ -84,7 +85,7 @@ export default function Login() {
     console.error('Draft handling error:', error);
     navigate(fromPath); // Fallback navigation
   }
-};
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -14,36 +14,44 @@ export default function Register() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // const handleRegistrationSuccess = async () => {
-  //   try {
-  //     // Get client IP
-  //     const ipResponse = await axios.get('https://api.ipify.org?format=json');
-  //     const clientIP = ipResponse.data.ip;
-
-  //     // Check for existing drafts using the IP
-  //     const draftResponse = await axios.get(`/get-draft/${clientIP}`);
+  const handleRegistrationSuccess = async () => {
+    try {
+      // Get client IP
+      const ipResponse = await axios.get('https://api.ipify.org?format=json');
+      const clientIP = ipResponse.data.ip;
+      const sessionId = localStorage.getItem('draft_session');
+    
+      // Prepare request data
+      const requestData = { ip: clientIP };
+      if (sessionId) {
+        requestData.session_id = sessionId;
+      }
       
-  //     if (draftResponse.data.exists) {
-  //       // Redirect to payment page with draft data
-  //       navigate('/payment', {
-  //         state: { 
-  //           draftData: draftResponse.data.data,
-  //           draftId: draftResponse.data.draft_id
-  //         }
-  //       });
-  //     } else {
-  //       // Regular role-based navigation
-  //       const role = localStorage.getItem('role');
-  //       const redirectPath = role === 'admin' ? '/home' :
-  //                         role === 'super_admin' ? '/admin/dashboard' :
-  //                         '/user/dashboard';
-  //       navigate(redirectPath);
-  //     }
-  //   } catch (error) {
-  //     console.error('Draft handling error:', error);
-  //     navigate('/user/dashboard'); // Fallback navigation
-  //   }
-  // };
+      console.log(requestData);
+      // Check for existing drafts using IP and/or session ID
+      const draftResponse = await axios.post('/get-draft', requestData);
+      
+      if (draftResponse.data.exists) {
+        // Redirect to payment page with draft data
+        navigate('/payment', {
+          state: { 
+            draftData: draftResponse.data.data,
+            draftId: draftResponse.data.draft_id
+          }
+        });
+      } else {
+        // Regular role-based navigation
+        const role = localStorage.getItem('role');
+        const redirectPath = role === 'admin' ? '/home' :
+                          role === 'super_admin' ? '/admin/dashboard' :
+                          '/user/dashboard';
+        navigate(redirectPath);
+      }
+    } catch (error) {
+      console.error('Draft handling error:', error);
+      navigate('/user/dashboard'); // Fallback navigation
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,28 +62,28 @@ export default function Register() {
         // Store token and role from response
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('role', response.data.role || 'customer');
-
+        await handleRegistrationSuccess();
         // Get client IP for draft check
         const ipResponse = await axios.get('https://api.ipify.org?format=json');
         const clientIP = ipResponse.data.ip;
 
         // Check for existing drafts
-        try {
-          const draftResponse = await axios.get(`/get-draft/${clientIP}`);
-          if (draftResponse.data.exists) {
-            navigate('/payment', {
-              state: { 
-                draftData: draftResponse.data.data,
-                draftId: draftResponse.data.draft_id
-              }
-            });
-          } else {
-            navigate('/user/dashboard');
-          }
-        } catch (draftError) {
-          console.error('Draft check failed:', draftError);
-          navigate('/user/dashboard');
-        }
+        // try {
+        //   const draftResponse = await axios.get(`/get-draft/${clientIP}`);
+        //   if (draftResponse.data.exists) {
+        //     navigate('/payment', {
+        //       state: { 
+        //         draftData: draftResponse.data.data,
+        //         draftId: draftResponse.data.draft_id
+        //       }
+        //     });
+        //   } else {
+        //     navigate('/user/dashboard');
+        //   }
+        // } catch (draftError) {
+        //   console.error('Draft check failed:', draftError);
+        //   navigate('/user/dashboard');
+        // }
       }
     } catch (error) {
       if (error.response) {

@@ -45,7 +45,7 @@
 }
 
 .close-button:hover {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 99, 71, 0.48);
   transform: rotate(90deg);
 }
 
@@ -56,5 +56,5 @@
 }
 
 .close-button:hover svg {
-  color: #1f2937;
+  color: tomato;
 }
