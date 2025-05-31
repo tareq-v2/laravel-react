@@ -2,12 +2,14 @@ import { useRef, useState, useEffect } from 'react';
 import '../Design/CustomerDashboard.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FiHome, FiCamera, FiFileText, FiUser, FiShoppingBag, FiSettings, FiX, FiEdit, FiLock, FiImage } from 'react-icons/fi';
+import { FiHome, FiCheck, FiCamera, FiFileText, FiUser, FiShoppingBag, FiSettings, FiX, FiEdit, FiLock, FiImage, FiEye, FiEyeOff } from 'react-icons/fi';
 import JobOfferForm from '../../Frontend/create/JobOfferForm';
 import ColorThief from 'colorthief';
+import Lottie from 'lottie-react';
+import savePasswordAnimation from './savePasswordSuccess.json';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('ads');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +20,9 @@ const Dashboard = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
     email: '',
@@ -74,6 +79,19 @@ const Dashboard = () => {
     newPassword: '',
     confirmPassword: ''
   });
+
+  const [passwordVisibility, setPasswordVisibility] = useState({
+    oldPassword: false,
+    newPassword: false,
+    confirmPassword: false
+  });
+
+  const togglePasswordVisibility = (field) => {
+    setPasswordVisibility(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
 
   const [profileForm, setProfileForm] = useState({
     name: userData.name,
@@ -198,6 +216,51 @@ const Dashboard = () => {
     });
   };
 
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setIsChangingPassword(true);
+    setPasswordChangeError('');
+    
+    // Basic validation
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordChangeError('New passwords do not match');
+      setIsChangingPassword(false);
+      return;
+    }
+    
+    try {
+      const response = await axios.post('/change-password', {
+        oldPassword: passwordForm.oldPassword,
+        newPassword: passwordForm.newPassword,
+        newPassword_confirmation: passwordForm.confirmPassword
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.data.success) {
+        setPasswordChangeSuccess(true);
+        // Reset form
+        setPasswordForm({
+          oldPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => setPasswordChangeSuccess(false), 30000);
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+      setPasswordChangeError(
+        error.response?.data?.message || 'Failed to change password. Please try again.'
+      );
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -255,7 +318,7 @@ const Dashboard = () => {
       }
     };
     
-    if (activeTab === 'dashboard' || activeTab === 'posts') {
+    if (activeTab === 'ads') {
       fetchPosts();
     }
   }, [activeTab]);
@@ -465,48 +528,75 @@ const Dashboard = () => {
   // Change Password JSX
   const renderChangePassword = () => (
     <div className="password-section">
-      <h2>Change Password</h2>
-      <form className="password-form">
-        <div className="form-group">
-          <label>
-            <FiLock /> Old Password
-          </label>
-          <input 
-            type="password" 
-            name="oldPassword"
-            value={passwordForm.oldPassword}
-            onChange={handlePasswordChange}
-          />
+      
+      {passwordChangeSuccess ? (
+        <div className="password-success">
+          <div className="success-animation">
+            <Lottie 
+              animationData={savePasswordAnimation}
+              loop={false}
+              autoplay={true}
+              style={{ height: 150, width: 150 }}
+            />
+          </div>
+          <h3 className="tomato-text">Password Changed Successfully!</h3>
+          <p>Your password has been updated.</p>
         </div>
-        
-        <div className="form-group">
-          <label>
-            <FiLock /> New Password
-          </label>
-          <input 
-            type="password" 
-            name="newPassword"
-            value={passwordForm.newPassword}
-            onChange={handlePasswordChange}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <FiLock /> Confirm New Password
-          </label>
-          <input 
-            type="password" 
-            name="confirmPassword"
-            value={passwordForm.confirmPassword}
-            onChange={handlePasswordChange}
-          />
-        </div>
-
-        <button type="submit" className="tomato-button">
-          Update Password
-        </button>
-      </form>
+      ) : (
+        <form className="password-form" onSubmit={handlePasswordSubmit}>
+          {/* State for password visibility */}
+          {["oldPassword", "newPassword", "confirmPassword"].map(field => (
+            <div className="form-group" key={field}>
+              <label className="input-label">
+                <FiLock className="tomato-icon" /> 
+                <span>
+                  {field === "oldPassword" && "Old Password"}
+                  {field === "newPassword" && "New Password"}
+                  {field === "confirmPassword" && "Confirm Password"}
+                </span>
+              </label>
+              <div className="password-input-container">
+                <input 
+                  type={passwordVisibility[field] ? "text" : "password"}
+                  name={field}
+                  value={passwordForm[field]}
+                  onChange={handlePasswordChange}
+                  className="tomato-input"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => togglePasswordVisibility(field)}
+                >
+                  {passwordVisibility[field] ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
+            </div>
+          ))}
+          
+          {passwordChangeError && (
+            <div className="password-error">
+              <p>{passwordChangeError}</p>
+            </div>
+          )}
+          
+          <button 
+            type="submit" 
+            className="tomato-button"
+            disabled={isChangingPassword}
+          >
+            {isChangingPassword ? (
+              <span>Changing Password...</span>
+            ) : (
+              <>
+                <FiCheck className="mr-2" />
+                <span>Update Password</span>
+              </>
+            )}
+          </button>
+        </form>
+      )}
     </div>
   );
 
@@ -676,20 +766,13 @@ const Dashboard = () => {
 
           {/* Keep existing nav buttons with updated styling */}
           <button 
-            className={activeTab === 'Profile' ? 'active tomato-button' : ''}
+            className={activeTab === 'Profile' ? 'active' : ''}
             onClick={() => setActiveTab('Profile')}
           >
             <FiUser className="nav-icon" />
             <span>Profile</span>
           </button>
           
-          {/* <button 
-            className={activeTab === 'editProfile' ? 'active' : ''}
-            onClick={() => setActiveTab('editProfile')}
-          >
-            <FiFileText className="nav-icon" />
-            <span>Edit Profile</span>
-          </button> */}
           <button 
             className={activeTab === 'changePassword' ? 'active' : ''}
             onClick={() => setActiveTab('changePassword')}

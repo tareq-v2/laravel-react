@@ -323,6 +323,7 @@ export default function Login() {
           <span
             type="button"
             className="password-toggle position-absolute bottom-0 end-0 translate-middle-y me-2"
+            style={{ top: '68%'}}
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}

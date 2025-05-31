@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -117,6 +118,31 @@ class AuthController extends Controller
             'email' => $user->email,
             'created_at' => $user->created_at,
             'avatar_url' => $user->avatar ? asset('uploads/users/' . $user->avatar) : null
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'oldPassword' => 'required',
+            'newPassword' => 'required|min:6|confirmed',
+        ]);
+
+        $user = Auth::user();
+        
+        if (!Hash::check($request->oldPassword, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided old password is incorrect'
+            ], 401);
+        }
+
+        $user->password = Hash::make($request->newPassword);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully'
         ]);
     }
 }
