@@ -65,4 +65,5 @@ class BannerController extends Controller
     public function getSpot3Banners() { return $this->getSpotBanners(3); }
     public function getSpot4Banners() { return $this->getSpotBanners(4); }
     public function getSpot5Banners() { return $this->getSpotBanners(5); }
+    public function getSpot6Banners() { return $this->getSpotBanners(6); }
 }

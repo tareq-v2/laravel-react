@@ -69,6 +69,7 @@ Route::get('/get/spot-2-banners', [BannerController::class, 'getSpot2Banners']);
 Route::get('/banners/spot-3', [BannerController::class, 'getSpot3Banners']);
 Route::get('/banners/spot-4', [BannerController::class, 'getSpot4Banners']);
 Route::get('/banners/spot-5', [BannerController::class, 'getSpot5Banners']);
+Route::get('/banners/spot-6', [BannerController::class, 'getSpot6Banners']);
 Route::post('/save-draft', [DraftController::class, 'store']);
 Route::post('/get-draft', [DraftController::class, 'getDraft']);
 Route::post('/drafts/{id}/confirm', [DraftController::class, 'confirmDraftUsage']);

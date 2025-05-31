@@ -385,7 +385,7 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="profile-initials">
-              {userData.name.charAt(0)}
+              {/* {userData.name.charAt(0)} */}
               <div className="edit-overlay">
                 <FiCamera size={20} />
               </div>
@@ -662,7 +662,7 @@ const Dashboard = () => {
               <ProfileImage src={userData.profileImage} />
             ) : (
               <div className="profile-initials-small">
-                {userData.name.charAt(0)}
+                {/* {userData.name.charAt(0)} */}
               </div>
             )}
           </div>
