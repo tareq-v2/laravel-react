@@ -602,45 +602,48 @@ const JobOfferList = () => {
                 </div>
                 
                 {/* Pagination */}
-                <div className="d-flex justify-content-end mt-1">
-                  <nav>
-                    <ul className="pagination pagination-custom">
-                      <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                          aria-label="Previous"
-                        >
-                          <FaArrowLeft />
-                        </button>
-                      </li>
-                      
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <li
-                          key={page}
-                          className={`page-item ${currentPage === page ? 'active' : ''}`}
-                        >
+                {jobOffers.length > 0 && totalPages > 1 && (
+                  <div className="d-flex justify-content-end mt-1">
+                    <nav>
+                      <ul className="pagination pagination-custom">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                           <button
                             className="page-link"
-                            onClick={() => handlePageChange(page)}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            aria-label="Previous"
                           >
-                            {page}
+                            <FaArrowLeft />
                           </button>
                         </li>
-                      ))}
+                        
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                          <li
+                            key={page}
+                            className={`page-item ${currentPage === page ? 'active' : ''}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => handlePageChange(page)}
+                            >
+                              {page}
+                            </button>
+                          </li>
+                        ))}
 
-                      <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button
-                          className="page-link"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                          aria-label="Next"
-                        >
-                          <FaArrowRight />
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                          <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            aria-label="Next"
+                          >
+                            <FaArrowRight />
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                )}
+
               </div>
             </div>
           </div>

@@ -41,6 +41,21 @@ const VideoSection = () => {
     setCurrentVideo(video);
   };
 
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data.type === 'HOROSCOPE_SIGN_SELECTED') {
+        const sign = event.data.sign;
+        handleHoroscopeClick(sign);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+  
   const sliderSettings = {
     dots: false,
     infinite: false,

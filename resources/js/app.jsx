@@ -47,6 +47,7 @@ import HousingOtherRentals from './components/Frontend/adCategories/listing/Hous
 import Payment from './components/Frontend/create/Payment';
 import PostConfirmation from './components/Frontend/create/PostConfirmation';
 import UserManagement from './components/Backend/users/Index';
+import BlogManagement from './components/Backend/blogs/Index';
 import AdHistory from './components/Backend/ads/AdHistory';
 import AdCategories from './components/Backend/ads/AdCategories';
 import AdminAdSubCategories from './components/Backend/ads/AdSubCategories';
@@ -256,6 +257,7 @@ function App() {
             }
           >
             <Route path="users" element={<UserManagement/>} />
+            <Route path="blogs" element={<BlogManagement/>} />
             <Route path="ads/history" element={<AdHistory/>} />
             <Route path="ads/categories" element={<AdCategories/>} />
             <Route path="ads/Subcategories" element={<AdminAdSubCategories/>} />

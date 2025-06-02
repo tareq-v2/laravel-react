@@ -19,6 +19,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostPermissionController;
 use App\Http\Controllers\JobOfferController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\BlogController;
 
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 
@@ -63,6 +64,8 @@ Route::post('/contact', function (Request $request) {
   return response()->json(['message' => 'Contact form submitted successfully']);
   
 });
+Route::get('/proxy/horoscope', [FrontendController::class, 'horoscopeProxy']);
+Route::get('/horoscope-content', [FrontendController::class, 'horoscopeContent']);
 Route::get('/get/inspire', [FrontendController::class, 'getQuote']);
 Route::get('/get/top-header-banner', [BannerController::class, 'getTopBanner']);
 Route::get('/get/spot-2-banners', [BannerController::class, 'getSpot2Banners']);
@@ -88,7 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/products', [ProductController::class, 'products']);
   Route::get('/product/{id}', [ProductController::class, 'show']);
   Route::delete('/delete/products/{id}', [ProductController::class, 'destroy']);
-  Route::get('/users', [UserController::class, 'users']);
+  Route::get('/admin/users', [UserController::class, 'users']);
   Route::post('/user/create', [UserController::class, 'create']);
   Route::post('/user/edit/{id}', [UserController::class, 'edit']);
   Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
@@ -113,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
   Route::get('/user/posts', function(){
     $posts = \App\Models\JobOffer::where('user_id', Auth::user()->id)->where('is_verified', 1)->get();
+    // dd($posts);
     return response()->json([
         'posts' => $posts
     ]);
@@ -143,6 +147,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/posts/{id}/verify', [PostPermissionController::class, 'verify']);
   Route::get('/admin/get/un-verified/post/{id}', [PostPermissionController::class, 'getUnVerifiedPost']);
   Route::get('/admin/ads/history', [FrontendController::class, 'adsHistory']);
+  Route::resource('blogs', BlogController::class);
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);

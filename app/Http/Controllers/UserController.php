@@ -8,7 +8,7 @@ use App\Models\User;
 class UserController extends Controller
 {
     public function users()
-    {
+    {   
         $users = User::select(['id', 'name', 'email', 'created_at'])->get();
         return response()->json([
             'success' => true,
@@ -49,8 +49,6 @@ class UserController extends Controller
             'success' => true,
             'data' => $user
         ]);
-    }
-
-    
+    }  
 
 }

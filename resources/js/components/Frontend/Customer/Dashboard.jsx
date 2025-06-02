@@ -1,105 +1,114 @@
-import { useRef, useState, useEffect } from 'react';
-import '../Design/CustomerDashboard.css';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FiHome, FiCheck, FiCamera, FiFileText, FiUser, FiShoppingBag, FiSettings, FiX, FiEdit, FiLock, FiImage, FiEye, FiEyeOff } from 'react-icons/fi';
-import JobOfferForm from '../../Frontend/create/JobOfferForm';
-import ColorThief from 'colorthief';
-import Lottie from 'lottie-react';
-import savePasswordAnimation from './savePasswordSuccess.json';
+import { 
+  FiHome, FiCheck, FiCamera, FiFileText, 
+  FiUser, FiShoppingBag, FiSettings, FiX, 
+  FiEdit, FiLock, FiImage, FiEye, FiEyeOff 
+} from 'react-icons/fi';
+import '../Design/CustomerDashboard.css';
+import ProfileSection from '../Customer/dashboard/ProfileSection';
+import PasswordSection from '../Customer/dashboard/PasswordSection';
+import AdsSection from '../Customer/dashboard/AdsSection';
+import DirectoriesSection from '../Customer/dashboard/DirectoriesSection';
+import BannersSection from '../Customer/dashboard/BannersSection';
+import ProfileImage from '../Customer/dashboard/ProfileImage';
+// import savePasswordAnimation from './savePasswordSuccess.json';
 
 const Dashboard = () => {
+  // State management
   const [activeTab, setActiveTab] = useState('ads');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingPost, setEditingPost] = useState(null);
-  const [editFormData, setEditFormData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
-  const [passwordChangeError, setPasswordChangeError] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [userData, setUserData] = useState({
     name: '',
     email: '',
     joinDate: '',
     profileImage: null
   });
-
-  const ProfileImage = ({ src }) => {
-    const imgRef = useRef(null);
-    const [shadowColor, setShadowColor] = useState('rgba(0,0,0,0.1)');
-  
-    useEffect(() => {
-      if (imgRef.current && src) {
-        const colorThief = new ColorThief();
-        
-        const updateShadow = () => {
-          try {
-            const dominantColor = colorThief.getColor(imgRef.current);
-            const [r, g, b] = dominantColor;
-            setShadowColor(`rgba(${r},${g},${b},0.4)`);
-          } catch (error) {
-            setShadowColor('rgba(255,99,71,0.4)'); // Fallback to tomato color
-          }
-        };
-  
-        if (imgRef.current.complete) {
-          updateShadow();
-        } else {
-          imgRef.current.addEventListener('load', updateShadow);
-        }
-  
-        return () => {
-          imgRef.current?.removeEventListener('load', updateShadow);
-        };
-      }
-    }, [src]);
-  
-    return (
-      <img
-        ref={imgRef}
-        src={src}
-        alt="Profile"
-        className="profile-image-small"
-        style={{ 
-          boxShadow: `0 8px 20px ${shadowColor}`,
-          transition: 'box-shadow 0.3s ease-in-out'
-        }}
-      />
-    );
-  };
-
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    email: '',
+    profileImage: null
+  });
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false);
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  const [passwordVisibility, setPasswordVisibility] = useState({
-    oldPassword: false,
-    newPassword: false,
-    confirmPassword: false
-  });
-
-  const togglePasswordVisibility = (field) => {
-    setPasswordVisibility(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
+  const fetchPostForEditing = async (postId) => {
+    try {
+      const response = await axios.get(`/user/post/edit/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      console.log(response.data);
+      setEditingPost(response.data.post);
+      initializeEditForm(response.data.post);
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      setError('Failed to load post details');
+    }
   };
 
-  const [profileForm, setProfileForm] = useState({
-    name: userData.name,
-    email: userData.email,
-    profileImageFile: userData.avatar_url,   
-    profileImage: userData.avatar_url
-  });
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('/user/profile');
+        const avatarUrl = response.data.avatar_url 
+          ? `${response.data.avatar_url}?ts=${Date.now()}`
+          : null;
+        
+        setUserData({
+          name: response.data.name,
+          email: response.data.email,
+          joinDate: new Date(response.data.created_at).toLocaleDateString(),
+          profileImage: response.data.avatar_url
+        });
+        
+        setProfileForm({
+          name: response.data.name,
+          email: response.data.email,
+          profileImage: avatarUrl
+        });
+      } catch (error) {
+        console.error('Failed to load user profile:', error);
+      }
+    };
+    
+    fetchUserData();
+  }, []);
 
+  // Fetch posts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (activeTab !== 'ads') return;
+      
+      try {
+        const response = await axios.get('/user/posts');
+        setPosts(response.data?.posts || []);
+        // console.log(response.data);
+        setError(null);
+      } catch (error) {
+        setError('Failed to load posts');
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPosts();
+  }, [activeTab]);
+
+  // Profile handlers
   const handleProfileChange = (e) => {
     if (e.target.name === 'profileImage') {
       const file = e.target.files[0];
@@ -131,7 +140,7 @@ const Dashboard = () => {
       }));
     }
   };
-
+  
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     
@@ -209,6 +218,7 @@ const Dashboard = () => {
     }
   };
 
+  // Password handlers
   const handlePasswordChange = (e) => {
     setPasswordForm({
       ...passwordForm,
@@ -249,7 +259,7 @@ const Dashboard = () => {
         });
         
         // Hide success message after 3 seconds
-        setTimeout(() => setPasswordChangeSuccess(false), 30000);
+        setTimeout(() => setPasswordChangeSuccess(false), 3000);
       }
     } catch (error) {
       console.error('Password change error:', error);
@@ -261,110 +271,7 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get('/user/profile', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        // Add cache busting to initial image load
-        const avatarUrl = response.data.avatar_url 
-          ? `${response.data.avatar_url}?ts=${Date.now()}`
-          : null;
-        
-        setUserData({
-          name: response.data.name,
-          email: response.data.email,
-          joinDate: new Date(response.data.created_at).toLocaleDateString(),
-          profileImage: response.data.avatar_url  // Should already be full URL
-        });
-        
-        setProfileForm({
-          name: response.data.name,
-          email: response.data.email,
-          profileImage: avatarUrl
-        });
-      } catch (error) {
-        console.error('Failed to load user profile:', error);
-      }
-    };
-    
-    fetchUserData();
-    },
-    []
-  );
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get('/user/posts', {
-          headers: { 
-            Authorization: `Bearer ${localStorage.getItem('token')}` 
-          }
-        });
-        console.log(response.data);
-        // Ensure we always get an array
-        setPosts(response.data?.posts || []);
-        setError(null);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-        setError('Failed to load posts');
-        setPosts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    if (activeTab === 'ads') {
-      fetchPosts();
-    }
-  }, [activeTab]);
-
-  const fetchPostForEditing = async (postId) => {
-    try {
-      const response = await axios.get(`/user/post/edit/${postId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      console.log(response.data);
-      setEditingPost(response.data.post);
-      initializeEditForm(response.data.post);
-    } catch (error) {
-      console.error('Error fetching post:', error);
-      setError('Failed to load post details');
-    }
-  };
-
-  // Initialize edit form with existing data
-  const initializeEditForm = (post) => {
-    setEditFormData({
-      title: post.title,
-      city: post.city,
-      category: post.category,
-      description: post.description,
-      businessName: post.businessName,
-      address: post.address,
-      salary: post.salary,
-      name: post.contactName,
-      telNo: post.telNo,
-      telExt: post.tel_ext,
-      altTelNo: post.altTelNo,
-      altTelExt: post.alt_tel_ext,
-      email: post.email,
-      website: post.website,
-      keywords: post.keywords,
-      featured: post.feature,
-      attachments: post.attachments || [],
-      postId: post.id
-    });
-    setIsEditing(true);
-  };
-
-    // Handle post update
+  // Handle post update
   const handleUpdatePost = async (formData) => {
     try {
       const payload = new FormData();
@@ -401,341 +308,44 @@ const Dashboard = () => {
     }
   };
 
-  // Edit modal component
-  const EditModal = () => {
-    if (!isEditing) return null;
-
-    return (
-      <div className="edit-modal-overlay">
-        <div className="edit-modal-content">
-          <div className="modal-header">
-            <h3>Edit Post</h3>
-            <button onClick={() => setIsEditing(false)}>
-              <FiX />
-            </button>
-          </div>
-
-          <div className="modal-body">
-            <JobOfferForm 
-              isEditMode={true}
-              initialData={editFormData}
-              onSubmit={handleUpdatePost}
-              onCancel={() => setIsEditing(false)}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderProfileInfo = () => (
-    <div className="profile-section">
-      <div className="profile-header">
-        <div 
-          className="profile-image-wrapper"
-          onClick={() => document.getElementById('avatarInput').click()}
-        >
-          {userData.profileImage ? (
-            <div className="profile-image-container">
-              <img 
-                src={userData.profileImage} 
-                alt="Profile" 
-                className="profile-image"
-              />
-              <div className="edit-overlay">
-                <FiCamera size={20} />
-              </div>
-            </div>
-          ) : (
-            <div className="profile-initials">
-              {/* {userData.name.charAt(0)} */}
-              <div className="edit-overlay">
-                <FiCamera size={20} />
-              </div>
-            </div>
-          )}
-          <input
-            id="avatarInput"
-            type="file"
-            name="profileImage"
-            style={{ display: 'none' }}
-            onChange={handleProfileChange}
-            accept="image/*"
-          />
-        </div>
-        
-        <div className="profile-meta">
-          <div className="name-field">
-            {isEditingName ? (
-              <input
-                type="text"
-                name="name"
-                value={profileForm.name}
-                onChange={handleProfileChange}
-                className="inline-edit"
-                autoFocus
-                onBlur={() => setIsEditingName(false)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') setIsEditingName(false)
-                }}
-              />
-            ) : (
-              <h2 onClick={() => setIsEditingName(true)}>
-                {userData.name}
-                <FiEdit className="edit-icon" />
-              </h2>
-            )}
-          </div>
-          
-          <div className="email-field">
-            {isEditingEmail ? (
-              <input
-                type="email"
-                name="email"
-                value={profileForm.email}
-                onChange={handleProfileChange}
-                className="inline-edit"
-                autoFocus
-                onBlur={() => setIsEditingEmail(false)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') setIsEditingEmail(false)
-                }}
-              />
-            ) : (
-              <p onClick={() => setIsEditingEmail(true)}>
-                {userData.email}
-                <FiEdit className="edit-icon" />
-              </p>
-            )}
-          </div>
-          
-          <p>Member since {userData.joinDate}</p>
-        </div>
-      </div>
-      
-      <div className="profile-actions">
-        <button 
-          className="tomato-button"
-          onClick={handleProfileUpdate}
-          disabled={isSaving}
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
-      </div>
-    </div>
-  );
-
-  // Change Password JSX
-  const renderChangePassword = () => (
-    <div className="password-section">
-      
-      {passwordChangeSuccess ? (
-        <div className="password-success">
-          <div className="success-animation">
-            <Lottie 
-              animationData={savePasswordAnimation}
-              loop={false}
-              autoplay={true}
-              style={{ height: 150, width: 150 }}
-            />
-          </div>
-          <h3 className="tomato-text">Password Changed Successfully!</h3>
-          <p>Your password has been updated.</p>
-        </div>
-      ) : (
-        <form className="password-form" onSubmit={handlePasswordSubmit}>
-          {/* State for password visibility */}
-          {["oldPassword", "newPassword", "confirmPassword"].map(field => (
-            <div className="form-group" key={field}>
-              <label className="input-label">
-                <FiLock className="tomato-icon" /> 
-                <span>
-                  {field === "oldPassword" && "Old Password"}
-                  {field === "newPassword" && "New Password"}
-                  {field === "confirmPassword" && "Confirm Password"}
-                </span>
-              </label>
-              <div className="password-input-container">
-                <input 
-                  type={passwordVisibility[field] ? "text" : "password"}
-                  name={field}
-                  value={passwordForm[field]}
-                  onChange={handlePasswordChange}
-                  className="tomato-input"
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => togglePasswordVisibility(field)}
-                >
-                  {passwordVisibility[field] ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </div>
-            </div>
-          ))}
-          
-          {passwordChangeError && (
-            <div className="password-error">
-              <p>{passwordChangeError}</p>
-            </div>
-          )}
-          
-          <button 
-            type="submit" 
-            className="tomato-button"
-            disabled={isChangingPassword}
-          >
-            {isChangingPassword ? (
-              <span>Changing Password...</span>
-            ) : (
-              <>
-                <FiCheck className="mr-2" />
-                <span>Update Password</span>
-              </>
-            )}
-          </button>
-        </form>
-      )}
-    </div>
-  );
-
-  // Edit Profile JSX
-  const renderEditProfile = () => (
-    <div className="edit-profile-section">
-      <h2>Edit Profile</h2>
-      <form className="edit-profile-form" onSubmit={handleProfileUpdate}>
-        <div className="form-group">
-          <label>
-            <FiUser /> Full Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={profileForm.name}
-            onChange={handleProfileChange}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <FiImage /> Profile Picture
-          </label>
-          <input
-            type="file"
-            name="profileImage"
-            onChange={handleProfileChange}
-            accept="image/*"
-          />
-          {/* {profileForm.profileImage && (
-            <div className="image-preview">
-              <img src={profileForm.profileImage} alt="Preview" />
-            </div>
-          )} */}
-        </div>
-
-        <div className="form-group">
-          <label>
-            <FiUser /> Email Address
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={profileForm.email}
-            onChange={handleProfileChange}
-          />
-        </div>
-
-        <button type="submit" className="tomato-button">
-          Save Changes
-        </button>
-      </form>
-    </div>
-  );
-
-  // Render post content
-  const renderPostsContent = () => (
-      <div className="posts-content">
-        <div className="posts-header">
-          <h2>Your Recent Posts</h2>
-          <Link to="/create-job-offer" className="new-post-button">
-            Create New Post
-          </Link>
-        </div>
-        <div className="post-list">
-          {posts.length > 0 ? posts.map(post => (
-            <div key={post.id} className="post-item">
-              <div className="post-info">
-                <h4>{post.title}</h4>
-                <span className={`status-badge ${post.is_verified}`}>
-                  {post.is_verified == 0 ? 'In Progress' : 'Published'}
-                </span>
-              </div>
-              <div className="post-meta">
-                <span className="post-date">
-                  {new Date(post.created_at).toLocaleDateString()}
-                </span>
-                <div className="post-actions">
-                  {post.is_verified == 0 && (
-                    <button 
-                      className="post-action"
-                      onClick={() => fetchPostForEditing(post.id)}
-                    >
-                      <FiEdit /> Edit
-                    </button>
-                  )}
-                  <button className="post-action ml-3">
-                    {post.is_verified == 1 ? 'Manage' : 'Preview'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )) : (
-            <div className="no-posts">No posts found</div>
-          )}
-        </div>
-        <EditModal />
-      </div>
-  );
-
+  // Render content based on active tab
   const renderContent = () => {
-    if (loading) {
-      return <div className="loading">Loading posts...</div>;
-    }
-
-    if (error) {
-      return <div className="error">{error}</div>;
-    }
-
-    const processingCount = posts.filter(post => post.is_verified == 0).length;
-    const publishedCount = posts.filter(post => post.is_verified == 1).length;
-
     switch(activeTab) {
       case 'Profile':
-        return renderProfileInfo();
-      case 'editProfile':
-        return renderEditProfile();
+        return (
+          <ProfileSection
+            userData={userData}
+            profileForm={profileForm}
+            handleProfileChange={handleProfileChange}
+            handleProfileUpdate={handleProfileUpdate}
+            isSaving={isSaving}
+          />
+        );
       case 'changePassword':
-        return renderChangePassword();
+        return (
+          <PasswordSection
+            passwordForm={passwordForm}
+            passwordChangeError={passwordChangeError}
+            passwordChangeSuccess={passwordChangeSuccess}
+            isChangingPassword={isChangingPassword}
+            handlePasswordChange={handlePasswordChange}
+            handlePasswordSubmit={handlePasswordSubmit}
+          />
+        );
       case 'ads':
-        return renderPostsContent();
+        return (
+          <AdsSection
+            posts={posts}
+            loading={loading}
+            error={error}
+            fetchPostForEditing={fetchPostForEditing}
+            handleUpdatePost={handleUpdatePost}
+          />
+        );
       case 'directory':
-        return (
-          <div className="dummy-section">
-            <h2>Directories</h2>
-            <p>Directory management coming soon</p>
-            <div className="dummy-box tomato-border"></div>
-          </div>
-        );
+        return <DirectoriesSection />;
       case 'banner':
-        return (
-          <div className="dummy-section">
-            <h2>Banners</h2>
-            <p>Banner management coming soon</p>
-            <div className="dummy-box tomato-border"></div>
-          </div>
-        );
-      
+        return <BannersSection />;
       default:
         return null;
     }
@@ -743,28 +353,28 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="profile-summary tomato-border d-flex my-3 position-relative">
-          <div 
-            className="profile-image-small mr-3"
-            onClick={() => document.getElementById('avatarInput').click()}
-          >
-            {userData.profileImage ? (
-              <ProfileImage src={userData.profileImage} />
-            ) : (
-              <div className="profile-initials-small">
-                {/* {userData.name.charAt(0)} */}
-              </div>
-            )}
-          </div>
-          <div className="profile-info-small position-absolute">
-            <h3>{userData.name}</h3>
-            <p>{userData.email}</p>
-          </div>
+      <div className="profile-summary d-flex my-3 position-relative">
+        <div 
+          className="profile-image-small mr-3"
+          onClick={() => document.getElementById('avatarInput').click()}
+        >
+          {userData.profileImage ? (
+            <ProfileImage src={userData.profileImage} />
+          ) : (
+            <div className="profile-initials-small">
+              {/* {userData.name.charAt(0)} */}
+            </div>
+          )}
+        </div>
+        <div className="profile-info-small position-absolute">
+          <h3>{userData.name}</h3>
+          <p>{userData.email}</p>
+        </div>
       </div>
+      
       <div className="dashboard">
         <nav className="tab-nav tomato-nav">
-
-          {/* Keep existing nav buttons with updated styling */}
+          {/* ... navigation tabs ... */}
           <button 
             className={activeTab === 'Profile' ? 'active' : ''}
             onClick={() => setActiveTab('Profile')}

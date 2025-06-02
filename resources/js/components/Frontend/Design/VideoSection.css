@@ -1,7 +1,6 @@
 .banner-description-slide {
   transition: transform 0.3s ease;
 }
-
 .banner-description-slide:hover {
   transform: scale(1.05);
 }

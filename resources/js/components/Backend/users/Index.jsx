@@ -19,14 +19,12 @@ const UserManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('/users', {
+            const response = await axios.get('/admin/users', {
                 headers: {
-                    Authorization: `Bearer ${token}`  // Add Bearer token to headers
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
                 }
             );
-            console.log(response.data.data);
             setUsers(response.data.data);
         } catch (err) {
             handleError(err);

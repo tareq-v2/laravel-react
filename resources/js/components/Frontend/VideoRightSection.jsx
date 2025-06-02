@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Slider from 'react-slick';
 import './Design/VideoRightSection.css';
@@ -17,6 +17,7 @@ import "swiper/css/effect-fade";
 import { EffectFade, Autoplay, Pagination, Navigation } from "swiper/modules";
 
 const VideoRightSection = () => {
+  const [isIframeLoading, setIsIframeLoading] = useState(false);
   const [iframeSrc, setIframeSrc] = useState('');
   const [showIframe, setShowIframe] = useState(false);
   const [banners, setBanners] = useState([]);
@@ -24,8 +25,9 @@ const VideoRightSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isHoroscopeLoading, setIsHoroscopeLoading] = useState(false);
   const [selectedSign, setSelectedSign] = useState(null);
-
-   const [spot2Banners, setSpot2Banners] = useState([]);
+  const iframeRef = useRef(null);
+  const [modifiedContent, setModifiedContent] = useState('');
+  const [spot2Banners, setSpot2Banners] = useState([]);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const [bannersLoading, setBannersLoading] = useState(true);
@@ -91,37 +93,32 @@ const VideoRightSection = () => {
     }, 1000);
   }, []);
 
-  const handleHoroscopeClick = async (sign, e) => {
-    e.preventDefault();
+  const handleHoroscopeClick = async (sign) => {
     setSelectedSign(sign);
     setIsHoroscopeLoading(true);
     
     try {
       setIsLoading(true);
-      const baseUrl = `https://mydailyhoroscope.org/widget.php?sign=${sign}&bc=000000&fc=ffffff&fs=12&h=`;
-      const modifiedSrc = baseUrl.replace('https:', '');
-      
-      const response = await axios.get('/checkHoroscope', {
-        params: { src: modifiedSrc },
-        headers: {
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        }
-      });
-      
-      setIframeSrc(response.data.session);
+      const proxyUrl = `/proxy/horoscope?sign=${sign}`;
+      const contentResponse = await axios.get(proxyUrl);
+      setIsIframeLoading(true);
+      setModifiedContent(contentResponse.data);
       setShowIframe(true);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching horoscope:', error);
     } finally {
       setIsHoroscopeLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleCloseIframe = () => {
     setShowIframe(false);
     setSelectedSign(null);
+    setIsIframeLoading(false);
   };
+
   return (
     <div className="col-lg-5">
 
@@ -152,7 +149,7 @@ const VideoRightSection = () => {
       <div>
         {
           loading ?  <div>Loading...</div> : (
-            <div className="p-3 bg-light rounded-3 position-relative horoscope-section">
+            <div className="pt-3 pb-1 bg-light rounded-3 position-relative horoscope-section">
             {!showIframe ? (
               <>
                 <div className="text-center mb-2">
@@ -203,16 +200,31 @@ const VideoRightSection = () => {
               <div className="position-relative">
                 <button
                   className="btn btn-danger btn-sm position-absolute"
-                  style={{ right: 15, top: -10, zIndex: 1 }}
+                  style={{ right: 15, top: -10, zIndex: 10 }}
                   onClick={handleCloseIframe}
                 >
                   &times;
                 </button>
+                
+                {/* Interactive loader for iframe */}
+                {isIframeLoading && (
+                  <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style={{ zIndex: 5 }}>
+                    <div className="spinner-border" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <span className="ms-2">Loading horoscope...</span>
+                  </div>
+                )}
+                
                 <iframe
-                  className="w-100 rounded-2"
-                  style={{ height: '250px', border: 'none' }}
-                  src={iframeSrc}
+                  className="w-100 rounded-1"
+                  style={{ height: '280px', border: 'none' }}
+                  srcDoc={modifiedContent}
                   title="Horoscope"
+                  sandbox="allow-scripts allow-popups"
+                  // Hide iframe until loaded
+                  styles={{ visibility: isIframeLoading ? 'hidden' : 'visible', height: '280px', border: 'none' }}
+                  onLoad={() => setIsIframeLoading(false)}
                 />
               </div>
             )}

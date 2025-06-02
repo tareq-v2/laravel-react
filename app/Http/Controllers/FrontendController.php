@@ -165,4 +165,107 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function horoscopeProxy(Request $request)
+    {
+        $sign = $request->query('sign');
+        $url = "https://mydailyhoroscope.org/widget.php?sign={$sign}&bc=000000&fc=ffffff&fs=12&h=";
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->get($url);
+            $content = $response->getBody()->getContents();
+
+            // Remove problematic scripts
+            $content = preg_replace(
+                '/<script\b[^>]*>window\.open\([^)]*\)[^<]*<\/script>/i', 
+                '', 
+                $content
+            );
+
+            // Add communication script
+            $customScript = <<<EOT
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Add event listeners to dropdown items
+                    document.querySelectorAll('.dropdown-item').forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const sign = this.href.split('sign=')[1].split('&')[0];
+                            
+                            // Send message to parent window
+                            window.parent.postMessage({
+                                type: 'HOROSCOPE_SIGN_SELECTED',
+                                sign: sign
+                            }, '*');
+                        });
+                    });
+                });
+                </script>
+                EOT;
+
+            // Inject CSS (same as before)
+            $customCSS = <<<EOT
+                <style>
+                body { 
+                    background-color: tomato !important; 
+                    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+                    color: #fff !important;
+                }
+                body small {
+                    display: none !important;
+                }
+                .tab-content { 
+                    background-color: white !important; 
+                    border-radius: 4px !important;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+                    padding: 15px 10px !important;
+                    margin-top: 5px !important;
+                    background: tomato !important;
+                }
+
+                /* Hide the dropdown toggle caret */
+                .dropdown-toggle::after {
+                    display: none !important;
+                }
+                .nav-tabs {
+                    display: none !important;
+                }
+                </style>
+                EOT;
+
+            // Inject CSS and script
+            $modifiedContent = str_replace('</head>', $customCSS . $customScript . '</head>', $content);
+
+            return response($modifiedContent)->header('Content-Type', 'text/html');
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function horoscopeContent(Request $request)
+    {
+        $sign = $request->query('sign', 'Leo');
+        $url = "https://mydailyhoroscope.org/widget.php?sign={$sign}&bc=000000&fc=ffffff&fs=12&h=";
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->get($url);
+            $content = $response->getBody()->getContents();
+
+            // Parse and return only the tab content
+            $dom = new \DOMDocument();
+            @$dom->loadHTML($content);
+            $xpath = new \DOMXPath($dom);
+            $tabContent = $xpath->query('//div[@id="myTabContent"]')->item(0);
+            
+            if ($tabContent) {
+                return $dom->saveHTML($tabContent);
+            }
+            
+            return response()->json(['error' => 'Content not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaBox, 
@@ -141,7 +143,12 @@ const Home = () => {
             {/* <Link to="/home/chat" className="nav-item" data-tooltip="Chat">
               <FaComments className="nav-icon" />
               {isSidebarExpanded && 'Chat Support'}
-          </Link> */}
+            </Link> */}
+
+           <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
+              <FaComments className="nav-icon" />
+              {isSidebarExpanded && 'Manage Blogs'}
+          </Link>
             <Link to="/home/users" className="nav-item" data-tooltip="Users">
               <FaUsers className="nav-icon" />
               {isSidebarExpanded && 'Users'}
