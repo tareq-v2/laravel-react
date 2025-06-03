@@ -53,6 +53,7 @@ class BlogController extends Controller
 
     public function update(Request $request, $id)
     {
+        
         $blog = Blog::findOrFail($id);
         
         $request->validate([

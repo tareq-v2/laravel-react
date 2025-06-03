@@ -147,7 +147,11 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/posts/{id}/verify', [PostPermissionController::class, 'verify']);
   Route::get('/admin/get/un-verified/post/{id}', [PostPermissionController::class, 'getUnVerifiedPost']);
   Route::get('/admin/ads/history', [FrontendController::class, 'adsHistory']);
-  Route::resource('blogs', BlogController::class);
+  // Route::resource('/home/blogs', BlogController::class);
+  Route::get('/admin/blogs', [BlogController::class, 'index']);
+  Route::post('/admin/blog/store', [BlogController::class, 'store']);
+  Route::post('/admin/blog/edit/{id}', [BlogController::class, 'update']);
+  Route::delete('/admin/blog/delete/{id}', [BlogController::class, 'destroy']);
 });
 
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);

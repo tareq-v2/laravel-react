@@ -15,6 +15,7 @@ const BlogManagement = () => {
     const [currentBlog, setCurrentBlog] = useState(null);
     const [videoThumbnailPreview, setVideoThumbnailPreview] = useState(null);
     const videoThumbnailRef = useRef(null);
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         fetchBlogs();
@@ -22,8 +23,7 @@ const BlogManagement = () => {
 
     const fetchBlogs = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('/blogs', {
+            const response = await axios.get('/admin/blogs', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setBlogs(response.data);
@@ -65,46 +65,35 @@ const BlogManagement = () => {
         });
 
         try {
-            const token = localStorage.getItem('token');
-            const url = editMode ? `/blogs/${currentBlog.id}` : '/blogs';
-            const method = editMode ? 'put' : 'post';
-
-            await axios[method](url, formDataToSend, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                // Content-Type header is automatically set by FormData
-            }
-            });
+            await axios.post(editMode ? `/admin/blog/edit/${currentBlog.id}` : '/admin/blog/store', formDataToSend, { headers: { Authorization: `Bearer ${token}` } });
             
             fetchBlogs();
             closeModal();
         } catch (error) {
             console.error('Error saving blog:', error);
         }
-        };
+    };
 
     const openCreateModal = () => {
-  setEditMode(false);
-  setCurrentBlog(null);
-  setVideoThumbnailPreview(null);
-  setFormData({
-    title: '',
-    category_id: '',
-    description: '',
-    image: null,
-    video_link: '',
-    video_thumbnail: null
-  });
-  setShowModal(true);
+        setEditMode(false);
+        setCurrentBlog(null);
+        setVideoThumbnailPreview(null);
+        setFormData({
+            title: '',
+            category_id: '',
+            description: '',
+            image: null,
+            video_link: '',
+            video_thumbnail: null
+        });
+        setShowModal(true);
     };
 
     const openEditModal = (blog) => {
         setEditMode(true);
         setCurrentBlog(blog);
         
-        // Set existing thumbnail preview if available
         if (blog.video_thumbnail) {
-            // Assuming blog.video_thumbnail is a URL string
             setVideoThumbnailPreview(blog.video_thumbnail);
         } else {
             setVideoThumbnailPreview(null);
@@ -116,7 +105,7 @@ const BlogManagement = () => {
             description: blog.description,
             image: null,
             video_link: blog.video_link || '',
-            video_thumbnail: null // Reset file input
+            video_thumbnail: null
         });
         
         setShowModal(true);
@@ -131,10 +120,7 @@ const BlogManagement = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this blog?')) {
             try {
-                const token = localStorage.getItem('token');
-                await axios.delete(`/blogs/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await axios.delete(`/admin/blog/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } });
                 fetchBlogs();
             } catch (error) {
                 console.error('Error deleting blog:', error);
