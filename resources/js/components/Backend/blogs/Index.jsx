@@ -1,8 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import './Index.css';
 
 const BlogManagement = () => {
+    const showToast = (message, type = 'success') => {
+        toast[type](message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+    };
+
     const [blogs, setBlogs] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
@@ -15,6 +28,10 @@ const BlogManagement = () => {
     const [currentBlog, setCurrentBlog] = useState(null);
     const [videoThumbnailPreview, setVideoThumbnailPreview] = useState(null);
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
+    const [existingThumbnail, setExistingThumbnail] = useState(null);
+    const [existingVideoThumbnail, setExistingVideoThumbnail] = useState(null);
+    const [newThumbnailSelected, setNewThumbnailSelected] = useState(false);
+    const [newVideoThumbnailSelected, setNewVideoThumbnailSelected] = useState(false);
     const videoThumbnailRef = useRef(null);
     const thumbnailRef = useRef(null);
     const token = localStorage.getItem('token');
@@ -42,6 +59,7 @@ const BlogManagement = () => {
     const handleVideoThumbnailChange = (e) => {
         const file = e.target.files[0];
         setFormData({ ...formData, video_thumbnail: file });
+        setNewVideoThumbnailSelected(true);
         
         // Create preview
         if (file) {
@@ -58,6 +76,7 @@ const BlogManagement = () => {
     const handlethumbnailChange = (e) => {
         const file = e.target.files[0];
         setFormData({ ...formData, thumbnail: file });
+        setNewThumbnailSelected(true);
         
         // Create preview
         if (file) {
@@ -78,17 +97,22 @@ const BlogManagement = () => {
         // Append all fields including video_thumbnail
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
-            formDataToSend.append(key, value);
+                formDataToSend.append(key, value);
             }
         });
 
         try {
             await axios.post(editMode ? `/admin/blog/edit/${currentBlog.id}` : '/admin/blog/store', formDataToSend, { headers: { Authorization: `Bearer ${token}` } });
-            
+            showToast(
+                editMode 
+                    ? 'Blog updated successfully!' 
+                    : 'Blog created successfully!'
+            );
             fetchBlogs();
             closeModal();
         } catch (error) {
             console.error('Error saving blog:', error);
+            showToast('Failed to save blog', 'error');
         }
     };
 
@@ -97,6 +121,10 @@ const BlogManagement = () => {
         setCurrentBlog(null);
         setVideoThumbnailPreview(null);
         setThumbnailPreview(null);
+        setExistingThumbnail(null);
+        setExistingVideoThumbnail(null);
+        setNewThumbnailSelected(false);
+        setNewVideoThumbnailSelected(false);
         setFormData({
             title: '',
             category_id: '',
@@ -111,17 +139,16 @@ const BlogManagement = () => {
     const openEditModal = (blog) => {
         setEditMode(true);
         setCurrentBlog(blog);
+        setNewThumbnailSelected(false);
+        setNewVideoThumbnailSelected(false);
+        
+        // Store existing URLs
+        if (blog.thumbnail) {
+            setExistingThumbnail(blog.thumbnail);
+        }
         
         if (blog.video_thumbnail) {
-            setVideoThumbnailPreview(blog.video_thumbnail);
-        } else {
-            setVideoThumbnailPreview(null);
-        }
-
-        if (blog.thumbnail) {
-            setThumbnailPreview(blog.thumbnail);
-        } else {
-            setThumbnailPreview(null);
+            setExistingVideoThumbnail(blog.video_thumbnail);
         }
         
         setFormData({
@@ -142,21 +169,28 @@ const BlogManagement = () => {
         // Reset preview when closing modal
         setVideoThumbnailPreview(null);
         setThumbnailPreview(null);
+        setExistingThumbnail(null);
+        setExistingVideoThumbnail(null);
+        setNewThumbnailSelected(false);
+        setNewVideoThumbnailSelected(false);
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this blog?')) {
             try {
                 await axios.delete(`/admin/blog/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+                showToast('Blog deleted successfully!');
                 fetchBlogs();
             } catch (error) {
                 console.error('Error deleting blog:', error);
+                showToast('Failed to delete blog', 'error');
             }
         }
     };
 
     return (
         <div className="blog-management">
+            <ToastContainer />
             <div className="header">
                 <h1 className="title">Blog Management</h1>
                 <button 
@@ -200,7 +234,7 @@ const BlogManagement = () => {
 
             {showModal && (
                 <div className="blog-modal-overlay">
-                    <div className="blog-modal">
+                    <div className="blog-modal tomato-theme">
                         <div className="blog-modal-header">
                             <h2>{editMode ? 'Edit Blog' : 'Create New Blog'}</h2>
                             <button 
@@ -258,22 +292,37 @@ const BlogManagement = () => {
                                 </div>
                                 <small>JPG, PNG or GIF (Max 5MB)</small>
                                 
-                                { thumbnailPreview && (
                                 <div className="thumbnail-preview">
-                                    <img 
-                                    style={{
-                                        width: '100px', 
-                                        height: '100px', 
-                                        borderRadius: '5px', 
-                                        objectFit: 'cover', 
-                                        border: '1px solid #ddd', 
-                                        padding: '5px'
-                                    }}
-                                    src={thumbnailPreview} 
-                                    alt="Video thumbnail preview" 
-                                    />
+                                    {thumbnailPreview ? (
+                                        <img 
+                                            style={{
+                                                width: '100px', 
+                                                height: '100px', 
+                                                borderRadius: '5px', 
+                                                objectFit: 'cover', 
+                                                border: '1px solid #ddd', 
+                                                padding: '5px'
+                                            }}
+                                            src={thumbnailPreview} 
+                                            alt="Thumbnail preview" 
+                                        />
+                                    ) : (
+                                        editMode && existingThumbnail && !newThumbnailSelected && (
+                                            <img 
+                                                style={{
+                                                    width: '100px', 
+                                                    height: '100px', 
+                                                    borderRadius: '5px', 
+                                                    objectFit: 'cover', 
+                                                    border: '1px solid #ddd', 
+                                                    padding: '5px'
+                                                }}
+                                                src={existingThumbnail} 
+                                                alt="Existing thumbnail" 
+                                            />
+                                        )
+                                    )}
                                 </div>
-                                )}
                             </div>
 
                             <div className="form-group">
@@ -320,28 +369,43 @@ const BlogManagement = () => {
                                 </div>
                                 <small>JPG, PNG or GIF (Max 5MB)</small>
                                 
-                                { videoThumbnailPreview && (
                                 <div className="thumbnail-preview">
-                                    <img 
-                                    style={{
-                                        width: '100px', 
-                                        height: '100px', 
-                                        borderRadius: '5px', 
-                                        objectFit: 'cover', 
-                                        border: '1px solid #ddd', 
-                                        padding: '5px'
-                                    }}
-                                    src={videoThumbnailPreview} 
-                                    alt="Video thumbnail preview" 
-                                    />
+                                    {videoThumbnailPreview ? (
+                                        <img 
+                                            style={{
+                                                width: '100px', 
+                                                height: '100px', 
+                                                borderRadius: '5px', 
+                                                objectFit: 'cover', 
+                                                border: '1px solid #ddd', 
+                                                padding: '5px'
+                                            }}
+                                            src={videoThumbnailPreview} 
+                                            alt="Video thumbnail preview" 
+                                        />
+                                    ) : (
+                                        editMode && existingVideoThumbnail && !newVideoThumbnailSelected && (
+                                            <img 
+                                                style={{
+                                                    width: '100px', 
+                                                    height: '100px', 
+                                                    borderRadius: '5px', 
+                                                    objectFit: 'cover', 
+                                                    border: '1px solid #ddd', 
+                                                    padding: '5px'
+                                                }}
+                                                src={existingVideoThumbnail} 
+                                                alt="Existing video thumbnail" 
+                                            />
+                                        )
+                                    )}
                                 </div>
-                                )}
                             </div>
                             
                             <div className="form-actions">
                                 <button 
                                     type="button"
-                                    className="cancel-btn"
+                                    className="cancel-btn tomato-btn"
                                     onClick={closeModal}
                                 >
                                     Cancel

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title', 191);
             $table->longText('sub_title')->nullable();
+            $table->string('category')->nullable();
             $table->string('slug', 191)->unique();
             $table->string('thumbnail', 191)->nullable();
             $table->longText('video_link')->nullable();

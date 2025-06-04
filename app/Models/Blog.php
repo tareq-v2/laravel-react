@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Blog extends Model
 {
-    protected $fillable = [
-        'title',
-        'slug',
-        'description',
-        'short_description'
-    ];
+    protected $guarded = [];
+    // protected $fillable = [
+    //     'title',
+    //     'slug',
+    //     'description',
+    //     'short_description'
+    // ];
 }

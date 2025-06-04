@@ -37,44 +37,42 @@ class BlogController extends Controller
 
         if ($request->hasFile('thumbnail') && $request->file('thumbnail') instanceof \Illuminate\Http\UploadedFile) {
             $thumbnail = $request->file('thumbnail');
-            $fileName = uniqid().'-img.'.$thumbnail->extension();
+            $fileName = uniqid().'-thumbnail-'.rand().'.'.$thumbnail->extension();
             $request->file('thumbnail')->move(public_path('uploads/blogs/thumbnail'), $fileName);
-            $thumbnail = $fileName; // Save to 'thumbnail' column
+            $thumbnail = $fileName; 
         }
 
         // Video thumbnail handling
         if ($request->hasFile('video_thumbnail') && $request->file('video_thumbnail') instanceof \Illuminate\Http\UploadedFile) {
             $videoThumb = $request->file('video_thumbnail');
-            $fileName = uniqid().'-img.'.$videoThumb->extension();
+            $fileName = uniqid().'-video-thumbnail-'.rand().'.'.$videoThumb->extension();
             $videoThumb->move(public_path('uploads/blogs/video_thumbnail'), $fileName);
             $video_thumbnail = $fileName;
         }
         $blog = Blog::create([
             'title' => $request->title,
             'slug' => $slug,
-            'category_id' => $request->category,
+            'category' => $request->category,
             'description' => $request->description,
             'video_link' => $request->video_link,
             'thumbnail' => $thumbnail,
             'video_thumbnail' => $video_thumbnail,
         ]);
-        // dd($blog);
         return response()->json($blog, 201);
     }
 
     public function update(Request $request, $id)
     {
         $blog = Blog::findOrFail($id);
-        
         $request->validate([
             'title' => 'sometimes|string|max:191',
             'description' => 'sometimes|string',
-            'image' => 'nullable|image|max:2048', // Added image validation
+            'thumbnail' => 'nullable|image|max:2048',
             'video_link' => 'nullable|url',
             'video_thumbnail' => 'nullable|image|max:2048'
         ]);
 
-        $data = $request->except(['video_thumbnail', 'image']);
+        $data = $request->except(['video_thumbnail', 'thumbnail']);
 
         if ($request->has('title')) {
             $data['slug'] = Str::slug($request->title);
@@ -97,7 +95,6 @@ class BlogController extends Controller
 
         // Handle video thumbnail
         if ($request->hasFile('video_thumbnail')) {
-            // Delete old video thumbnail
             if ($blog->video_thumbnail) {
                 $oldVideoThumbPath = public_path('uploads/blogs/video_thumbnail/') . $blog->video_thumbnail;
                 if (file_exists($oldVideoThumbPath)) {
@@ -109,7 +106,7 @@ class BlogController extends Controller
             $videoThumb->move(public_path('uploads/blogs/video_thumbnail'), $fileName);
             $data['video_thumbnail'] = $fileName;
         }
-
+        
         $blog->update($data);
 
         return response()->json($blog);
