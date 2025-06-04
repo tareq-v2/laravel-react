@@ -8,12 +8,8 @@ class Blog extends Model
 {
     protected $fillable = [
         'title',
-        'sub_title',
         'slug',
-        'image',
-        'video_link',
         'description',
-        'source',
         'short_description'
     ];
 }

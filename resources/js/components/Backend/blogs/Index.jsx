@@ -14,7 +14,9 @@ const BlogManagement = () => {
     const [editMode, setEditMode] = useState(false);
     const [currentBlog, setCurrentBlog] = useState(null);
     const [videoThumbnailPreview, setVideoThumbnailPreview] = useState(null);
+    const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const videoThumbnailRef = useRef(null);
+    const thumbnailRef = useRef(null);
     const token = localStorage.getItem('token');
 
     useEffect(() => {
@@ -37,7 +39,7 @@ const BlogManagement = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-     const handleVideoThumbnailChange = (e) => {
+    const handleVideoThumbnailChange = (e) => {
         const file = e.target.files[0];
         setFormData({ ...formData, video_thumbnail: file });
         
@@ -50,6 +52,22 @@ const BlogManagement = () => {
             reader.readAsDataURL(file);
         } else {
             setVideoThumbnailPreview(null);
+        }
+    };
+
+    const handlethumbnailChange = (e) => {
+        const file = e.target.files[0];
+        setFormData({ ...formData, thumbnail: file });
+        
+        // Create preview
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setThumbnailPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setThumbnailPreview(null);
         }
     };
 
@@ -78,6 +96,7 @@ const BlogManagement = () => {
         setEditMode(false);
         setCurrentBlog(null);
         setVideoThumbnailPreview(null);
+        setThumbnailPreview(null);
         setFormData({
             title: '',
             category_id: '',
@@ -98,6 +117,12 @@ const BlogManagement = () => {
         } else {
             setVideoThumbnailPreview(null);
         }
+
+        if (blog.thumbnail) {
+            setThumbnailPreview(blog.thumbnail);
+        } else {
+            setThumbnailPreview(null);
+        }
         
         setFormData({
             title: blog.title,
@@ -105,7 +130,8 @@ const BlogManagement = () => {
             description: blog.description,
             image: null,
             video_link: blog.video_link || '',
-            video_thumbnail: null
+            video_thumbnail: null,
+            thumbnail: null,
         });
         
         setShowModal(true);
@@ -115,6 +141,7 @@ const BlogManagement = () => {
         setShowModal(false);
         // Reset preview when closing modal
         setVideoThumbnailPreview(null);
+        setThumbnailPreview(null);
     };
 
     const handleDelete = async (id) => {
@@ -205,11 +232,50 @@ const BlogManagement = () => {
                                     required
                                 >
                                     <option value="">Select Category</option>
-                                    <option value="1">Category 1</option>
-                                    <option value="2">Category 2</option>
+                                    <option value="News">News</option>
+                                    <option value="News & Culture">Arts & Culture</option>
                                 </select>
                             </div>
-                            
+
+                            <div className="form-group">
+                                <label>Thumbnail *</label>
+                                <div className="thumbnail-upload">
+                                    <input
+                                        type="file"
+                                        ref={thumbnailRef}
+                                        onChange={handlethumbnailChange}
+                                        accept="image/*"
+                                        hidden
+                                    />
+                                    <button 
+                                        type="button"
+                                        className="upload-btn"
+                                        onClick={() => thumbnailRef.current.click()}
+                                    >
+                                        Choose File
+                                    </button>
+                                    <span>{formData.thumbnail?.name || 'No file chosen'}</span>
+                                </div>
+                                <small>JPG, PNG or GIF (Max 5MB)</small>
+                                
+                                { thumbnailPreview && (
+                                <div className="thumbnail-preview">
+                                    <img 
+                                    style={{
+                                        width: '100px', 
+                                        height: '100px', 
+                                        borderRadius: '5px', 
+                                        objectFit: 'cover', 
+                                        border: '1px solid #ddd', 
+                                        padding: '5px'
+                                    }}
+                                    src={thumbnailPreview} 
+                                    alt="Video thumbnail preview" 
+                                    />
+                                </div>
+                                )}
+                            </div>
+
                             <div className="form-group">
                                 <label>Description *</label>
                                 <textarea
