@@ -154,7 +154,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/admin/blog/edit/{id}', [BlogController::class, 'update']);
   Route::delete('/admin/blog/delete/{id}', [BlogController::class, 'destroy']);
 });
-
+Route::get('/blogs', [BlogController::class, 'allBlog']);
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 Route::get('/products/lists', [ProductController::class, 'productsList']);
 

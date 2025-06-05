@@ -1,299 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { Link } from 'react-router-dom';
-// import axios from 'axios';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import './Design/MainContent.css'; // Assuming you have a CSS file for styling
-
-// // Import Swiper styles
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
-// import { useTranslation } from './src/hooks/useTranslation';
-
-// const MainContent = () => {
-//   const t = useTranslation();
-//   const [adCategories, setAdCategories] = useState([]);
-//   const [directoryCategories, setDirectoryCategories] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-  
-//   // Fetch ad categories from Laravel backend
-//   useEffect(() => {
-//     const fetchCategories = async () => {
-//       try {
-//         const response = await axios.get('ad/category/icons');
-//         console.log(response.data.data);
-//         setAdCategories(response.data.data);
-//         setLoading(false);
-//       } catch (err) {
-//         setError(err.message);
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchCategories();
-//   }, []);
-
-//   // Fetch directory categories from Laravel backend
-//   useEffect(() => {
-//     const fetchDirectoryCategories = async () => {
-//       try {
-//         const response = await axios.get('directory/category/icons');
-//         console.log(response.data.data);
-//         setDirectoryCategories(response.data.data);
-//         setLoading(false);
-//       } catch (err) {
-//         setError(err.message);
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchDirectoryCategories();
-//   }, []);
-  // const sections = {
-  //   news: [
-  //     { 
-  //       id: 1, 
-  //       title: 'Latest Industry News', 
-  //       date: 'March 18, 2025',
-  //       excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-  //       image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
-  //     },
-  //     { 
-  //       id: 2, 
-  //       title: 'Latest Industry News', 
-  //       date: 'March 18, 2025',
-  //       excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-  //       image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
-  //     },
-  //     { 
-  //       id: 3, 
-  //       title: 'Latest Industry News', 
-  //       date: 'March 18, 2025',
-  //       excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-  //       image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
-  //     },
-  //     { 
-  //       id: 4, 
-  //       title: 'Latest Industry News', 
-  //       date: 'March 18, 2025',
-  //       excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-  //       image: 'http://localhost:8001/uploads/categoryIcons/jobs.png'
-  //     },
-  //     // Add more news
-  //   ],
-  //   businesses: [
-  //     {
-  //       id: 1,
-  //       name: 'Premium Business',
-  //       address: '123 Main St, Yerevan',
-  //       logo: '/businesses/logo1.png',
-  //       description: 'Lorem ipsum dolor sit amet consectetur...'
-  //     },
-  //     // Add more businesses
-  //   ]
-  // };
-
-//   return (
-    
-//     <div className="container">
-//       {/* Ad Categories Section */}
-//       <section className="section-spacing">
-//         <div className="row">
-//           <div className="col-md-2">
-//             <div className="side-banner">
-//               <img src="http://localhost:8001/uploads/banner/side-banner.png" alt="Left banner" />
-//             </div>
-//           </div>
-          
-//           <div className="col-md-8">
-//             <div className='ad-categories'>
-//               <div className="section-header">
-//                 <div>
-//                   {/* Empty */}
-//                 </div>
-//                 <div>
-//                   <h1>Classified Ads</h1>
-//                   <p>{t('Select Category To View Listings')}</p>
-//                 </div>
-//                 <div>
-//                 <Link to="/post-ad" className="btn btn-primary">
-//                   <i className="fa fa-plus me-2"></i>
-//                   Post Your Ad
-//                 </Link>
-//                 </div>
-//               </div>
-              
-//               {loading ? (
-//                   <div className="text-center">Loading categories...</div>
-//                 ) : error ? (
-//                   <div className="text-center text-danger">Error: {error}</div>
-//                 ) : (
-//                   <div className="container">
-//                     <div className="row g-4">
-//                       {adCategories.map(category => (
-//                         <div key={category.id} className="col-md-3">
-//                           <Link to={`/ad/sub/categories/${category.id}`} className="text-decoration-none">
-//                             <div className="category-card h-100 p-3"> {/* Add padding inside card */}
-//                               <img
-//                                 src={category.icon}
-//                                 alt={category.name}
-//                                 className="img-fluid"
-//                               />
-//                               <h6 className="font-weight-semibold mb-0 mt-2">{category.name}</h6>
-//                             </div>
-//                           </Link>
-//                         </div>
-//                       ))}
-//                     </div>
-//                   </div>
-//                 )}
-//             </div>
-//           </div>
-
-//           <div className="col-md-2">
-//             <div className="side-banner">
-//               <img src="http://localhost:8001/uploads/banner/side-banner1.png" alt="Right banner" />
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Directory Categories Section */}
-//       <section className="section-spacing">
-//         <div className="row">
-//           <div className="col-md-2">
-//             {/* Side banners similar to ad categories */}
-//           </div>
-          
-//           <div className="col-md-8">
-//             <div className="ad-categories">
-//             <div className="section-header">
-//               <div>
-//                  {/* Empty */}
-//               </div>
-//               <div>
-//               <h1>Business Directory</h1>
-//                 <p>Select Category To View Listings</p>
-//               </div>
-//               <div>
-//               <Link to="/add-business" className="btn btn-primary">
-//                 <i className="fa fa-plus me-2"></i>
-//                 Add Your Business
-//               </Link>
-//               </div>
-//             </div>
-            
-//             <div className="directory-grid">
-//               {loading ? (
-//                 <div className="text-center">Loading categories...</div>
-//               ) : error ? (
-//                 <div className="text-center text-danger">Error: {error}</div>
-//               ) : (
-//                 <div className="container">
-//                   <div className="row g-4">
-//                     {directoryCategories.map(category => (
-//                       <div key={category.id} className="col-md-3 col-6">
-//                         <Link to={`/your-route/${category.id}`} className="text-decoration-none">
-//                           <div className="category-card h-100 p-3">
-//                             <img
-//                               src={category.icon}
-//                               alt={category.name}
-//                               className="img-fluid"
-//                             />
-//                             <h6 className="font-weight-semibold mb-0 mt-2 text-center">
-//                               {category.name}
-//                             </h6>
-//                           </div>
-//                         </Link>
-//                       </div>
-//                     ))}
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-//             </div>
-//           </div>
-
-//           <div className="col-md-2">
-//             {/* Side banners similar to ad categories */}
-//           </div>
-//         </div>
-//       </section>
-
-
-//       {/* News Section */}
-//       <section className="section-spacing">
-//         <div className="row">
-//           <div className="col-md-3">
-//             <div className="news-banner">
-//               <img src="/banners/news-left.jpg" alt="News banner" />
-//             </div>
-//           </div>
-          
-//           <div className="col-md-6">
-//             <div className="section-header">
-//                 <h1>Latest News</h1>
-//             </div>
-//             <Swiper
-//                 className="news-carousel"
-//                 spaceBetween={10}
-//                 slidesPerView={2}  // Show 2 slides at once
-//                 navigation={true}  // Enable arrow navigation
-//                 pagination={{ clickable: true }}  // Enable dots pagination
-//                 autoplay={{ delay: 3000 }}  // Auto-slide every 3 seconds
-//                 modules={[Navigation, Pagination, Autoplay]}  // Load modules
-//                 breakpoints={{
-//                 // Responsive breakpoints
-//                 320: { slidesPerView: 1 },  // 1 slide on mobile
-//                 768: { slidesPerView: 2 },  // 2 slides on tablet/desktop
-//                 }}
-//             >
-//                 {sections.news.map(article => 
-//                 <SwiperSlide key={article.id} className="news-card">
-//                     <img src={article.icon} alt={article.title} />
-//                     <div className="news-content">
-//                     <small>{article.date}</small>
-//                     <h5>{article.title}</h5>
-//                     <p>{article.excerpt}</p>
-//                     </div>
-//                 </SwiperSlide>)}
-//             </Swiper>
-//             </div>
-
-//           <div className="col-md-3">
-//             <div className="news-banner">
-//               <img src="/banners/news-right.jpg" alt="News banner" />
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       {/* Featured Businesses Section */}
-      // <section className="section-spacing">
-      //   <div className="section-header">
-      //     <h1>Featured Businesses</h1>
-      //   </div>
-      //   <div className="business-grid">
-      //     {sections.businesses.map(business => (
-      //       <div key={business.id} className="business-card">
-      //         <img src={business.logo} alt={business.name} />
-      //         <h4>{business.name}</h4>
-      //         <p>{business.address}</p>
-      //         <p className="description">{business.description}</p>
-      //       </div>
-      //     ))}
-      //   </div>
-      // </section>
-//     </div>
-//   );
-// };
-
-// export default MainContent;
-
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -375,6 +79,7 @@ const MainContent = () => {
   const [directoryCategories, setDirectoryCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [blogs, setBlogs] = useState([]);
   const sections = {
     news: [
       { 
@@ -423,11 +128,13 @@ const MainContent = () => {
       try {
         const [adResponse, dirResponse] = await Promise.all([
           axios.get('/ad/category/icons'),
-          axios.get('/directory/category/icons')
+          axios.get('/directory/category/icons'),
+          axios.get('/blogs')
         ]);
         
         setAdCategories(adResponse.data.data);
         setDirectoryCategories(dirResponse.data.data);
+        setBlogs(blogsResponse.data);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -543,8 +250,68 @@ const MainContent = () => {
           <div className="col-md-3">
             <BannerSpot spotNumber={4} />
           </div>
-          
           <div className="col-md-7">
+            <div className="section-header">
+              <div></div>
+              <div>
+                <h1>Latest Blog Posts</h1>
+                <p>Stay updated with our latest articles and insights</p>
+              </div>
+              <div>
+                <Link to="/blogs" className="btn view-all-btn">
+                  View All
+                </Link>
+              </div>
+            </div>
+            
+            <Swiper
+              className="blog-carousel"
+              spaceBetween={20}
+              slidesPerView={3}
+              navigation={true}
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 5000 }}
+              modules={[Navigation, Pagination, Autoplay]}
+              breakpoints={{
+                320: { slidesPerView: 1 },
+                576: { slidesPerView: 2 },
+                992: { slidesPerView: 3 },
+              }}
+            >
+              {blogs.map(blog => (
+                <SwiperSlide key={blog.id} className="blog-card">
+                  <Link to={`/blog/${blog.id}`} className="blog-link">
+                    {blog.thumbnail ? (
+                      <div className="blog-thumbnail">
+                        <img 
+                          src={`http://localhost:8000/uploads/blogs/thumbnail/${blog.thumbnail}`} 
+                          alt={blog.title} 
+                        />
+                      </div>
+                    ) : (
+                      <div className="blog-thumbnail placeholder">
+                        <i className="fas fa-image"></i>
+                      </div>
+                    )}
+                    <div className="blog-content">
+                      <div className="blog-meta">
+                        <span className="blog-category">{blog.category}</span>
+                        <span className="blog-date">
+                          {new Date(blog.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h4 className="blog-title">{blog.title}</h4>
+                      <p className="blog-excerpt">
+                        {blog.description.substring(0, 100)}...
+                      </p>
+                      <div className="read-more">Read More →</div>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+          {/* <div className="col-md-7">
             <div className="section-header">
                  <h1>Latest News</h1>
              </div>
@@ -571,7 +338,7 @@ const MainContent = () => {
                      </div>
                  </SwiperSlide>)}
              </Swiper>
-          </div>
+          </div> */}
 
           <div className="col-md-2">
             <BannerSpot spotNumber={5} />

@@ -136,4 +136,9 @@ class BlogController extends Controller
         
         return response()->json(null, 204);
     }
+
+    public function allBlog()
+    {
+        return response()->json(Blog::all());
+    }
 }
