@@ -11,7 +11,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::get();
+        $blogs = Blog::orderBy('created_at', 'desc')->get();
         return response()->json($blogs);
     }
 

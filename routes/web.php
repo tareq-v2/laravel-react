@@ -149,6 +149,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/admin/ads/history', [FrontendController::class, 'adsHistory']);
   // Route::resource('/home/blogs', BlogController::class);
   Route::get('/admin/blogs', [BlogController::class, 'index']);
+  Route::get('/blog/{id}', [BlogController::class, 'show']);
   Route::post('/admin/blog/store', [BlogController::class, 'store']);
   Route::post('/admin/blog/edit/{id}', [BlogController::class, 'update']);
   Route::delete('/admin/blog/delete/{id}', [BlogController::class, 'destroy']);

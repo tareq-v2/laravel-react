@@ -1,30 +1,78 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './Index.css';
+// ... other imports remain the same ...
 
 const BlogManagement = () => {
-    // ... existing state and ref declarations ...
+    // ... existing states and functions ...
 
-    // Toast notification function
-    const showToast = (message, type = 'success') => {
-        toast[type](message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
+    useEffect(() => {
+        fetchBlogs();
+    }, []);
+
+    const fetchBlogs = async () => {
+        try {
+            const response = await axios.get('/admin/blogs', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setBlogs(response.data);
+        } catch (error) {
+            console.error('Error fetching blogs:', error);
+        }
     };
 
-    // ... existing useEffect and fetchBlogs ...
+    // ... other functions ...
+
+    const openCreateModal = () => {
+        setEditMode(false);
+        setCurrentBlog(null);
+        setVideoThumbnailPreview(null);
+        setThumbnailPreview(null);
+        setExistingThumbnail(null);
+        setExistingVideoThumbnail(null);
+        setNewThumbnailSelected(false);
+        setNewVideoThumbnailSelected(false);
+        setFormData({
+            title: '',
+            category: '', // Changed from category_id
+            description: '',
+            thumbnail: null,
+            video_link: '',
+            video_thumbnail: null
+        });
+        setShowModal(true);
+    };
+
+    const openEditModal = (blog) => {
+        setEditMode(true);
+        setCurrentBlog(blog);
+        setNewThumbnailSelected(false);
+        setNewVideoThumbnailSelected(false);
+        
+        // Store existing URLs
+        if (blog.thumbnail) {
+            setExistingThumbnail(`http://localhost:8000/uploads/blogs/thumbnail/${blog.thumbnail}`);
+        }
+        
+        if (blog.video_thumbnail) {
+            setExistingVideoThumbnail(`http://localhost:8000/uploads/blogs/video_thumbnail/${blog.video_thumbnail}`);
+        }
+        
+        setFormData({
+            title: blog.title,
+            category: blog.category, // Changed from category_id
+            description: blog.description,
+            thumbnail: null,
+            video_link: blog.video_link || '',
+            video_thumbnail: null,
+        });
+        
+        setShowModal(true);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formDataToSend = new FormData();
         
+        // Append all fields
         Object.entries(formData).forEach(([key, value]) => {
             if (value !== null && value !== undefined) {
                 formDataToSend.append(key, value);
@@ -32,18 +80,23 @@ const BlogManagement = () => {
         });
 
         try {
-            await axios.post(
-                editMode ? `/admin/blog/edit/${currentBlog.id}` : '/admin/blog/store', 
-                formDataToSend, 
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            // Use correct endpoint for update
+            const endpoint = editMode 
+                ? `/admin/blog/update/${currentBlog.id}` 
+                : '/admin/blog/store';
+                
+            await axios.post(endpoint, formDataToSend, { 
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                } 
+            });
             
             showToast(
                 editMode 
                     ? 'Blog updated successfully!' 
                     : 'Blog created successfully!'
             );
-            
             fetchBlogs();
             closeModal();
         } catch (error) {
@@ -52,58 +105,101 @@ const BlogManagement = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this blog?')) {
-            try {
-                await axios.delete(`/admin/blog/delete/${id}`, { 
-                    headers: { Authorization: `Bearer ${token}` } 
-                });
-                showToast('Blog deleted successfully!');
-                fetchBlogs();
-            } catch (error) {
-                console.error('Error deleting blog:', error);
-                showToast('Failed to delete blog', 'error');
-            }
-        }
-    };
+    // ... return statement ...
 
     return (
         <div className="blog-management">
-            <ToastContainer />
-            
-            {/* ... existing header and blog list code ... */}
+            {/* ... existing JSX ... */}
             
             {showModal && (
                 <div className="blog-modal-overlay">
                     <div className="blog-modal tomato-theme">
-                        <div className="blog-modal-header">
-                            <h2>{editMode ? 'Edit Blog' : 'Create New Blog'}</h2>
-                            <button 
-                                className="blog-modal-close-btn"
-                                onClick={closeModal}
-                            >
-                                &times;
-                            </button>
-                        </div>
+                        {/* ... modal header ... */}
                         
                         <form onSubmit={handleSubmit} className="blog-form">
-                            {/* ... existing form fields ... */}
+                            {/* ... title field ... */}
                             
-                            <div className="form-actions">
-                                <button 
-                                    type="button"
-                                    className="cancel-btn"
-                                    onClick={closeModal}
+                            <div className="form-group">
+                                <label>Category *</label>
+                                <select
+                                    name="category" // Changed to category
+                                    value={formData.category}
+                                    onChange={handleInputChange}
+                                    required
                                 >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit"
-                                    className="submit-btn tomato-btn"
-                                >
-                                    {editMode ? 'Update Blog' : 'Create Blog'}
-                                </button>
+                                    <option value="">Select Category</option>
+                                    <option value="News">News</option>
+                                    <option value="Arts & Culture">Arts & Culture</option>
+                                </select>
                             </div>
+
+                            <div className="form-group">
+                                <label>Thumbnail *</label>
+                                <div className="thumbnail-upload">
+                                    <input
+                                        type="file"
+                                        ref={thumbnailRef}
+                                        onChange={handlethumbnailChange}
+                                        accept="image/*"
+                                        hidden
+                                    />
+                                    <button 
+                                        type="button"
+                                        className="upload-btn"
+                                        onClick={() => thumbnailRef.current.click()}
+                                    >
+                                        Choose File
+                                    </button>
+                                    <span>{formData.thumbnail?.name || 'No file chosen'}</span>
+                                </div>
+                                <small>JPG, PNG or GIF (Max 5MB)</small>
+                                
+                                <div className="thumbnail-preview">
+                                    {/* Preview logic remains the same */}
+                                </div>
+                            </div>
+
+                            {/* ... description field ... */}
+                            
+                            <div className="form-group">
+                                <label>YouTube Video Link</label>
+                                <input
+                                    type="url"
+                                    name="video_link"
+                                    value={formData.video_link}
+                                    onChange={handleInputChange}
+                                    placeholder="https://www.youtube.com/embed/..."
+                                />
+                                <small>Embed URL (e.g., https://www.youtube.com/embed/video_id)</small>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Video Thumbnail {formData.video_link ? '*' : ''}</label>
+                                <div className="thumbnail-upload">
+                                    <input
+                                        type="file"
+                                        ref={videoThumbnailRef}
+                                        onChange={handleVideoThumbnailChange}
+                                        accept="image/*"
+                                        hidden
+                                    />
+                                    <button 
+                                        type="button"
+                                        className="upload-btn"
+                                        onClick={() => videoThumbnailRef.current.click()}
+                                    >
+                                        Choose File
+                                    </button>
+                                    <span>{formData.video_thumbnail?.name || 'No file chosen'}</span>
+                                </div>
+                                <small>JPG, PNG or GIF (Max 5MB)</small>
+                                
+                                <div className="thumbnail-preview">
+                                    {/* Preview logic remains the same */}
+                                </div>
+                            </div>
+                            
+                            {/* ... form actions ... */}
                         </form>
                     </div>
                 </div>

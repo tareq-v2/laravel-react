@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import './Index.css';
 
 const BlogManagement = () => {
+    const navigate = useNavigate();
     const showToast = (message, type = 'success') => {
         toast[type](message, {
             position: "top-right",
@@ -20,7 +22,7 @@ const BlogManagement = () => {
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
-        category_id: '',
+        category: '',
         description: '',
         image: null
     });
@@ -127,7 +129,7 @@ const BlogManagement = () => {
         setNewVideoThumbnailSelected(false);
         setFormData({
             title: '',
-            category_id: '',
+            category: '',
             description: '',
             image: null,
             video_link: '',
@@ -144,16 +146,16 @@ const BlogManagement = () => {
         
         // Store existing URLs
         if (blog.thumbnail) {
-            setExistingThumbnail(blog.thumbnail);
+            setExistingThumbnail(`http://localhost:8000/uploads/blogs/thumbnail/${blog.thumbnail}`);
         }
         
         if (blog.video_thumbnail) {
-            setExistingVideoThumbnail(blog.video_thumbnail);
+            setExistingVideoThumbnail(`http://localhost:8000/uploads/blogs/video_thumbnail/${blog.video_thumbnail}`);
         }
         
         setFormData({
             title: blog.title,
-            category_id: blog.category_id,
+            category: blog.category,
             description: blog.description,
             image: null,
             video_link: blog.video_link || '',
@@ -214,6 +216,13 @@ const BlogManagement = () => {
                                 <p className="blog-desc">{blog.description.substring(0, 100)}...</p>
                             </div>
                             <div className="blog-actions">
+                                {/* Add View button */}
+                                <button 
+                                    className="action-btn view-btn"
+                                    onClick={() => navigate(`/home/blog/${blog.id}`)}
+                                >
+                                    View
+                                </button>
                                 <button 
                                     className="action-btn edit-btn"
                                     onClick={() => openEditModal(blog)}
@@ -260,8 +269,8 @@ const BlogManagement = () => {
                             <div className="form-group">
                                 <label>Category *</label>
                                 <select
-                                    name="category_id"
-                                    value={formData.category_id}
+                                    name="category"
+                                    value={formData.category}
                                     onChange={handleInputChange}
                                     required
                                 >
