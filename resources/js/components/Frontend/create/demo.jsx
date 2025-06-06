@@ -1,130 +1,114 @@
 // ... existing imports ...
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import './Design/MainContent.css';
-import { useTranslation } from './src/hooks/useTranslation';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
-// ... BannerSpot component remains the same ...
+const BlogDetails = () => {
+  // ... existing states ...
+  const [comments, setComments] = useState([]);
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [commentsTotalPages, setCommentsTotalPages] = useState(1);
+  const [commentsLoading, setCommentsLoading] = useState(false);
 
-const MainContent = () => {
-  const t = useTranslation();
-  const [adCategories, setAdCategories] = useState([]);
-  const [directoryCategories, setDirectoryCategories] = useState([]);
-  const [blogs, setBlogs] = useState([]); // New state for blogs
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
+  // ... existing useEffect ...
+
+  // Separate useEffect for comments pagination
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchComments = async () => {
       try {
-        const [adResponse, dirResponse, blogsResponse] = await Promise.all([
-          axios.get('/ad/category/icons'),
-          axios.get('/directory/category/icons'),
-          axios.get('/blogs') // New endpoint for fetching blogs
-        ]);
-        
-        setAdCategories(adResponse.data.data);
-        setDirectoryCategories(dirResponse.data.data);
-        setBlogs(blogsResponse.data); // Set blogs data
-        setLoading(false);
+        setCommentsLoading(true);
+        const commentsRes = await axios.get(`/blogs/${id}/comments?page=${commentsPage}`);
+        setComments(commentsRes.data.data); // Paginated comments
+        setCommentsTotalPages(commentsRes.data.last_page);
       } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        console.error('Error loading comments:', err);
+      } finally {
+        setCommentsLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    if (id) {
+      fetchComments();
+    }
+  }, [id, commentsPage]);
 
-  // ... existing sections ...
+  // ... existing functions ...
+
+  // Handle comment page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= commentsTotalPages) {
+      setCommentsPage(newPage);
+    }
+  };
+
+  // ... existing return ...
 
   return (
-    <div className="container">
-      {/* ... existing sections ... */}
+    <div className="container py-4">
+      {/* ... existing code ... */}
       
-      {/* Blog Section */}
-      <section className="section-spacing">
-        <div className="row">
-          <div className="col-md-3">
-            <BannerSpot spotNumber={4} />
-          </div>
-          
-          <div className="col-md-7">
-            <div className="section-header">
-              <div></div>
-              <div>
-                <h1>Latest Blog Posts</h1>
-                <p>Stay updated with our latest articles and insights</p>
-              </div>
-              <div>
-                <Link to="/blogs" className="btn view-all-btn">
-                  View All
-                </Link>
-              </div>
-            </div>
-            
-            <Swiper
-              className="blog-carousel"
-              spaceBetween={20}
-              slidesPerView={3}
-              navigation={true}
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 5000 }}
-              modules={[Navigation, Pagination, Autoplay]}
-              breakpoints={{
-                320: { slidesPerView: 1 },
-                576: { slidesPerView: 2 },
-                992: { slidesPerView: 3 },
-              }}
-            >
-              {blogs.map(blog => (
-                <SwiperSlide key={blog.id} className="blog-card">
-                  <Link to={`/blog/${blog.id}`} className="blog-link">
-                    {blog.thumbnail ? (
-                      <div className="blog-thumbnail">
-                        <img 
-                          src={`http://localhost:8000/uploads/blogs/thumbnail/${blog.thumbnail}`} 
-                          alt={blog.title} 
-                        />
-                      </div>
-                    ) : (
-                      <div className="blog-thumbnail placeholder">
-                        <i className="fas fa-image"></i>
-                      </div>
-                    )}
-                    <div className="blog-content">
-                      <div className="blog-meta">
-                        <span className="blog-category">{blog.category}</span>
-                        <span className="blog-date">
-                          {new Date(blog.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <h4 className="blog-title">{blog.title}</h4>
-                      <p className="blog-excerpt">
-                        {blog.description.substring(0, 100)}...
-                      </p>
-                      <div className="read-more">Read More →</div>
-                    </div>
-                  </Link>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+      {/* Comments Section */}
+      <div className="comments-section mt-5">
+        <h3 className="mb-4">Comments ({commentsTotalPages > 0 ? commentsTotalPages * 10 : 0})</h3>
+        
+        {/* ... comment form ... */}
 
-          <div className="col-md-2">
-            <BannerSpot spotNumber={5} />
-          </div>
+        <div className="comments-list">
+          {commentsLoading ? (
+            <div className="text-center py-3">Loading comments...</div>
+          ) : comments.length === 0 ? (
+            <p className="text-muted">No comments yet. Be the first to comment!</p>
+          ) : (
+            comments.map(comment => (
+              // ... existing comment rendering ...
+            ))
+          )}
         </div>
-      </section>
 
-      {/* ... existing sections ... */}
+        {/* Pagination Controls - Only show if needed */}
+        {commentsTotalPages > 1 && (
+          <div className="comment-pagination mt-4">
+            <nav>
+              <ul className="pagination justify-content-center">
+                <li className={`page-item ${commentsPage === 1 ? 'disabled' : ''}`}>
+                  <button 
+                    className="page-link" 
+                    onClick={() => handlePageChange(commentsPage - 1)}
+                  >
+                    &laquo; Previous
+                  </button>
+                </li>
+                
+                {[...Array(commentsTotalPages).keys()].map(page => (
+                  <li 
+                    key={page + 1} 
+                    className={`page-item ${commentsPage === page + 1 ? 'active' : ''}`}
+                  >
+                    <button 
+                      className="page-link" 
+                      onClick={() => handlePageChange(page + 1)}
+                    >
+                      {page + 1}
+                    </button>
+                  </li>
+                ))}
+                
+                <li className={`page-item ${commentsPage === commentsTotalPages ? 'disabled' : ''}`}>
+                  <button 
+                    className="page-link" 
+                    onClick={() => handlePageChange(commentsPage + 1)}
+                  >
+                    Next &raquo;
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        )}
+      </div>
+
+      {/* ... existing code ... */}
     </div>
   );
 };
 
-export default MainContent;
+// ... existing components ...
+
+export default BlogDetails;

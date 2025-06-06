@@ -358,7 +358,7 @@ const BlogManagement = () => {
                             </div>
                             
                             <div className="form-group">
-                                <label>Video Thumbnail *</label>
+                                <label>Video Thumbnail</label>
                                 <div className="thumbnail-upload">
                                     <input
                                         type="file"

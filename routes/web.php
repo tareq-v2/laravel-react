@@ -39,6 +39,15 @@ Route::get('directory/category/icons', [DirectoryController::class, 'categoryIco
 Route::post('job-offers-post', [FrontendController::class, 'jobOfferPost']);
 Route::get('job-offers/{id}', [FrontendController::class, 'jobOfferConfirm']);
 
+Route::get('/user/blogs/{id}', [BlogController::class, 'showBlog']);
+Route::get('/blogs/{id}/adjacent', [BlogController::class, 'adjacent']);
+Route::get('/blogs/{id}/comments', [BlogController::class, 'comments']);
+
+// Like routes (protected by auth)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/blogs/{id}/like', [BlogController::class, 'like']);
+    Route::post('/blogs/{id}/comments', [BlogController::class, 'postComment']);
+});
 Route::get('/job-offer-categories', function() {
     $categories = \App\Models\JobOfferCategory::all();
     return array_chunk($categories->toArray(), ceil($categories->count() / 4));
@@ -154,7 +163,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/admin/blog/edit/{id}', [BlogController::class, 'update']);
   Route::delete('/admin/blog/delete/{id}', [BlogController::class, 'destroy']);
 });
-Route::get('/blogs', [BlogController::class, 'allBlog']);
+Route::get('/user/blogs', [BlogController::class, 'allBlog']);
+// Route::get('/user/blogs/{id}', [BlogController::class, 'blogDetails']);
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 Route::get('/products/lists', [ProductController::class, 'productsList']);
 

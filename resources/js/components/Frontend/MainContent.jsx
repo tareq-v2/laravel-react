@@ -8,70 +8,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
-const BannerSpot = ({ spotNumber }) => {
-  const [banners, setBanners] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        const response = await axios.get(`/banners/spot-${spotNumber}`);
-        if (response.data.success) {
-          setBanners(response.data.banners);
-          setCurrentIndex(Math.floor(Math.random() * response.data.banners.length));
-        }
-      } catch (error) {
-        console.error(`Error fetching spot ${spotNumber} banners:`, error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBanners();
-  }, [spotNumber]);
-
-  useEffect(() => {
-    if (banners.length > 1) {
-      const interval = setInterval(() => {
-        setFade(false);
-        setTimeout(() => {
-          let newIndex;
-          do {
-            newIndex = Math.floor(Math.random() * banners.length);
-          } while (newIndex === currentIndex);
-          setCurrentIndex(newIndex);
-          setFade(true);
-        }, 500);
-      }, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, [banners, currentIndex]);
-
-  if (loading) return <div className="banner-loading">Loading...</div>;
-
-  return (
-    <div className="side-banner">
-      {banners.length > 0 ? (
-        <div className={`banner-slide ${fade ? 'fade-in' : 'fade-out'}`}>
-          <a href={banners[currentIndex]?.url || '#'} target="_blank" rel="noopener noreferrer">
-            <img
-              src={`http://localhost:8000/storage/banners/${banners[currentIndex]?.images}`}
-              alt={`Spot ${spotNumber} Banner`}
-            />
-          </a>
-        </div>
-      ) : (
-        <div className="banner-placeholder">
-          <img src="/default-banner.jpg" alt="Default banner" />
-        </div>
-      )}
-    </div>
-  );
-};
+import '@fortawesome/fontawesome-free/css/all.css';
 
 const MainContent = () => {
   const t = useTranslation();
@@ -80,6 +17,8 @@ const MainContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [blogs, setBlogs] = useState([]);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState(null);
   const sections = {
     news: [
       { 
@@ -123,18 +62,16 @@ const MainContent = () => {
       // Add more businesses
     ]
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [adResponse, dirResponse] = await Promise.all([
           axios.get('/ad/category/icons'),
-          axios.get('/directory/category/icons'),
-          axios.get('/blogs')
+          axios.get('/directory/category/icons')
         ]);
-        
-        setAdCategories(adResponse.data.data);
-        setDirectoryCategories(dirResponse.data.data);
-        setBlogs(blogsResponse.data);
+        setAdCategories(adResponse.data?.data || []);
+        setDirectoryCategories(dirResponse.data?.data || []);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -145,6 +82,26 @@ const MainContent = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await axios.get('/user/blogs');
+        console.log(response.data);
+        setBlogs(response.data || []);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+
+  const closeShareModal = () => {
+    setShareModalOpen(false);
+    setSelectedBlog(null);
+  };
   const renderCategories = (categories, routePrefix) => (
     <div className="row g-4">
       {categories.map(category => (
@@ -251,16 +208,10 @@ const MainContent = () => {
             <BannerSpot spotNumber={4} />
           </div>
           <div className="col-md-7">
-            <div className="section-header">
-              <div></div>
+            <div className="blog-section-header">
               <div>
-                <h1>Latest Blog Posts</h1>
+                <h2>Latest Artcles</h2>
                 <p>Stay updated with our latest articles and insights</p>
-              </div>
-              <div>
-                <Link to="/blogs" className="btn view-all-btn">
-                  View All
-                </Link>
               </div>
             </div>
             
@@ -268,7 +219,7 @@ const MainContent = () => {
               className="blog-carousel"
               spaceBetween={20}
               slidesPerView={3}
-              navigation={true}
+              navigation={false}
               pagination={{ clickable: true }}
               autoplay={{ delay: 5000 }}
               modules={[Navigation, Pagination, Autoplay]}
@@ -280,65 +231,53 @@ const MainContent = () => {
             >
               {blogs.map(blog => (
                 <SwiperSlide key={blog.id} className="blog-card">
-                  <Link to={`/blog/${blog.id}`} className="blog-link">
-                    {blog.thumbnail ? (
-                      <div className="blog-thumbnail">
+                  <Link to={`/blog/details/${blog.id}`} className="blog-link">
+                    {/* Thumbnail container with fixed height */}
+                    <div className="blog-thumbnail-container">
+                      {blog.thumbnail ? (
                         <img 
                           src={`http://localhost:8000/uploads/blogs/thumbnail/${blog.thumbnail}`} 
-                          alt={blog.title} 
+                          alt={blog.title || "Blog thumbnail"} 
                         />
-                      </div>
-                    ) : (
-                      <div className="blog-thumbnail placeholder">
-                        <i className="fas fa-image"></i>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="blog-thumbnail placeholder">
+                          <i className="fas fa-image fa-2x"></i>
+                        </div>
+                      )}
+                    </div>
+                    
                     <div className="blog-content">
                       <div className="blog-meta">
-                        <span className="blog-category">{blog.category}</span>
-                        <span className="blog-date">
-                          {new Date(blog.created_at).toLocaleDateString()}
+                        <span>{blog.category || "Uncategorized"}</span>
+                        <span>
+                          {blog.created_at 
+                            ? new Date(blog.created_at).toLocaleDateString()
+                            : "No date"}
                         </span>
                       </div>
-                      <h4 className="blog-title">{blog.title}</h4>
+                      
+                      <h6 className="blog-title">{blog.title || "Untitled Blog"}</h6>
+                      
                       <p className="blog-excerpt">
-                        {blog.description.substring(0, 100)}...
+                        {blog.description 
+                          ? `${blog.description.substring(0, 150)}...` 
+                          : "No description available"}
                       </p>
-                      <div className="read-more">Read More →</div>
+                      
+                      <div className="blog-footer">
+                        <div className="read-more">
+                          <Link to={`/blog/details/${blog.id}`}>
+                            Read More →
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </Link>
                 </SwiperSlide>
               ))}
             </Swiper>
+            
           </div>
-          {/* <div className="col-md-7">
-            <div className="section-header">
-                 <h1>Latest News</h1>
-             </div>
-             <Swiper
-                className="news-carousel"
-                spaceBetween={10}
-                slidesPerView={2}
-                navigation={true}
-                pagination={{ clickable: true }} 
-                autoplay={{ delay: 3000 }}
-                modules={[Navigation, Pagination, Autoplay]}  // Load modules
-                breakpoints={{
-                  320: { slidesPerView: 1 },
-                  768: { slidesPerView: 2 },
-                }}
-             >
-                 {sections.news.map(article => 
-                 <SwiperSlide key={article.id} className="news-card">
-                     <img src={article.icon} alt={article.title} />
-                     <div className="news-content">
-                     <small>{article.date}</small>
-                     <h5>{article.title}</h5>
-                     <p>{article.excerpt}</p>
-                     </div>
-                 </SwiperSlide>)}
-             </Swiper>
-          </div> */}
 
           <div className="col-md-2">
             <BannerSpot spotNumber={5} />
@@ -377,6 +316,154 @@ const MainContent = () => {
           </div>
         </div>
       </section>
+
+      {shareModalOpen && (
+        <ShareModal blog={selectedBlog} onClose={closeShareModal} />
+      )}
+    </div>
+  );
+};
+
+const BannerSpot = ({ spotNumber }) => {
+  const [banners, setBanners] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const response = await axios.get(`/banners/spot-${spotNumber}`);
+        if (response.data.success) {
+          setBanners(response.data.banners);
+          setCurrentIndex(Math.floor(Math.random() * response.data.banners.length));
+        }
+      } catch (error) {
+        console.error(`Error fetching spot ${spotNumber} banners:`, error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBanners();
+  }, [spotNumber]);
+
+  useEffect(() => {
+    if (banners.length > 1) {
+      const interval = setInterval(() => {
+        setFade(false);
+        setTimeout(() => {
+          let newIndex;
+          do {
+            newIndex = Math.floor(Math.random() * banners.length);
+          } while (newIndex === currentIndex);
+          setCurrentIndex(newIndex);
+          setFade(true);
+        }, 500);
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
+  }, [banners, currentIndex]);
+
+  if (loading) return <div className="banner-loading">Loading...</div>;
+
+  return (
+    <div className="side-banner">
+      {banners.length > 0 ? (
+        <div className={`banner-slide ${fade ? 'fade-in' : 'fade-out'}`}>
+          <a href={banners[currentIndex]?.url || '#'} target="_blank" rel="noopener noreferrer">
+            <img
+              src={`http://localhost:8000/storage/banners/${banners[currentIndex]?.images}`}
+              alt={`Spot ${spotNumber} Banner`}
+            />
+          </a>
+        </div>
+      ) : (
+        <div className="banner-placeholder">
+          <img src="/default-banner.jpg" alt="Default banner" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ShareModal = ({ blog, onClose }) => {
+  if (!blog) return null;
+
+  const shareOnSocial = (platform) => {
+    const url = `http://localhost:3000/blog/${blog.id}`;
+    const title = blog.title || "Check out this blog post";
+    const text = blog.description?.substring(0, 100) || "Interesting blog post";
+
+    switch(platform) {
+      case 'facebook':
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+          '_blank'
+        );
+        break;
+      case 'twitter':
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+          '_blank'
+        );
+        break;
+      case 'linkedin':
+        window.open(
+          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+          '_blank'
+        );
+        break;
+      case 'whatsapp':
+        window.open(
+          `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`,
+          '_blank'
+        );
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="share-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h5>Share this post</h5>
+          <button className="close-btn" onClick={onClose}>
+            &times;
+          </button>
+        </div>
+        <div className="modal-body">
+          <div className="social-icons">
+            <div className="icon facebook" onClick={() => shareOnSocial('facebook')}>
+              <i className="fab fa-facebook-f"></i>
+              <span>Facebook</span>
+            </div>
+            <div className="icon twitter" onClick={() => shareOnSocial('twitter')}>
+              <i className="fab fa-twitter"></i>
+              <span>Twitter</span>
+            </div>
+            <div className="icon linkedin" onClick={() => shareOnSocial('linkedin')}>
+              <i className="fab fa-linkedin-in"></i>
+              <span>LinkedIn</span>
+            </div>
+            <div className="icon whatsapp" onClick={() => shareOnSocial('whatsapp')}>
+              <i className="fab fa-whatsapp"></i>
+              <span>WhatsApp</span>
+            </div>
+            <div className="icon copy" onClick={() => shareOnSocial('copy')}>
+              <i className="fas fa-link"></i>
+              <span>Copy Link</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

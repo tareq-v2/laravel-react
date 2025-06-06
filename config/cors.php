@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'storage/*', 'broadcasting/auth', 'sanctum/csrf-cookie'], // Allow CORS for these paths
+    'paths' => ['api/*', 'storage/*', 'broadcasting/auth', 'sanctum/csrf-cookie', 'user/blogs/*', 'blogs/*'], // Allow CORS for these paths
     'allowed_methods' => ['*'], // Allow all HTTP methods (GET, POST, etc.)
     'allowed_origins' => ['http://localhost:5173'], // Replace with your React app URL
     'allowed_origins_patterns' => [], // Regex patterns for allowed origins
@@ -9,4 +9,5 @@ return [
     'exposed_headers' => [], // Expose no additional headers
     'max_age' => 0, // Preflight request cache duration (0 = no cache)
     'supports_credentials' => true, // Allow credentials (cookies, authorization headers)
+    
 ];

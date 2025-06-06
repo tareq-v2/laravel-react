@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Blog extends Model
 {
     protected $guarded = [];
-    // protected $fillable = [
-    //     'title',
-    //     'slug',
-    //     'description',
-    //     'short_description'
-    // ];
+    public function comments()
+    {
+        return $this->hasMany(BlogComment::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(BlogLike::class);
+    }
 }

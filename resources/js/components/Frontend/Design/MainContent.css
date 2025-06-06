@@ -10,11 +10,20 @@
 }
 
 .section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
+  padding: 0.5rem !important;
+  justify-content: center;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem !important;
+}
+
+.blog-section-header {
+  padding: 0.5rem !important;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 0.5rem !important;
+}
+.blog-section-header h2 {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .category-card, .directory-card {
@@ -273,4 +282,241 @@
 .post-btn:hover{
   color: #fff;
   background: tomato;
+}
+
+
+// Add this CSS to your MainContent.css file
+.blog-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: white;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.blog-thumbnail-container {
+  position: relative;
+  height: 200px; /* Fixed height for all thumbnails */
+  overflow: hidden;
+}
+
+.blog-thumbnail-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures images fill container while maintaining aspect ratio */
+  transition: transform 0.5s ease;
+}
+
+.blog-card:hover .blog-thumbnail-container img {
+  transform: scale(1.05);
+}
+
+.blog-thumbnail.placeholder {
+  height: 100%;
+  background: #f5f7fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+}
+
+.blog-content {
+  padding: 15px;
+  margin-bottom: 8px !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.6rem;
+  color: #6c757d;
+}
+.blog-carousel .blog-title {
+  font-size: 12pt !important;
+}
+.blog-title {
+  font-size: 0.5rem;
+  margin-bottom: 5px !important;
+  transition: color 0.3s ease;
+}
+.blog-content p {
+  margin-bottom: 5px !important;
+}
+.blog-link {
+  text-decoration: none;
+}
+.blog-card:hover .blog-title {
+  color: #007bff; /* Change color on hover */
+}
+
+.blog-excerpt {
+  text-align: justify;
+  text-indent: 5%;
+  margin-bottom: 16px;
+  font-size: 10pt;
+  margin-bottom: 15px;
+  color: #495057;
+}
+
+.blog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.read-more {
+  font-size: 11pt;
+  color: #007bff;
+  font-weight: 500;
+  transition: transform 0.3s ease;
+}
+.social-share {
+  width: 30px;
+  text-align: left;
+}
+
+.blog-card:hover .read-more {
+  transform: translateX(5px);
+} 
+
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.share-modal {
+  background: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h5 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.social-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 80px;
+}
+
+.icon:hover {
+  transform: translateY(-3px);
+}
+
+.icon span {
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.icon.facebook { background: #f0f8ff; color: #3b5998; }
+.icon.twitter { background: #f0f9ff; color: #1da1f2; }
+.icon.linkedin { background: #f0f8ff; color: #0077b5; }
+.icon.whatsapp { background: #f0fff4; color: #25d366; }
+.icon.copy { background: #f5f5f5; color: #333; }
+
+.icon.facebook:hover { background: #e1f0ff; }
+.icon.twitter:hover { background: #e1f5ff; }
+.icon.linkedin:hover { background: #e1f0ff; }
+.icon.whatsapp:hover { background: #e1ffe7; }
+.icon.copy:hover { background: #eaeaea; }
+
+/* Grid layout instead of carousel */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Remove all Swiper-specific classes and styles */
+.swiper-slide, 
+.swiper-slide-active, 
+.swiper-slide-next, 
+.swiper-slide-prev {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  filter: none !important;
+}
+.swiper-wrapper {
+  padding: 0 8px 1rem 0;
+}
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .blog-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .blog-grid {
+    grid-template-columns: 1fr;
+  }
 }

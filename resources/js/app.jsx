@@ -25,6 +25,7 @@ import CustomerDashboard from './components/Frontend/Customer/Dashboard';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import AdvertiseWithUs from './components/Frontend/AdvertiseWithUs';
 import TermsAndConditions from './components/Frontend/TermsAndCondition';
+import FrontBlogDetails from './components/Frontend/BlogDetails';
 import ContactForm from './components/Frontend/ContactUs';
 import AboutUs from './components/Frontend/AboutUs';
 import PrivacyPolicy from './components/Frontend/PrivacyPolicy';
@@ -189,6 +190,10 @@ function App() {
           <Route
               path="/advertise/with/us"
               element={<Layout><AdvertiseWithUs /></Layout>}
+          />
+          <Route
+              path="/blog/details/:id"
+              element={<Layout><FrontBlogDetails /></Layout>}
           />
           <Route
               path="/terms/and/conditions"

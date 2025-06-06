@@ -49,4 +49,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function blogComments()
+    {
+        return $this->hasMany(BlogComment::class);
+    }
 }
