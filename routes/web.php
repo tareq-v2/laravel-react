@@ -73,6 +73,7 @@ Route::post('/contact', function (Request $request) {
   return response()->json(['message' => 'Contact form submitted successfully']);
   
 });
+Route::get('/auth/google', [AuthController::class, 'handleGoogleLogin']);
 Route::get('/proxy/horoscope', [FrontendController::class, 'horoscopeProxy']);
 Route::get('/horoscope-content', [FrontendController::class, 'horoscopeContent']);
 Route::get('/get/inspire', [FrontendController::class, 'getQuote']);

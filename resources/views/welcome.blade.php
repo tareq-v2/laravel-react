@@ -10,5 +10,10 @@
 </head>
 <body>
     <div id="root"></div>
+    <script 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDq2asAtKU756FskGWy-FjN7vIzo2Jufeg&libraries=places"
+        async
+        defer
+    ></script>
 </body>
 </html>

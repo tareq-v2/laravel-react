@@ -1,4 +1,14 @@
-const Preview = ({ formData, logoPreview, onEdit, onSubmit }) => {
+// Preview.jsx
+import React from 'react';
+
+const Preview = ({ 
+  formData, 
+  logoPreview, 
+  thumbnailPreviews,
+  location,
+  onEdit, 
+  onSubmit 
+}) => {
   return (
     <div className="card">
       <div className="card-header">
@@ -7,7 +17,7 @@ const Preview = ({ formData, logoPreview, onEdit, onSubmit }) => {
       <div className="card-body">
         <div className="row">
           {/* Left Column */}
-          <div className="col-md-7">
+           <div className="col-md-7">
             <div className="mb-4">
               <h3>{formData.businessName}</h3>
               <p className="text-muted">
@@ -104,8 +114,9 @@ const Preview = ({ formData, logoPreview, onEdit, onSubmit }) => {
 
           {/* Right Column */}
           <div className="col-md-5">
+            {/* Logo Preview */}
             {logoPreview && (
-              <div className="mb-4 text-center">
+              <div className="mb-4">
                 <h5>Business Logo</h5>
                 <img 
                   src={logoPreview} 
@@ -113,6 +124,24 @@ const Preview = ({ formData, logoPreview, onEdit, onSubmit }) => {
                   className="img-fluid rounded border p-2"
                   style={{ maxHeight: '200px' }}
                 />
+              </div>
+            )}
+
+            {/* Thumbnails Preview */}
+            {thumbnailPreviews.length > 0 && (
+              <div className="mt-4">
+                <h5>Business Images</h5>
+                <div className="d-flex flex-wrap gap-2">
+                  {thumbnailPreviews.map((preview, index) => (
+                    <img
+                      key={index}
+                      src={preview}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="img-thumbnail"
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -141,3 +170,5 @@ const Preview = ({ formData, logoPreview, onEdit, onSubmit }) => {
     </div>
   );
 };
+
+export default Preview;

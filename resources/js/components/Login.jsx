@@ -111,33 +111,47 @@ export default function Login() {
   };
 
   // Updated handleSocialLogin function
-  const handleSocialLogin = async (provider) => {
-    try {
-      const response = await axios.post(
-        `api/auth/${provider}/callback`, // Full backend URL
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          }
-        }
-      );
+  // const handleSocialLogin = async (provider) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `api/auth/${provider}/callback`, // Full backend URL
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Accept': 'application/json',
+  //         }
+  //       }
+  //     );
 
+  //     if (response.data.token) {
+  //       localStorage.setItem('token', response.data.token);
+  //       navigate('/admin-dashboard');
+  //     }
+  //   } catch (error) {
+  //     console.error('Login failed:', error.response?.data);
+  //     setError(error.response?.data?.error || 'Login failed');
+  //   }
+  // };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.get('/auth/google', {
+        token: credentialResponse.credential
+      });
+      
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         navigate('/admin-dashboard');
       }
     } catch (error) {
-      console.error('Login failed:', error.response?.data);
-      setError(error.response?.data?.error || 'Login failed');
+      setError('Google login failed');
     }
   };
-
   // Handle Google OAuth success
-  const handleGoogleSuccess = (credentialResponse) => {
-    const authToken = credentialResponse.credential; // Extract the authToken
-    handleSocialLogin(authToken, 'google'); // Pass the authToken to the social login handler
-  };
+  // const handleGoogleSuccess = (credentialResponse) => {
+  //   const authToken = credentialResponse.credential; // Extract the authToken
+  //   handleSocialLogin(authToken, 'google'); // Pass the authToken to the social login handler
+  // };
 
   // Handle Google OAuth error
   const handleGoogleError = () => {

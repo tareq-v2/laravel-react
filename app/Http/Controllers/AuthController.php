@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -65,7 +66,7 @@ class AuthController extends Controller
         // Return a customizable response
         return response()->json([
             'message' => 'Logged out successfully',
-        ]);
+        ]);  
     }
 
     public function updateProfile(Request $request)
@@ -144,5 +145,25 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Password changed successfully'
         ]);
+    }
+
+    public function handleGoogleLogin(Request $request)
+    {
+        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $payload = $client->verifyIdToken($request->token);
+        
+        if ($payload) {
+            $user = User::firstOrCreate(
+                ['email' => $payload['email']],
+                ['name' => $payload['name'], 'password' => Hash::make(Str::random(16))]
+            );
+            
+            Auth::login($user);
+            $token = $user->createToken('authToken')->plainTextToken;
+            
+            return response()->json(['token' => $token]);
+        }
+        
+        return response()->json(['error' => 'Invalid token'], 401);
     }
 }

@@ -32,6 +32,7 @@ import PrivacyPolicy from './components/Frontend/PrivacyPolicy';
 import AdSubCategories from './components/Frontend/AdSubCategories';
 import AdSubCategoriesListing from './components/Frontend/AdSubCategoriesListing';
 import CreateJobOfferForm from './components/Frontend/create/JobOfferForm';
+import BusinessCreateForm from './components/Frontend/create/business/BusinessCreateForm';
 import JobOfferList from './components/Frontend/adCategories/listing/JobOfferList';
 import JobWantedResume from './components/Frontend/adCategories/listing/JobWantedResume';
 import LocalServicesLosAngeles from './components/Frontend/adCategories/listing/LocalServicesLosAngeles';
@@ -57,8 +58,9 @@ import AdRates from './components/Backend/ads/AdRates';
 import PostVerification from './components/Backend/PostVerification';
 
 function App() {
-  const googleClientId = '725102962027-hbrvvh2u965in4g86qis5nt6a6te3s2p.apps.googleusercontent.com';
-
+  const googleClientId = '219618520859-ov7gt3l7b0rqjorih253tndtml7nkvvd.apps.googleusercontent.com';
+  // const googleId = "219618520859-ov7gt3l7b0rqjorih253tndtml7nkvvd.apps.googleusercontent.com";
+  // const googleClientId = "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";
   return (
     <LanguageProvider>
       <BrowserRouter>
@@ -130,6 +132,10 @@ function App() {
           <Route
               path="/create-job-offer"
               element={<Layout><CreateJobOfferForm /></Layout>}
+          />
+          <Route
+              path="add-business"
+              element={<Layout><BusinessCreateForm /></Layout>}
           />
 
           <Route
