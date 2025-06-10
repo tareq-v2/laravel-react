@@ -15,39 +15,71 @@ const BusinessCreateForm = ({
     onCancel 
 }) => {
 const navigate = useNavigate();
+// Days for working hours
+const daysOfWeek = [
+    { id: 'monday', label: 'Monday' },
+    { id: 'tuesday', label: 'Tuesday' },
+    { id: 'wednesday', label: 'Wednesday' },
+    { id: 'thursday', label: 'Thursday' },
+    { id: 'friday', label: 'Friday' },
+    { id: 'saturday', label: 'Saturday' },
+    { id: 'sunday', label: 'Sunday' }
+];
 const [formData, setFormData] = useState({
-businessName: '',
-address: '',
-suite: '',
-city: '',
-category: '',
-subCategory: '',
-description: '',
-workingHour: '',
-days: [],
-startTime: '',
-endTime: '',
-telNo: '',
-tel_ext: '',
-altTelNo: '',
-alt_tel_ext: '',
-email: '',
-website: '',
-facebook: '',
-instagram: '',
-yelp: '',
-youtube: '',
-logo: null,
-contactName: '',
-contactTelNo: '',
-contactEmail: '',
-featured: 'No',
-model: 'Directory',
-socialShare: '',
-rate: 0,
-featureRate: 0,
-socialMediaRate: 0,
-sessionId: localStorage.getItem('draft_session'),
+    businessName: '',
+    address: '',
+    suite: '',
+    city: '',
+    category: '',
+    subCategory: '',
+    description: '',
+    workingHour: '',
+    days: [],
+    startTime: '',
+    endTime: '',
+    telNo: '',
+    tel_ext: '',
+    altTelNo: '',
+    alt_tel_ext: '',
+    email: '',
+    website: '',
+    facebook: '',
+    instagram: '',
+    yelp: '',
+    youtube: '',
+    logo: null,
+    contactName: '',
+    contactTelNo: '',
+    contactEmail: '',
+    featured: 'No',
+    model: 'Directory',
+    socialShare: '',
+    rate: 0,
+    featureRate: 0,
+    socialMediaRate: 0,
+    sessionId: localStorage.getItem('draft_session'),
+    monday: false,
+    monday_startTime: '',
+    monday_endTime: '',
+    tuesday: false,
+    tuesday_startTime: '',
+    tuesday_endTime: '',
+    wednesday: false,
+    wednesday_startTime: '',
+    wednesday_endTime: '',
+    thursday: false,
+    thursday_startTime: '',
+    thursday_endTime: '',
+    friday: false,
+    friday_startTime: '',
+    friday_endTime: '',
+    saturday: false,
+    saturday_startTime: '',
+    saturday_endTime: '',
+    sunday: false,
+    sunday_startTime: '',
+    sunday_endTime: '',
+    hide_hour: false,
 });
 
 const [sessionId, setSessionId] = useState('');
@@ -76,6 +108,46 @@ const [thumbnails, setThumbnails] = useState([]);
 const [thumbnailPreviews, setThumbnailPreviews] = useState([]);
 const fileInputThumbnails = useRef(null);
 
+// Handle day checkbox change
+const handleDayCheckboxChange = (dayId, checked) => {
+    setFormData(prev => ({
+        ...prev,
+        [dayId]: checked,
+        // Clear times when unchecking
+        [`${dayId}_startTime`]: checked ? prev[`${dayId}_startTime`] : '',
+        [`${dayId}_endTime`]: checked ? prev[`${dayId}_endTime`] : ''
+    }));
+};
+
+// Handle time input change
+const handleTimeChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+};
+
+// Handle hide hours checkbox
+const handleHideHoursChange = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+        // Reset all day fields when hiding hours
+        const resetFields = {};
+        daysOfWeek.forEach(day => {
+            resetFields[day.id] = false;
+            resetFields[`${day.id}_startTime`] = '';
+            resetFields[`${day.id}_endTime`] = '';
+        });
+        
+        setFormData(prev => ({
+            ...prev,
+            ...resetFields,
+            hide_hour: checked
+        }));
+    } else {
+        setFormData(prev => ({
+            ...prev,
+            hide_hour: checked
+        }));
+    }
+};
   // Handle thumbnail upload
   const handleThumbnailsChange = (e) => {
     const files = Array.from(e.target.files || e.dataTransfer.files);
@@ -100,8 +172,6 @@ const fileInputThumbnails = useRef(null);
     setThumbnailPreviews(prev => prev.filter((_, i) => i !== index));
     setThumbnails(prev => prev.filter((_, i) => i !== index));
   };
-// Days of week for working hours
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   
   // Business categories
   const [categories] = useState([
@@ -441,76 +511,6 @@ const fileInputThumbnails = useRef(null);
                     socialMediaPromotion={socialMediaPromotion}
                     setSocialMediaPromotion={setSocialMediaPromotion}
                 />
-            //   <div className="card feature-card">
-            //     <div className="card-header">
-            //       <h4 className="mb-0">
-            //         <strong>Business Directory Listing - {getRate.base === 0 ? 'Free' : `$${getRate.base}`}</strong>
-            //       </h4>
-            //     </div>
-                
-            //     <div className="card-body">
-            //       <div className="post-duration-info mb-4">
-            //         <p>Listing active for 1 year. Expires {new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString('en-US', { 
-            //           month: 'long', 
-            //           day: 'numeric', 
-            //           year: 'numeric' 
-            //         })}.</p>
-            //       </div>
-
-            //       <div className="feature-option active">
-            //         <div className="form-check">
-            //           <input
-            //             className="form-check-input single-checkbox2"
-            //             type="checkbox"
-            //             id="featured_post"
-            //             checked={formData.featured === 'Yes'}
-            //             onChange={(e) => setFormData(prev => ({
-            //               ...prev,
-            //               featured: e.target.checked ? 'Yes' : 'No',
-            //               featureRate: e.target.checked ? getRate.feature : 0
-            //             }))}
-            //           />
-            //           <label className="form-check-label package_label" htmlFor="featured_post">
-            //             <strong>Feature your business on directory homepage - {getRate.feature === 0 ? 'Free' : `$${getRate.feature}`}</strong>
-            //           </label>
-            //         </div>
-            //       </div>  
-
-            //       <div className="social-promotion-section mt-4">
-            //         <div className="form-check">
-            //           <input
-            //             className="form-check-input single-checkbox2"
-            //             type="checkbox"
-            //             id="social_media"
-            //             checked={socialMediaPromotion}
-            //             onChange={handleSocialPromotionChange}
-            //           />
-            //           <label className="form-check-label package_label" htmlFor="social_media">
-            //             <strong>Promote your business on our social media - {getRate.social === 0 ? 'Free' : `$${getRate.social}`}</strong>
-            //           </label>
-            //         </div>
-            //       </div>
-
-            //       <div className="action-buttons mt-3">
-            //         <button 
-            //           className="btn btn-outline-secondary"
-            //           onClick={() => {
-            //             setShowFeatureSelection(false);
-            //             setShowPreview(true);
-            //           }}
-            //         >
-            //           ← Back to Preview
-            //         </button>
-                    
-            //         <button 
-            //           className="btn btn-primary ms-2"
-            //           onClick={handleFeaturedSubmit}
-            //         >
-            //           Confirm & Submit
-            //         </button>
-            //       </div>
-            //     </div>
-            //   </div>
             ) : showPreview ? (
               <Preview
                 formData={formData}
@@ -680,68 +680,105 @@ const fileInputThumbnails = useRef(null);
 
                     {/* Working Hours Section */}
                     <div className="mb-4">
-                      <h5 className="border-bottom pb-2 mb-3">Working Hours</h5>
-                      
-                      <div className="form-group">
-                        <label className="form-label text-dark fw-semibold">Working Hours Summary</label>
-                        <input
-                          type="text"
-                          name="workingHour"
-                          value={formData.workingHour}
-                          onChange={handleInputChange}
-                          className="form-control"
-                          placeholder="e.g., Mon-Fri: 9AM-5PM, Sat: 10AM-2PM"
-                        />
-                      </div>
-                      
-                      <div className="mt-3">
-                        <label className="form-label text-dark fw-semibold">Select Working Days</label>
-                        <div className="d-flex flex-wrap gap-2">
-                          {daysOfWeek.map(day => (
-                            <button
-                              key={day}
-                              type="button"
-                              className={`btn btn-sm ${formData.days.includes(day) ? 'btn-primary' : 'btn-outline-primary'}`}
-                              onClick={() => handleDaySelection(day)}
-                            >
-                              {day}
-                            </button>
-                          ))}
+                        <h5 className="border-bottom pb-2 mb-3">Working Hours</h5>
+                        
+                        <div className="form-group mt-3">
+                            <label className="form-label mb-0 d-flex">
+                                <span style={{ fontSize: '12pt', display: '' }}>Hide</span>
+                                <input
+                                    type="checkbox"
+                                    id="hideHours"
+                                    name="hide_hour"
+                                    checked={formData.hide_hour}
+                                    onChange={handleHideHoursChange}
+                                    className="ms-2 me-2"
+                                />
+                                
+                            </label>
                         </div>
-                      </div>
-                      
-                      <div className="row mt-3">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label className="form-label text-dark fw-semibold">Opening Time</label>
-                            <div className="input-group">
-                              <span className="input-group-text"><FaClock /></span>
-                              <input
-                                type="time"
-                                name="startTime"
-                                value={formData.startTime}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
+                        
+                        {!formData.hide_hour && (
+                            <div className="container px-0 mt-3" style={{ marginTop: '6px' }}>
+                                <span className="text-muted font-weight-semibold" style={{ fontSize: '14px' }}>
+                                    (Check the box if you prefer not to display the operating hours)
+                                </span>
+                                <div className="card p-2 mb-1 hour_card">
+                                <div className="m-0 p-0">
+                                    {daysOfWeek.map(day => (
+                                    <div className="row mb-2 align-items-center" key={day.id}>
+                                        <div className="col-3">
+                                        <input
+                                            type="checkbox"
+                                            id={day.id}
+                                            name={day.id}
+                                            checked={formData[day.id]}
+                                            onChange={(e) => handleDayCheckboxChange(day.id, e.target.checked)}
+                                            className="me-2"
+                                        />
+                                        <label htmlFor={day.id} className="font-weight-bold">
+                                            {day.label} {/* Fixed: render label text */}
+                                        </label>
+                                        </div>
+                                        <div className="col-9 px-0">
+                                            <div className="d-flex align-items-center gap-2">
+                                                {/* Start Time */}
+                                                <div className="flex-grow-1 position-relative">
+                                                <div className="input-group">
+                                                    <span className="input-group-text bg-light border-end-0 py-2">
+                                                    <FaClock size={12} className="text-muted" />
+                                                    </span>
+                                                    <input
+                                                    type="time"
+                                                    name={`${day.id}_startTime`}
+                                                    value={formData[`${day.id}_startTime`]}
+                                                    onChange={(e) => handleTimeChange(`${day.id}_startTime`, e.target.value)}
+                                                    className="form-control border-start-0 py-2"
+                                                    disabled={!formData[day.id]}
+                                                    style={{ 
+                                                        paddingRight: '2.5rem',
+                                                        backgroundColor: formData[day.id] ? '#fff' : '#f8f9fa'
+                                                    }}
+                                                    />
+                                                    <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted small">
+                                                    Start
+                                                    </span>
+                                                </div>
+                                                </div>
+
+                                                {/* Separator */}
+                                                <div className="text-muted" style={{ width: '20px', textAlign: 'center' }}>–</div>
+
+                                                {/* End Time */}
+                                                <div className="flex-grow-1 position-relative">
+                                                <div className="input-group">
+                                                    <input
+                                                    type="time"
+                                                    name={`${day.id}_endTime`}
+                                                    value={formData[`${day.id}_endTime`]}
+                                                    onChange={(e) => handleTimeChange(`${day.id}_endTime`, e.target.value)}
+                                                    className="form-control border-end-0 py-2"
+                                                    disabled={!formData[day.id]}
+                                                    style={{ 
+                                                        paddingLeft: '2.5rem',
+                                                        backgroundColor: formData[day.id] ? '#fff' : '#f8f9fa'
+                                                    }}
+                                                    />
+                                                    <span className="position-absolute start-0 top-50 translate-middle-y ms-2 text-muted small">
+                                                    End
+                                                    </span>
+                                                    <span className="input-group-text bg-light border-start-0 py-2">
+                                                    <FaClock size={12} className="text-muted" />
+                                                    </span>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ))}
+                                </div>
+                                </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label className="form-label text-dark fw-semibold">Closing Time</label>
-                            <div className="input-group">
-                              <span className="input-group-text"><FaClock /></span>
-                              <input
-                                type="time"
-                                name="endTime"
-                                value={formData.endTime}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        )}
                     </div>
 
                     {/* Contact Information Section */}

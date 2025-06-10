@@ -1,143 +1,221 @@
-const Preview = ({ formData, logoPreview, onEdit, onSubmit }) => {
-  return (
-    <div className="card">
-      <div className="card-header">
-        <h4 className="mb-0"><strong>Preview Your Business Listing</strong></h4>
-      </div>
-      <div className="card-body">
-        <div className="row">
-          {/* Left Column */}
-          <div className="col-md-7">
-            <div className="mb-4">
-              <h3>{formData.businessName}</h3>
-              <p className="text-muted">
-                {formData.category && <><strong>Category:</strong> {formData.category}<br /></>}
-                {formData.subCategory && <><strong>Sub-Category:</strong> {formData.subCategory}<br /></>}
-                {formData.address && <><strong>Address:</strong> {formData.address}</>}
-                {formData.suite && `, ${formData.suite}`}<br />
-                {formData.city && <>{formData.city}</>}
-              </p>
-            </div>
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FaFileAlt, FaRedo, FaCloudUploadAlt, FaTimes, FaClock } from 'react-icons/fa';
+import VirtualKeyboard from '../Frontend/VirtualKeyboard';
+import AuthModal from '../Frontend/AuthModal';
+import '../Frontend/BusinessCreateForm.css';
+import Preview from './Preview';
+import FeatureSelection from './FeatureSelection';
 
-            {formData.description && (
-              <div className="mb-4">
-                <h5>Description</h5>
-                <p style={{ whiteSpace: 'pre-wrap' }}>{formData.description}</p>
-              </div>
-            )}
+const BusinessCreateForm = ({ 
+    isEditMode = false, 
+    initialData = null,
+    onSubmit: externalSubmit,
+    onCancel 
+}) => {
+    // ... existing state declarations ...
 
-            {(formData.workingHour || formData.days.length > 0) && (
-              <div className="mb-4">
-                <h5>Working Hours</h5>
-                {formData.workingHour && <p>{formData.workingHour}</p>}
-                
-                {formData.days.length > 0 && (
-                  <div>
-                    <strong>Open Days:</strong>
-                    <p>{formData.days.join(', ')}</p>
-                  </div>
-                )}
-                
-                {(formData.startTime || formData.endTime) && (
-                  <p>
-                    <strong>Hours:</strong> {formData.startTime} - {formData.endTime}
-                  </p>
-                )}
-              </div>
-            )}
+    // Days for working hours
+    const daysOfWeek = [
+        { id: 'monday', label: 'Monday' },
+        { id: 'tuesday', label: 'Tuesday' },
+        { id: 'wednesday', label: 'Wednesday' },
+        { id: 'thursday', label: 'Thursday' },
+        { id: 'friday', label: 'Friday' },
+        { id: 'saturday', label: 'Saturday' },
+        { id: 'sunday', label: 'Sunday' }
+    ];
 
-            <div className="mb-4">
-              <h5>Contact Information</h5>
-              <p>
-                {formData.telNo && (
-                  <><strong>Phone:</strong> {formData.telNo}
-                  {formData.tel_ext && ` ext.${formData.tel_ext}`}<br /></>
-                )}
-                {formData.altTelNo && (
-                  <><strong>Alt Phone:</strong> {formData.altTelNo}
-                  {formData.alt_tel_ext && ` ext.${formData.alt_tel_ext}`}<br /></>
-                )}
-                {formData.email && <><strong>Email:</strong> {formData.email}<br /></>}
-                {formData.website && <><strong>Website:</strong> {formData.website}<br /></>}
-              </p>
-              
-              {(formData.facebook || formData.instagram || formData.yelp || formData.youtube) && (
-                <div className="mt-3">
-                  <strong>Social Media:</strong>
-                  <div className="d-flex flex-wrap gap-2 mt-2">
-                    {formData.facebook && (
-                      <a href={formData.facebook} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                        Facebook
-                      </a>
-                    )}
-                    {formData.instagram && (
-                      <a href={formData.instagram} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                        Instagram
-                      </a>
-                    )}
-                    {formData.yelp && (
-                      <a href={formData.yelp} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                        Yelp
-                      </a>
-                    )}
-                    {formData.youtube && (
-                      <a href={formData.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                        YouTube
-                      </a>
-                    )}
-                  </div>
+    // ... existing useEffect hooks ...
+
+    // Initialize form data with working hours fields
+    const [formData, setFormData] = useState({
+        businessName: '',
+        address: '',
+        // ... other fields ...
+        // Working hours fields
+        monday: false,
+        monday_startTime: '',
+        monday_endTime: '',
+        tuesday: false,
+        tuesday_startTime: '',
+        tuesday_endTime: '',
+        wednesday: false,
+        wednesday_startTime: '',
+        wednesday_endTime: '',
+        thursday: false,
+        thursday_startTime: '',
+        thursday_endTime: '',
+        friday: false,
+        friday_startTime: '',
+        friday_endTime: '',
+        saturday: false,
+        saturday_startTime: '',
+        saturday_endTime: '',
+        sunday: false,
+        sunday_startTime: '',
+        sunday_endTime: '',
+        hide_hour: false,
+        // ... other fields ...
+    });
+
+    // ... existing functions ...
+
+    // Handle day checkbox change
+    const handleDayCheckboxChange = (dayId, checked) => {
+        setFormData(prev => ({
+            ...prev,
+            [dayId]: checked,
+            // Clear times when unchecking
+            [`${dayId}_startTime`]: checked ? prev[`${dayId}_startTime`] : '',
+            [`${dayId}_endTime`]: checked ? prev[`${dayId}_endTime`] : ''
+        }));
+    };
+
+    // Handle time input change
+    const handleTimeChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    // Handle hide hours checkbox
+    const handleHideHoursChange = (e) => {
+        const checked = e.target.checked;
+        if (checked) {
+            // Reset all day fields when hiding hours
+            const resetFields = {};
+            daysOfWeek.forEach(day => {
+                resetFields[day.id] = false;
+                resetFields[`${day.id}_startTime`] = '';
+                resetFields[`${day.id}_endTime`] = '';
+            });
+            
+            setFormData(prev => ({
+                ...prev,
+                ...resetFields,
+                hide_hour: checked
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                hide_hour: checked
+            }));
+        }
+    };
+
+    return (
+        <section className="sptb pt-5">
+            <div className="container">
+                <div className="row d-flex justify-content-center">
+                    <div className="col-xl-10" style={{ position: 'relative' }}>
+                        {/* ... existing conditional rendering for preview/feature selection ... */}
+                        
+                        {!showFeatureSelection && !showPreview && (
+                            <form onSubmit={handleSubmit} encType="multipart/form-data">
+                                {/* ... other form sections ... */}
+                                
+                                {/* Working Hours Section - Updated */}
+                                <div className="mb-4">
+                                    <h5 className="border-bottom pb-2 mb-3">Working Hours</h5>
+                                    
+                                    <div className="form-group">
+                                        <label className="form-label text-dark fw-semibold">
+                                            Working Hours Summary
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="workingHour"
+                                            value={formData.workingHour}
+                                            onChange={handleInputChange}
+                                            className="form-control"
+                                            placeholder="e.g., Mon-Fri: 9AM-5PM, Sat: 10AM-2PM"
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-group mt-3">
+                                        <label className="form-label mb-0">
+                                            <span style={{ fontSize: '12pt' }}>Hide</span>
+                                            <input
+                                                type="checkbox"
+                                                id="hideHours"
+                                                name="hide_hour"
+                                                checked={formData.hide_hour}
+                                                onChange={handleHideHoursChange}
+                                                className="ms-2 me-2"
+                                            />
+                                            <span className="text-muted font-weight-semibold" style={{ fontSize: '14px' }}>
+                                                (Check the box if you prefer not to display the operating hours)
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    {!formData.hide_hour && (
+                                        <div className="container px-0 mt-3" style={{ marginTop: '6px' }}>
+                                            <div className="card p-2 mb-1 hour_card">
+                                                <div className="m-0 p-0">
+                                                    {daysOfWeek.map(day => (
+                                                        <div className="row mb-2 align-items-center" key={day.id}>
+                                                            <div className="col-3">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id={day.id}
+                                                                    name={day.id}
+                                                                    checked={formData[day.id]}
+                                                                    onChange={(e) => handleDayCheckboxChange(day.id, e.target.checked)}
+                                                                    className="me-2"
+                                                                />
+                                                                <label htmlFor={day.id} className="font-weight-bold">
+                                                                    {day.label}
+                                                                </label>
+                                                            </div>
+                                                            <div className="col-9 px-0">
+                                                                <div className="row m-0 p-0">
+                                                                    <div className="col-6">
+                                                                        <div className="input-group">
+                                                                            <label className="input-group-text">From</label>
+                                                                            <input
+                                                                                type="time"
+                                                                                name={`${day.id}_startTime`}
+                                                                                value={formData[`${day.id}_startTime`]}
+                                                                                onChange={(e) => handleTimeChange(`${day.id}_startTime`, e.target.value)}
+                                                                                className="form-control"
+                                                                                disabled={!formData[day.id]}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-6">
+                                                                        <div className="input-group">
+                                                                            <label className="input-group-text">To</label>
+                                                                            <input
+                                                                                type="time"
+                                                                                name={`${day.id}_endTime`}
+                                                                                value={formData[`${day.id}_endTime`]}
+                                                                                onChange={(e) => handleTimeChange(`${day.id}_endTime`, e.target.value)}
+                                                                                className="form-control"
+                                                                                disabled={!formData[day.id]}
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* ... rest of the form ... */}
+                            </form>
+                        )}
+                    </div>
                 </div>
-              )}
             </div>
-
-            {(formData.contactName || formData.contactTelNo || formData.contactEmail) && (
-              <div className="mb-4">
-                <h5>Contact Person</h5>
-                <p>
-                  {formData.contactName && <><strong>Name:</strong> {formData.contactName}<br /></>}
-                  {formData.contactTelNo && <><strong>Phone:</strong> {formData.contactTelNo}<br /></>}
-                  {formData.contactEmail && <><strong>Email:</strong> {formData.contactEmail}</>}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column */}
-          <div className="col-md-5">
-            {logoPreview && (
-              <div className="mb-4 text-center">
-                <h5>Business Logo</h5>
-                <img 
-                  src={logoPreview} 
-                  alt="Logo preview" 
-                  className="img-fluid rounded border p-2"
-                  style={{ maxHeight: '200px' }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="d-flex justify-content-between mt-4">
-          <button 
-            type="button" 
-            className="btn btn-lg btn-outline-secondary"
-            onClick={onEdit}
-          >
-            <i className="fas fa-edit me-2"></i>
-            Edit Listing
-          </button>
-          
-          <button 
-            type="button" 
-            className="btn btn-lg btn-primary"
-            onClick={onSubmit}
-          >
-            <i className="fas fa-check-circle me-2"></i>
-            Submit Listing
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+            
+            {/* ... existing modals and components ... */}
+        </section>
+    );
 };
+
+export default BusinessCreateForm;
