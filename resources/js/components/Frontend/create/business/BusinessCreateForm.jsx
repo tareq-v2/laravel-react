@@ -25,6 +25,8 @@ const daysOfWeek = [
     { id: 'saturday', label: 'Saturday' },
     { id: 'sunday', label: 'Sunday' }
 ];
+
+// formdata here
 const [formData, setFormData] = useState({
     businessName: '',
     address: '',
@@ -107,6 +109,8 @@ const [locationSuggestions, setLocationSuggestions] = useState([]);
 const [thumbnails, setThumbnails] = useState([]);
 const [thumbnailPreviews, setThumbnailPreviews] = useState([]);
 const fileInputThumbnails = useRef(null);
+const [categories, setCategories] = useState([]);
+const [subCategories, setSubCategories] = useState([]);
 
 // Handle day checkbox change
 const handleDayCheckboxChange = (dayId, checked) => {
@@ -148,351 +152,371 @@ const handleHideHoursChange = (e) => {
         }));
     }
 };
-  // Handle thumbnail upload
-  const handleThumbnailsChange = (e) => {
-    const files = Array.from(e.target.files || e.dataTransfer.files);
-    if (files.length === 0) return;
+// Handle thumbnail upload
+const handleThumbnailsChange = (e) => {
+  const files = Array.from(e.target.files || e.dataTransfer.files);
+  if (files.length === 0) return;
 
-    const validFiles = files.filter(file => 
-      ['image/jpeg', 'image/png'].includes(file.type) && 
-      file.size <= 2 * 1024 * 1024
-    );
+  const validFiles = files.filter(file => 
+    ['image/jpeg', 'image/png'].includes(file.type) && 
+    file.size <= 2 * 1024 * 1024
+  );
 
-    if (validFiles.length !== files.length) {
-      setFileError('Only JPG/PNG images under 2MB are allowed');
+  if (validFiles.length !== files.length) {
+    setFileError('Only JPG/PNG images under 2MB are allowed');
+  }
+
+  const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+  setThumbnailPreviews(prev => [...prev, ...newPreviews]);
+  setThumbnails(prev => [...prev, ...validFiles]);
+};
+
+// Remove thumbnail
+const removeThumbnail = (index) => {
+  setThumbnailPreviews(prev => prev.filter((_, i) => i !== index));
+  setThumbnails(prev => prev.filter((_, i) => i !== index));
+};
+
+useEffect(() => {
+  const fetchCateories = async () => {
+      try {
+          const response = await axios.get('/get/directory/categories');
+          if (response.data.success && response.data.categories.length > 0) {
+              setCategories(response.data.categories);
+          }
+      } catch (err) {
+          console.error('Error fetching categories:', err);
+      }
+  };
+  fetchCateories();
+}, []);
+
+useEffect(() => {
+  if (isEditMode && initialData) {
+    setFormData(prev => ({
+      ...prev,
+      ...initialData,
+      postId: initialData.id
+    }));
+
+    // Handle existing logo preview
+    if (initialData.logo) {
+      setLogoPreview(initialData.logo);
     }
+  }
+}, [isEditMode, initialData]);
 
-    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-    setThumbnailPreviews(prev => [...prev, ...newPreviews]);
-    setThumbnails(prev => [...prev, ...validFiles]);
+// Initialize session
+useEffect(() => {
+  const initializeSession = async () => {
+    try {
+      const response = await axios.post('/session/init');
+      const newSessionId = response.data.session_id;
+      localStorage.setItem('draft_session', newSessionId);
+      setSessionId(newSessionId);
+      setFormData(prev => ({ ...prev, sessionId: newSessionId }));
+    } catch (error) {
+      console.error('Session initialization failed:', error);
+    }
   };
 
-  // Remove thumbnail
-  const removeThumbnail = (index) => {
-    setThumbnailPreviews(prev => prev.filter((_, i) => i !== index));
-    setThumbnails(prev => prev.filter((_, i) => i !== index));
-  };
+  if (!localStorage.getItem('draft_session')) {
+    initializeSession();
+  } else {
+    const existingSession = localStorage.getItem('draft_session');
+    setSessionId(existingSession);
+    setFormData(prev => ({ ...prev, sessionId: existingSession }));
+  }
+}, []);
+
+// Handle input changes
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
   
-  // Business categories
-  const [categories] = useState([
-    'Restaurants', 'Retail', 'Services', 'Healthcare', 'Automotive', 
-    'Real Estate', 'Education', 'Entertainment', 'Technology', 'Other'
-  ]);
+  // Clear error for this field
+  if (errors[name]) {
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      return newErrors;
+    });
+  }
 
-  useEffect(() => {
-    if (isEditMode && initialData) {
+  // Phone number validation
+  if (name === 'telNo' || name === 'altTelNo' || name === 'contactTelNo') {
+    const isValid = /^[()+\d\s.-]*$/.test(value);
+    if (!isValid) return;
+  }
+
+  setFormData(prev => ({ ...prev, [name]: value }));
+};
+
+// Handle category input changes
+const handleSubCategoryInputChange = (e) => {
+  if (!e) return;
+  axios.get(`/get/directory/sub/categories/${e.target.value}`)
+    .then(response => {
+      setSubCategories(response.data.subCategories);
+    })
+    .catch(error => {
+      console.error('Error fetching sub categories:', error);
+    });
+};
+
+// Handle day selection for working hours
+const handleDaySelection = (day) => {
+  setFormData(prev => {
+    const newDays = [...prev.days];
+    if (newDays.includes(day)) {
+      return { ...prev, days: newDays.filter(d => d !== day) };
+    } else {
+      return { ...prev, days: [...newDays, day] };
+    }
+  });
+};
+
+// Handle logo upload
+const handleLogoChange = (e) => {
+  const file = e.target.files?.[0] || (e.dataTransfer && e.dataTransfer.files[0]);
+  if (!file) return;
+
+  setFileError('');
+  
+  // Validate file
+  const validTypes = ['image/jpeg', 'image/png'];
+  const isValidType = validTypes.includes(file.type);
+  const isValidSize = file.size <= 2 * 1024 * 1024; // 2MB
+  
+  if (!isValidType) {
+    setFileError('Only JPG and PNG images are allowed');
+    return;
+  }
+  
+  if (!isValidSize) {
+    setFileError('File size must be less than 2MB');
+    return;
+  }
+  
+  // Set preview and form data
+  setLogoPreview(URL.createObjectURL(file));
+  setFormData(prev => ({ ...prev, logo: file }));
+};
+
+// Handle drag events for logo
+const handleDrag = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  setDragActive(e.type === 'dragenter' || e.type === 'dragover');
+};
+
+// Handle file drop for logo
+const handleDrop = (e) => {
+e.preventDefault();
+e.stopPropagation();
+setDragActive(false);
+handleLogoChange(e);
+};
+
+// Trigger file input
+const handleLogoClick = () => {
+  fileInputRef.current.click();
+};
+
+// Remove logo
+const handleRemoveLogo = () => {
+  setLogoPreview(null);
+  setFormData(prev => ({ ...prev, logo: null }));
+  if (fileInputRef.current) fileInputRef.current.value = '';
+};
+
+const handleKeyboardInput = (value) => {
+  setFormData(prev => ({
+    ...prev,
+    [keyboardTarget.name]: value
+  }));
+};
+
+// CAPTCHA handling
+const generateCaptcha = () => {
+  const chars = '1234567890';
+  let captcha = '';
+  for(let i = 0; i < 5; i++) {
+    captcha += chars[Math.floor(Math.random() * chars.length)];
+  }
+  setCaptchaText(captcha);
+  setCaptchaInput('');
+  setCaptchaError('');
+};
+
+useEffect(() => {
+  generateCaptcha();
+}, []);
+
+// Fetch rates
+useEffect(() => {
+  const fetchRate = async () => {
+    try {
+      const response = await axios.get('/directory/rate');
+      const base = parseFloat(response.data?.base_rate) || 0;
+      const feature = parseFloat(response.data?.feature_rate) || 0;
+      const social = parseFloat(response.data?.social_share_rate) || 0;
+
+      setRate({ base, feature, social });
       setFormData(prev => ({
         ...prev,
-        ...initialData,
-        postId: initialData.id
+        rate: base,
+        featureRate: 0,
+        socialMediaRate: 0
       }));
-
-      // Handle existing logo preview
-      if (initialData.logo) {
-        setLogoPreview(initialData.logo);
-      }
+    } catch (error) {
+      console.error('Error fetching rates:', error);
+      setRate({ base: 75, feature: 35, social: 25 });
+      setFormData(prev => ({
+        ...prev,
+        rate: 75,
+        featureRate: 0,
+        socialMediaRate: 0
+      }));
     }
-  }, [isEditMode, initialData]);
-
-  // Initialize session
-  useEffect(() => {
-    const initializeSession = async () => {
-      try {
-        const response = await axios.post('/session/init');
-        const newSessionId = response.data.session_id;
-        localStorage.setItem('draft_session', newSessionId);
-        setSessionId(newSessionId);
-        setFormData(prev => ({ ...prev, sessionId: newSessionId }));
-      } catch (error) {
-        console.error('Session initialization failed:', error);
-      }
-    };
-
-    if (!localStorage.getItem('draft_session')) {
-      initializeSession();
-    } else {
-      const existingSession = localStorage.getItem('draft_session');
-      setSessionId(existingSession);
-      setFormData(prev => ({ ...prev, sessionId: existingSession }));
-    }
-  }, []);
-
-  // Handle input changes
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    
-    // Clear error for this field
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-
-    // Phone number validation
-    if (name === 'telNo' || name === 'altTelNo' || name === 'contactTelNo') {
-      const isValid = /^[()+\d\s.-]*$/.test(value);
-      if (!isValid) return;
-    }
-
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
+  fetchRate();
+}, []);
 
-  // Handle day selection for working hours
-  const handleDaySelection = (day) => {
-    setFormData(prev => {
-      const newDays = [...prev.days];
-      if (newDays.includes(day)) {
-        return { ...prev, days: newDays.filter(d => d !== day) };
-      } else {
-        return { ...prev, days: [...newDays, day] };
+// Social media promotion
+const handleSocialPromotionChange = (e) => {
+  const isChecked = e.target.checked;
+  setSocialMediaPromotion(isChecked);
+  setFormData(prev => ({
+    ...prev,
+    socialMediaRate: isChecked ? getRate.social : 0
+  }));
+};
+
+// Save draft
+const saveDraftData = async () => {
+  try {
+    const formPayload = new FormData();
+    
+    // Append all form fields
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key !== 'logo' && value) {
+        formPayload.append(key, value);
       }
     });
-  };
-
-  // Handle logo upload
-  const handleLogoChange = (e) => {
-    const file = e.target.files?.[0] || (e.dataTransfer && e.dataTransfer.files[0]);
-    if (!file) return;
-
-    setFileError('');
     
-    // Validate file
-    const validTypes = ['image/jpeg', 'image/png'];
-    const isValidType = validTypes.includes(file.type);
-    const isValidSize = file.size <= 2 * 1024 * 1024; // 2MB
-    
-    if (!isValidType) {
-      setFileError('Only JPG and PNG images are allowed');
-      return;
+    // Append logo if exists
+    if (formData.logo) {
+      formPayload.append('logo', formData.logo);
     }
     
-    if (!isValidSize) {
-      setFileError('File size must be less than 2MB');
-      return;
-    }
+    formPayload.append('ip', await getClientIP());
     
-    // Set preview and form data
-    setLogoPreview(URL.createObjectURL(file));
-    setFormData(prev => ({ ...prev, logo: file }));
-  };
+    const response = await axios.post('/save-directory-draft', formPayload);
+    return response.data.draftId;
+  } catch (error) {
+    console.error('Draft save failed:', error);
+  }
+};
 
-  // Handle drag events for logo
-  const handleDrag = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(e.type === 'dragenter' || e.type === 'dragover');
-  };
+const getClientIP = async () => {
+  try {
+    const response = await axios.get('https://api.ipify.org?format=json');
+    return response.data.ip;
+  } catch (error) {
+    console.error('Error fetching IP:', error);
+    return 'unknown';
+  }
+};
 
-  // Handle file drop for logo
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    handleLogoChange(e);
-  };
+// Form submission
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setErrors({});
+  setCaptchaError('');
+  // Validation
+  const newErrors = {};
+  if (!formData.businessName) newErrors.businessName = 'Business name is required';
+  if (!formData.address) newErrors.address = 'Address is required';
+  if (!formData.city) newErrors.city = 'City is required';
+  // if (!formData.category) newErrors.category = 'Category is required';
+  if (!formData.description) newErrors.description = 'Description is required';
+  if (!formData.telNo) newErrors.telNo = 'Phone number is required';
+  if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Invalid email format';
+  if (formData.tel_ext && !formData.telNo) {
+    newErrors.telNo = 'Phone number is required when extension is provided';
+  }
+  if (formData.alt_tel_ext && !formData.altTelNo) {
+    newErrors.altTelNo = 'Alternate phone is required when extension is provided';
+  }
 
-  // Trigger file input
-  const handleLogoClick = () => {
-    fileInputRef.current.click();
-  };
+  daysOfWeek.forEach(day => {
+    if (formData[day.id]) {
 
-  // Remove logo
-  const handleRemoveLogo = () => {
-    setLogoPreview(null);
-    setFormData(prev => ({ ...prev, logo: null }));
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  // Keyboard handling
-  const handleBusinessNameCheckbox = (e) => {
-    const isChecked = e.target.checked;
-    setBusinessNameCheckbox(isChecked);
-    setDescCheckbox(false);
-    setShowKeyboard(isChecked);
-    setKeyboardTarget(isChecked ? businessNameInputRef.current : null);
-    if (isChecked) businessNameInputRef.current.focus();
-  };
-
-  const handleDescCheckbox = (e) => {
-    const isChecked = e.target.checked;
-    setDescCheckbox(isChecked);
-    setBusinessNameCheckbox(false);
-    setShowKeyboard(isChecked);
-    setKeyboardTarget(isChecked ? descInputRef.current : null);
-    if (isChecked) descInputRef.current.focus();
-  };
-
-  const handleKeyboardInput = (value) => {
-    setFormData(prev => ({
-      ...prev,
-      [keyboardTarget.name]: value
-    }));
-  };
-
-  // CAPTCHA handling
-  const generateCaptcha = () => {
-    const chars = '1234567890';
-    let captcha = '';
-    for(let i = 0; i < 5; i++) {
-      captcha += chars[Math.floor(Math.random() * chars.length)];
+      const startField = `${day.id}_startTime`;
+      const endField = `${day.id}_endTime`;
+      
+      if (!formData[startField]) {
+        newErrors[startField] = `Start time is required for ${day.label}`;
+      }
+      
+      if (!formData[endField]) {
+        newErrors[endField] = `End time is required for ${day.label}`;
+      }
+     
+      if (formData[startField] && formData[endField] && 
+          formData[startField] >= formData[endField]) {
+        newErrors[endField] = `End time must be after start time for ${day.label}`;
+      }
     }
-    setCaptchaText(captcha);
-    setCaptchaInput('');
-    setCaptchaError('');
-  };
+  });
 
-  useEffect(() => {
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    console.log(newErrors);
+    return;
+  }
+
+  // CAPTCHA validation
+  if (!isEditMode && !isReturningFromPreview && captchaInput !== captchaText) {
+    setCaptchaError('Invalid CAPTCHA code');
     generateCaptcha();
-  }, []);
-
-  // Fetch rates
-  useEffect(() => {
-    const fetchRate = async () => {
-      try {
-        const response = await axios.get('/directory/rate');
-        const base = parseFloat(response.data?.base_rate) || 0;
-        const feature = parseFloat(response.data?.feature_rate) || 0;
-        const social = parseFloat(response.data?.social_share_rate) || 0;
-
-        setRate({ base, feature, social });
-        setFormData(prev => ({
-          ...prev,
-          rate: base,
-          featureRate: 0,
-          socialMediaRate: 0
-        }));
-      } catch (error) {
-        console.error('Error fetching rates:', error);
-        setRate({ base: 75, feature: 35, social: 25 });
-        setFormData(prev => ({
-          ...prev,
-          rate: 75,
-          featureRate: 0,
-          socialMediaRate: 0
-        }));
-      }
+    return;
+  }
+  if (isEditMode) {
+    // Handle edit submission
+    const editPayload = {
+      ...formData,
+      logo: formData.logo
     };
-    fetchRate();
-  }, []);
+    externalSubmit(editPayload);
+  } else {
+    setShowPreview(true);
+  }
+};
 
-  // Social media promotion
-  const handleSocialPromotionChange = (e) => {
-    const isChecked = e.target.checked;
-    setSocialMediaPromotion(isChecked);
-    setFormData(prev => ({
-      ...prev,
-      socialMediaRate: isChecked ? getRate.social : 0
-    }));
-  };
+const handleFeaturedSubmit = async () => {
+  try {
+    // Check authentication
+    const isAuthenticated = localStorage.getItem('token') !== null;
 
-  // Save draft
-  const saveDraftData = async () => {
-    try {
-      const formPayload = new FormData();
-      
-      // Append all form fields
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'logo' && value) {
-          formPayload.append(key, value);
-        }
-      });
-      
-      // Append logo if exists
-      if (formData.logo) {
-        formPayload.append('logo', formData.logo);
-      }
-      
-      formPayload.append('ip', await getClientIP());
-      
-      const response = await axios.post('/save-directory-draft', formPayload);
-      return response.data.draftId;
-    } catch (error) {
-      console.error('Draft save failed:', error);
-    }
-  };
-
-  const getClientIP = async () => {
-    try {
-      const response = await axios.get('https://api.ipify.org?format=json');
-      return response.data.ip;
-    } catch (error) {
-      console.error('Error fetching IP:', error);
-      return 'unknown';
-    }
-  };
-
-  // Form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrors({});
-    setCaptchaError('');
-
-    // Validation
-    const newErrors = {};
-    if (!formData.businessName) newErrors.businessName = 'Business name is required';
-    if (!formData.address) newErrors.address = 'Address is required';
-    if (!formData.city) newErrors.city = 'City is required';
-    if (!formData.category) newErrors.category = 'Category is required';
-    if (!formData.description) newErrors.description = 'Description is required';
-    if (!formData.telNo) newErrors.telNo = 'Phone number is required';
-    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Invalid email format';
-    if (formData.tel_ext && !formData.telNo) {
-      newErrors.telNo = 'Phone number is required when extension is provided';
-    }
-    
-    if (formData.alt_tel_ext && !formData.altTelNo) {
-      newErrors.altTelNo = 'Alternate phone is required when extension is provided';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
       return;
     }
 
-    // CAPTCHA validation
-    if (!isEditMode && !isReturningFromPreview && captchaInput !== captchaText) {
-      setCaptchaError('Invalid CAPTCHA code');
-      generateCaptcha();
-      return;
-    }
-
-    if (isEditMode) {
-      // Handle edit submission
-      const editPayload = {
-        ...formData,
-        logo: formData.logo
-      };
-      externalSubmit(editPayload);
-    } else {
-      setShowPreview(true);
-    }
-  };
-
-  const handleFeaturedSubmit = async () => {
-    try {
-      // Check authentication
-      const isAuthenticated = localStorage.getItem('token') !== null;
-
-      if (!isAuthenticated) {
-        setShowAuthModal(true);
-        return;
-      }
-
-      navigate('/payment', { 
-        state: { 
-          draftData: {
-            ...formData,
-            totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
-          },
-          model: 'Directory'
-        } 
-      });
-    } catch (error) {
-      console.error('Submission error:', error);
-    }
-  };
+    navigate('/payment', { 
+      state: { 
+        draftData: {
+          ...formData,
+          totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
+        },
+        model: 'Directory'
+      } 
+    });
+  } catch (error) {
+    console.error('Submission error:', error);
+  }
+};
 
   return (
     <section className="sptb pt-5">
@@ -516,6 +540,7 @@ const handleHideHoursChange = (e) => {
                 formData={formData}
                 logoPreview={logoPreview}
                 thumbnailPreviews={thumbnailPreviews}
+                daysOfWeek={daysOfWeek}
                 onEdit={() => {
                   setShowPreview(false);
                   setIsReturningFromPreview(true);
@@ -523,7 +548,7 @@ const handleHideHoursChange = (e) => {
                 onSubmit={() => setShowFeatureSelection(true)}
               />
             ) : (
-                 <form onSubmit={handleSubmit} encType="multipart/form-data">
+              <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <div className="card">
                   <div className="card-header mb-1 d-md-flex justify-content-between align-items-center">
                     <h6 className="mb-0 text-muted"><strong>Create Business Listing</strong></h6>
@@ -594,54 +619,54 @@ const handleHideHoursChange = (e) => {
                           className="form-control"
                         />
                       </div>
-
-                      <div className="row mt-3">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label className="form-label text-dark fw-semibold">
-                              City <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              name="city"
-                              value={formData.city}
-                              onChange={handleInputChange}
-                              className={`form-control ${errors.city ? 'is-invalid' : ''}`}
-                            />
-                            {errors.city && <div className="invalid-feedback">{errors.city}</div>}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label className="form-label text-dark fw-semibold">
-                              Category <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              name="category"
-                              value={formData.category}
-                              onChange={handleInputChange}
-                              className={`form-control ${errors.category ? 'is-invalid' : ''}`}
-                            >
-                              <option value="">Select Category</option>
-                              {categories.map((category) => (
-                                <option key={category} value={category}>{category}</option>
-                              ))}
-                            </select>
-                            {errors.category && <div className="invalid-feedback">{errors.category}</div>}
-                          </div>
-                        </div>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">
+                          City <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          className={`form-control ${errors.city ? 'is-invalid' : ''}`}
+                        />
+                        {errors.city && <div className="invalid-feedback">{errors.city}</div>}
+                      </div>
+                      <div className="form-group mt-3">
+                        <label className="form-label text-dark fw-semibold">
+                          Category <span className="text-danger">*</span>
+                        </label>
+                        <select
+                          name="category"
+                          value={formData.category}
+                          onChange={(e) => {
+                            handleInputChange(e);
+                            handleSubCategoryInputChange(e);
+                          }}
+                          className={`form-control ${errors.category ? 'is-invalid' : ''}`}
+                        >
+                          <option value="">Select Category</option>
+                          {categories.map((category) => (
+                            <option key={category.id} value={category.id}>{category.name}</option>
+                          ))}
+                        </select>
+                        {errors.category && <div className="invalid-feedback">{errors.category}</div>}
                       </div>
 
                       <div className="form-group mt-3">
                         <label className="form-label text-dark fw-semibold">Sub-Category</label>
-                        <input
-                          type="text"
-                          name="subCategory"
-                          value={formData.subCategory}
-                          onChange={handleInputChange}
-                          className="form-control"
-                          placeholder="e.g., Italian, Electronics, Dental, etc."
-                        />
+
+                         <select
+                              name="subCategory"
+                              value={formData.subCategory}
+                              onChange={handleInputChange}
+                              className={`form-control ${errors.category ? 'is-invalid' : ''}`}
+                            >
+                              <option value="">Select Sub Category</option>
+                              {subCategories.length > 0 && subCategories.map((subCategory) => (
+                                <option key={subCategory.id} value={subCategory.name}>{subCategory.name}</option>
+                              ))}
+                            </select>
                       </div>
 
                       <div className="form-group mt-3">
@@ -678,107 +703,119 @@ const handleHideHoursChange = (e) => {
                       </div>
                     </div>
 
-                    {/* Working Hours Section */}
                     <div className="mb-4">
-                        <h5 className="border-bottom pb-2 mb-3">Working Hours</h5>
-                        
-                        <div className="form-group mt-3">
-                            <label className="form-label mb-0 d-flex">
-                                <span style={{ fontSize: '12pt', display: '' }}>Hide</span>
-                                <input
-                                    type="checkbox"
-                                    id="hideHours"
-                                    name="hide_hour"
-                                    checked={formData.hide_hour}
-                                    onChange={handleHideHoursChange}
-                                    className="ms-2 me-2"
-                                />
-                                
-                            </label>
-                        </div>
-                        
-                        {!formData.hide_hour && (
-                            <div className="container px-0 mt-3" style={{ marginTop: '6px' }}>
-                                <span className="text-muted font-weight-semibold" style={{ fontSize: '14px' }}>
-                                    (Check the box if you prefer not to display the operating hours)
-                                </span>
-                                <div className="card p-2 mb-1 hour_card">
-                                <div className="m-0 p-0">
-                                    {daysOfWeek.map(day => (
-                                    <div className="row mb-2 align-items-center" key={day.id}>
-                                        <div className="col-3">
-                                        <input
-                                            type="checkbox"
-                                            id={day.id}
-                                            name={day.id}
-                                            checked={formData[day.id]}
-                                            onChange={(e) => handleDayCheckboxChange(day.id, e.target.checked)}
-                                            className="me-2"
-                                        />
-                                        <label htmlFor={day.id} className="font-weight-bold">
-                                            {day.label} {/* Fixed: render label text */}
-                                        </label>
+                      <h5 className="border-bottom pb-2 mb-3">Working Hours</h5>
+                      
+                      <div className="d-flex align-items-center" style={{ fontSize: '16pt' }}>
+                        <input
+                          type="checkbox"
+                          id="hideHours"
+                          name="hide_hour"
+                          checked={formData.hide_hour}
+                          onChange={handleHideHoursChange}
+                          className="me-2"
+                        />
+                        <label htmlFor="hideHours" className="form-label mb-0">
+                          Hide
+                        </label>
+                      </div>
+                      
+                      {!formData.hide_hour && (
+                        <div className="container px-0 mt-1">
+                          <span className="text-muted font-weight-semibold" style={{ fontSize: '14px' }}>
+                            (Check the box if you prefer not to display the operating hours)
+                          </span>
+                          <div className="card p-2 mb-1 hour_card">
+                            <div className="m-0 p-0">
+                              {daysOfWeek.map(day => (
+                                <div className="row mb-2 align-items-center" key={day.id}>
+                                  <div className="col-2">
+                                    <input
+                                      type="checkbox"
+                                      id={day.id}
+                                      name={day.id}
+                                      checked={formData[day.id]}
+                                      onChange={(e) => handleDayCheckboxChange(day.id, e.target.checked)}
+                                      className="me-2"
+                                    />
+                                    <label htmlFor={day.id} className="font-weight-bold">
+                                      {day.label}
+                                    </label>
+                                  </div>
+                                  <div className="col-10 px-0">
+                                    <div className="d-flex align-items-center gap-2">
+                                      {/* Start Time */}
+                                      <div className="flex-grow-1 position-relative">
+                                        <div className="input-group">
+                                          <span className="input-group-text bg-light border-end-0 py-2">
+                                            <FaClock size={12} className="text-muted" />
+                                          </span>
+                                          <input
+                                            type="time"
+                                            name={`${day.id}_startTime`}
+                                            value={formData[`${day.id}_startTime`]}
+                                            onChange={(e) => handleTimeChange(`${day.id}_startTime`, e.target.value)}
+                                            className={`form-control border-start-0 py-2 ${
+                                              errors[`${day.id}_startTime`] ? 'is-invalid' : ''
+                                            }`}
+                                            disabled={!formData[day.id]}
+                                            style={{ 
+                                              paddingRight: '2.5rem',
+                                              backgroundColor: formData[day.id] ? '#fff' : '#f8f9fa'
+                                            }}
+                                          />
+                                          <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted small">
+                                            Start
+                                          </span>
                                         </div>
-                                        <div className="col-9 px-0">
-                                            <div className="d-flex align-items-center gap-2">
-                                                {/* Start Time */}
-                                                <div className="flex-grow-1 position-relative">
-                                                <div className="input-group">
-                                                    <span className="input-group-text bg-light border-end-0 py-2">
-                                                    <FaClock size={12} className="text-muted" />
-                                                    </span>
-                                                    <input
-                                                    type="time"
-                                                    name={`${day.id}_startTime`}
-                                                    value={formData[`${day.id}_startTime`]}
-                                                    onChange={(e) => handleTimeChange(`${day.id}_startTime`, e.target.value)}
-                                                    className="form-control border-start-0 py-2"
-                                                    disabled={!formData[day.id]}
-                                                    style={{ 
-                                                        paddingRight: '2.5rem',
-                                                        backgroundColor: formData[day.id] ? '#fff' : '#f8f9fa'
-                                                    }}
-                                                    />
-                                                    <span className="position-absolute end-0 top-50 translate-middle-y me-2 text-muted small">
-                                                    Start
-                                                    </span>
-                                                </div>
-                                                </div>
+                                        {errors[`${day.id}_startTime`] && (
+                                          <div className="text-danger small mt-1">
+                                            {errors[`${day.id}_startTime`]}
+                                          </div>
+                                        )}
+                                      </div>
 
-                                                {/* Separator */}
-                                                <div className="text-muted" style={{ width: '20px', textAlign: 'center' }}>–</div>
+                                      {/* Separator */}
+                                      <div className="text-muted" style={{ width: '20px', textAlign: 'center' }}>–</div>
 
-                                                {/* End Time */}
-                                                <div className="flex-grow-1 position-relative">
-                                                <div className="input-group">
-                                                    <input
-                                                    type="time"
-                                                    name={`${day.id}_endTime`}
-                                                    value={formData[`${day.id}_endTime`]}
-                                                    onChange={(e) => handleTimeChange(`${day.id}_endTime`, e.target.value)}
-                                                    className="form-control border-end-0 py-2"
-                                                    disabled={!formData[day.id]}
-                                                    style={{ 
-                                                        paddingLeft: '2.5rem',
-                                                        backgroundColor: formData[day.id] ? '#fff' : '#f8f9fa'
-                                                    }}
-                                                    />
-                                                    <span className="position-absolute start-0 top-50 translate-middle-y ms-2 text-muted small">
-                                                    End
-                                                    </span>
-                                                    <span className="input-group-text bg-light border-start-0 py-2">
-                                                    <FaClock size={12} className="text-muted" />
-                                                    </span>
-                                                </div>
-                                                </div>
-                                            </div>
+                                      {/* End Time */}
+                                      <div className="flex-grow-1 position-relative">
+                                        <div className="input-group">
+                                          <input
+                                            type="time"
+                                            name={`${day.id}_endTime`}
+                                            value={formData[`${day.id}_endTime`]}
+                                            onChange={(e) => handleTimeChange(`${day.id}_endTime`, e.target.value)}
+                                            className={`form-control border-end-0 py-2 ${
+                                              errors[`${day.id}_endTime`] ? 'is-invalid' : ''
+                                            }`}
+                                            disabled={!formData[day.id]}
+                                            style={{ 
+                                              paddingLeft: '2.5rem',
+                                              backgroundColor: formData[day.id] ? '#fff' : '#f8f9fa'
+                                            }}
+                                          />
+                                          <span className="position-absolute start-0 top-50 translate-middle-y ms-2 text-muted small">
+                                            End
+                                          </span>
+                                          <span className="input-group-text bg-light border-start-0 py-2">
+                                            <FaClock size={12} className="text-muted" />
+                                          </span>
                                         </div>
+                                        {errors[`${day.id}_endTime`] && (
+                                          <div className="text-danger small mt-1">
+                                            {errors[`${day.id}_endTime`]}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
-                                    ))}
+                                  </div>
                                 </div>
-                                </div>
+                              ))}
                             </div>
-                        )}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Contact Information Section */}

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DirectoryCategory;
+use App\Models\DirectorySubCategory;
+use Directory;
 
 class DirectoryController extends Controller
 {
@@ -18,6 +20,48 @@ class DirectoryController extends Controller
                     'icon' => asset('storage/'.$category->icon),
                 ];
             })
+        ]);
+    }
+
+    public function getDirectoryCategories(){
+        $categories = DirectoryCategory::all();
+
+        if ($categories->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'categories' => $categories
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No active category found.'
+        ]);
+    }
+    
+    public function getDirectoryCategory($id)
+    {
+        $category = DirectoryCategory::find($id);
+        
+        return response()->json([
+            'success' => $category ? true : false,
+            'category' => $category
+        ]);
+    }
+
+    public function getDirectorySubCategories($id){
+        $categories = DirectorySubCategory::where('category_id', $id)->get();
+
+        if ($categories->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'subCategories' => $categories
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No active category found.'
         ]);
     }
     

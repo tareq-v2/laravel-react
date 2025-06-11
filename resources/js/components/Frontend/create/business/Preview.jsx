@@ -1,5 +1,19 @@
 // Preview.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+// Helper function to format time
+const formatTime = (timeString) => {
+  if (!timeString) return '';
+  
+  // Convert "HH:MM" to "HH:MM AM/PM" format
+  const [hours, minutes] = timeString.split(':');
+  const parsedHours = parseInt(hours, 10);
+  const period = parsedHours >= 12 ? 'PM' : 'AM';
+  const displayHours = parsedHours % 12 || 12;
+  
+  return `${displayHours}:${minutes} ${period}`;
+};
+
 
 const Preview = ({ 
   formData, 
@@ -9,6 +23,30 @@ const Preview = ({
   onEdit, 
   onSubmit 
 }) => {
+  const [category, setcategory] = useState([]);
+  const daysOfWeek = [
+      { id: 'monday', label: 'Monday' },
+      { id: 'tuesday', label: 'Tuesday' },
+      { id: 'wednesday', label: 'Wednesday' },
+      { id: 'thursday', label: 'Thursday' },
+      { id: 'friday', label: 'Friday' },
+      { id: 'saturday', label: 'Saturday' },
+      { id: 'sunday', label: 'Sunday' }
+  ];
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const response = await axios.get(`/get/directory/category/${formData.category}`);
+        
+        if (response.data.success && response.data.category) {
+          setcategory(response.data.category.name); 
+        }
+      } catch (err) {
+        console.error('Error fetching category:', err);
+      }
+    };
+    fetchCategory();
+  }, [formData.category]);
   return (
     <div className="card">
       <div className="card-header">
@@ -21,7 +59,7 @@ const Preview = ({
             <div className="mb-4">
               <h3>{formData.businessName}</h3>
               <p className="text-muted">
-                {formData.category && <><strong>Category:</strong> {formData.category}<br /></>}
+                {formData.category && <><strong>Category:</strong> {category}<br /></>}
                 {formData.subCategory && <><strong>Sub-Category:</strong> {formData.subCategory}<br /></>}
                 {formData.address && <><strong>Address:</strong> {formData.address}</>}
                 {formData.suite && `, ${formData.suite}`}<br />
@@ -36,23 +74,30 @@ const Preview = ({
               </div>
             )}
 
-            {(formData.workingHour || formData.days.length > 0) && (
+            {!formData.hide_hour && (
               <div className="mb-4">
                 <h5>Working Hours</h5>
-                {formData.workingHour && <p>{formData.workingHour}</p>}
-                
-                {formData.days.length > 0 && (
-                  <div>
-                    <strong>Open Days:</strong>
-                    <p>{formData.days.join(', ')}</p>
-                  </div>
-                )}
-                
-                {(formData.startTime || formData.endTime) && (
-                  <p>
-                    <strong>Hours:</strong> {formData.startTime} - {formData.endTime}
-                  </p>
-                )}
+                <table className="table table-sm">
+                  <tbody>
+                    {daysOfWeek.map(day => {
+                      if (formData[day.id]) {
+                        const startTime = formData[`${day.id}_startTime`];
+                        const endTime = formData[`${day.id}_endTime`];
+                        return (
+                          <tr key={day.id}>
+                            <td><strong>{day.label}</strong></td>
+                            <td>
+                              {startTime && endTime 
+                                ? `${formatTime(startTime)} - ${formatTime(endTime)}` 
+                                : 'Hours not set'}
+                            </td>
+                          </tr>
+                        );
+                      }
+                      return null;
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
 

@@ -91,7 +91,10 @@ Route::post('/session/init', [DraftController::class, 'initSession']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+Route::get('/get/directory/categories', [DirectoryController::class, 'getDirectoryCategories']);
+Route::get('/get/directory/category/{id}', [DirectoryController::class, 'getDirectoryCategory']);
+Route::get('/get/directory/sub/categories/{id}', [DirectoryController::class, 'getDirectorySubCategories']);
+// Authenticate Routes
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthController::class, 'logout']);
   Route::post('/update-profile', [AuthController::class, 'updateProfile']);
@@ -165,7 +168,6 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('/admin/blog/delete/{id}', [BlogController::class, 'destroy']);
 });
 Route::get('/user/blogs', [BlogController::class, 'allBlog']);
-// Route::get('/user/blogs/{id}', [BlogController::class, 'blogDetails']);
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 Route::get('/products/lists', [ProductController::class, 'productsList']);
 
