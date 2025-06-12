@@ -13,10 +13,12 @@ import {
   FaList, 
   FaChevronLeft, 
   FaChevronRight, 
-  FaChevronDown, // Add this import
+  FaChevronDown,
   FaMoon, 
-  FaSun 
-} from 'react-icons/fa';import './AdminDashboard.css';
+  FaSun,
+  FaFolder
+} from 'react-icons/fa';
+import './AdminDashboard.css';
 import { useTheme } from './Frontend/src/context/ThemeContext';
 import { Outlet, useLocation } from 'react-router-dom';
 import NotificationBell from './Backend/Notification';
@@ -46,6 +48,7 @@ const Home = () => {
 
   const [expandedMenus, setExpandedMenus] = useState({
     ads: false,
+    directory: false
   });
 
   const toggleMenu = (menu) => {
@@ -78,145 +81,167 @@ const Home = () => {
   };
 
   return (
-
     <div className="admin-dashboard">
-        <aside className={`sidebar ${!isSidebarExpanded ? 'collapsed' : ''}`}>
-          <div className="brand">
-            <h2>
-              <Link to='/home'>
-                {isSidebarExpanded ? 'Admin Panel' : 'D'}
-              </Link>
-            </h2>
-            <button className="toggle-btn" onClick={toggleSidebar}>
-              {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
-            </button>
+      <aside className={`sidebar ${!isSidebarExpanded ? 'collapsed' : ''}`}>
+        <div className="brand">
+          <h2>
+            <Link to='/home'>
+              {isSidebarExpanded ? 'Admin Panel' : 'D'}
+            </Link>
+          </h2>
+          <button className="toggle-btn" onClick={toggleSidebar}>
+            {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
+          </button>
+        </div>
+      
+        <nav className="nav-menu">
+          {/* Dashboard Link */}
+          <div className='nav-item' data-tooltip="Analytics">
+            <FaChartLine className="nav-icon" />
+            {isSidebarExpanded && 'Dashboard'}
           </div>
-        
-          <nav className="nav-menu">
-            {/* Dashboard Link */}
-            <div className='nav-item' data-tooltip="Analytics">
-              <FaChartLine className="nav-icon" />
-              {isSidebarExpanded && 'Dashboard'}
-            </div>
 
-            {/* Collapsible Ads Section */}
-            <div className="nav-parent">
-              <div 
-                className="nav-item" 
-                onClick={() => toggleMenu('ads')}
-                data-tooltip="Ads"
-              >
-                <FaBox className="nav-icon" />
-                {isSidebarExpanded && (
-                  <>
-                    <span>Ads</span>
-                    <span className="chevron">
-                      {expandedMenus.ads ? <FaChevronDown /> : <FaChevronRight />}
-                    </span>
-                  </>
-                )}
-              </div>
-              
-              {expandedMenus.ads && isSidebarExpanded && (
-                <div className="nav-children open">
-                  <Link to="/home/ads/history" className="nav-item child">
-                    <FaList className="nav-icon" />
-                    History
-                  </Link>
-                  <Link to="/home/ads/categories" className="nav-item child">
-                    <FaList className="nav-icon" />
-                    Categories
-                  </Link>
-                  <Link to="/home/ads/subcategories" className="nav-item child">
-                    <FaList className="nav-icon" />
-                    Sub Categories
-                  </Link>
-                  <Link to="/home/ads/rates" className="nav-item child">
-                    <FaList className="nav-icon" />
-                    Rates
-                  </Link>
-                </div>
+          {/* Collapsible Ads Section */}
+          <div className="nav-parent">
+            <div 
+              className="nav-item" 
+              onClick={() => toggleMenu('ads')}
+              data-tooltip="Ads"
+            >
+              <FaBox className="nav-icon" />
+              {isSidebarExpanded && (
+                <>
+                  <span style={{ marginLeft: '0.5rem' }}>Ads</span>
+                  <span className="chevron">
+                    {expandedMenus.ads ? <FaChevronDown /> : <FaChevronRight />}
+                  </span>
+                </>
               )}
             </div>
-
-            {/* Users Link */}
-            {/* <Link to="/home/chat" className="nav-item" data-tooltip="Chat">
-              <FaComments className="nav-icon" />
-              {isSidebarExpanded && 'Chat Support'}
-            </Link> */}
-
-           <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
-              <FaComments className="nav-icon" />
-              {isSidebarExpanded && 'Manage Blogs'}
-          </Link>
-            <Link to="/home/users" className="nav-item" data-tooltip="Users">
-              <FaUsers className="nav-icon" />
-              {isSidebarExpanded && 'Users'}
-            </Link>
-          </nav>
-
-          <button onClick={handleLogout} className="logout-btn">
-            <FaSignOutAlt /> {isSidebarExpanded && 'Logout'}
-          </button>
-        </aside>
-
-        <main className={`main-content ${!isSidebarExpanded ? 'expanded' : ''}`}>
-
-          <header className="dashboard-header">
-              <div className="header-left">
-                <h3>
-                  Welcome, {currentUser?.name || 'Admin'}
-                </h3>
-              </div>
-              <div className="quick-actions">
-                <NotificationBell />
-              <button 
-                onClick={toggleTheme}
-                className="theme-toggle"
-                aria-label="Toggle theme"
-              >
-                {darkMode ? <FaSun /> : <FaMoon />}
-              </button>
-              {/* <Link to="/admin/add-product" className="action-btn">
-                <FaPlus /> {isSidebarExpanded && 'Add Product'}
-              </Link> */}
-            </div>
-          </header>
-          
-          {location.pathname === '/home' ? (
-          // Dashboard content
-          <>
             
-            <div className='admin-analytics'>
-                <div className="stats-grid">
-                <div className="stat-card">
-                  <FaList className="stat-icon" />
-                  <h3>Total Orders</h3>
-                  {/* <p>{stats.totalOrders}</p> */}
-                </div>
-                <div className="stat-card">
-                  <FaUsers className="stat-icon" />
-                  <h3>Total Users</h3>
-                  {/* <p>{stats.totalUsers}</p> */}
-                </div>
-                <div className="stat-card">
-                  <FaChartLine className="stat-icon" />
-                  <h3>Total Revenue</h3>
-                  {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
-                </div>
+            {expandedMenus.ads && isSidebarExpanded && (
+              <div className="nav-children open">
+                <Link to="/home/ads/history" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  History
+                </Link>
+                <Link to="/home/ads/categories" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Categories
+                </Link>
+                <Link to="/home/ads/subcategories" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Sub Categories
+                </Link>
+                <Link to="/home/ads/rates" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Rates
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Directories Section */}
+          <div className="nav-parent">
+            <div 
+              className="nav-item" 
+              onClick={() => toggleMenu('directory')}
+              data-tooltip="Directory Management"
+            >
+              <FaFolder className="nav-icon" />
+              {isSidebarExpanded && (
+                <>
+                  <span>Directory</span>
+                  <span className="chevron">
+                    {expandedMenus.directory ? <FaChevronDown /> : <FaChevronRight />}
+                  </span>
+                </>
+              )}
+            </div>
+            
+            {expandedMenus.directory && isSidebarExpanded && (
+              <div className="nav-children open">
+                <Link to="/home/directory/history" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  History
+                </Link>
+                <Link to="/home/directory/category/status" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Category Status
+                </Link>
+                <Link to="/home/directory/rates" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Rates
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Other Menu Items */}
+          <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
+            <FaComments className="nav-icon" />
+            {isSidebarExpanded && 'Manage Blogs'}
+          </Link>
+          <Link to="/home/users" className="nav-item" data-tooltip="Users">
+            <FaUsers className="nav-icon" />
+            {isSidebarExpanded && 'Users'}
+          </Link>
+        </nav>
+
+        <button onClick={handleLogout} className="logout-btn">
+          <FaSignOutAlt /> {isSidebarExpanded && 'Logout'}
+        </button>
+      </aside>
+
+      <main className={`main-content ${!isSidebarExpanded ? 'expanded' : ''}`}>
+        <header className="dashboard-header">
+          <div className="header-left">
+            <h3>
+              Welcome, {currentUser?.name || 'Admin'}
+            </h3>
+          </div>
+          <div className="quick-actions">
+            <NotificationBell />
+            <button 
+              onClick={toggleTheme}
+              className="theme-toggle"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? <FaSun /> : <FaMoon />}
+            </button>
+          </div>
+        </header>
+        
+        {location.pathname === '/home' ? (
+          // Dashboard content
+          <div className='admin-analytics'>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <FaList className="stat-icon" />
+                <h3>Total Orders</h3>
+                {/* <p>{stats.totalOrders}</p> */}
+              </div>
+              <div className="stat-card">
+                <FaUsers className="stat-icon" />
+                <h3>Total Users</h3>
+                {/* <p>{stats.totalUsers}</p> */}
+              </div>
+              <div className="stat-card">
+                <FaChartLine className="stat-icon" />
+                <h3>Total Revenue</h3>
+                {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
               </div>
             </div>
-          </>
+          </div>
         ) : (
           // Nested route content
           <div className="content-container">
-            <header>{/* Header with title based on route */}</header>
             <Outlet /> {/* This renders nested routes */}
           </div>
         )}
-        </main>
+      </main>
     </div>
-    
   );
 };
+
 export default Home;

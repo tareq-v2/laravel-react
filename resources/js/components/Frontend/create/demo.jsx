@@ -1,221 +1,251 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaFileAlt, FaRedo, FaCloudUploadAlt, FaTimes, FaClock } from 'react-icons/fa';
-import VirtualKeyboard from '../Frontend/VirtualKeyboard';
-import AuthModal from '../Frontend/AuthModal';
-import '../Frontend/BusinessCreateForm.css';
-import Preview from './Preview';
-import FeatureSelection from './FeatureSelection';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  FaBox, 
+  FaUsers, 
+  FaChartLine, 
+  FaSignOutAlt, 
+  FaPlus, 
+  FaComments,
+  FaList, 
+  FaChevronLeft, 
+  FaChevronRight, 
+  FaChevronDown,
+  FaMoon, 
+  FaSun,
+  FaFolderTree // New icon for Directory Management
+} from 'react-icons/fa';
+import './AdminDashboard.css';
+import { useTheme } from './Frontend/src/context/ThemeContext';
+import { Outlet, useLocation } from 'react-router-dom';
+import NotificationBell from './Backend/Notification';
 
-const BusinessCreateForm = ({ 
-    isEditMode = false, 
-    initialData = null,
-    onSubmit: externalSubmit,
-    onCancel 
-}) => {
-    // ... existing state declarations ...
+const Home = () => {
+  const location = useLocation();
+  const { darkMode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
-    // Days for working hours
-    const daysOfWeek = [
-        { id: 'monday', label: 'Monday' },
-        { id: 'tuesday', label: 'Tuesday' },
-        { id: 'wednesday', label: 'Wednesday' },
-        { id: 'thursday', label: 'Thursday' },
-        { id: 'friday', label: 'Friday' },
-        { id: 'saturday', label: 'Saturday' },
-        { id: 'sunday', label: 'Sunday' }
-    ];
-
-    // ... existing useEffect hooks ...
-
-    // Initialize form data with working hours fields
-    const [formData, setFormData] = useState({
-        businessName: '',
-        address: '',
-        // ... other fields ...
-        // Working hours fields
-        monday: false,
-        monday_startTime: '',
-        monday_endTime: '',
-        tuesday: false,
-        tuesday_startTime: '',
-        tuesday_endTime: '',
-        wednesday: false,
-        wednesday_startTime: '',
-        wednesday_endTime: '',
-        thursday: false,
-        thursday_startTime: '',
-        thursday_endTime: '',
-        friday: false,
-        friday_startTime: '',
-        friday_endTime: '',
-        saturday: false,
-        saturday_startTime: '',
-        saturday_endTime: '',
-        sunday: false,
-        sunday_startTime: '',
-        sunday_endTime: '',
-        hide_hour: false,
-        // ... other fields ...
-    });
-
-    // ... existing functions ...
-
-    // Handle day checkbox change
-    const handleDayCheckboxChange = (dayId, checked) => {
-        setFormData(prev => ({
-            ...prev,
-            [dayId]: checked,
-            // Clear times when unchecking
-            [`${dayId}_startTime`]: checked ? prev[`${dayId}_startTime`] : '',
-            [`${dayId}_endTime`]: checked ? prev[`${dayId}_endTime`] : ''
-        }));
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/currentUser', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setCurrentUser(response.data.data);
+      } catch (err) {
+        console.error('Error fetching user:', err);
+      }
     };
+    
+    fetchCurrentUser();
+  }, []);
 
-    // Handle time input change
-    const handleTimeChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
+  const [expandedMenus, setExpandedMenus] = useState({
+    ads: false,
+    directory: false // Added new state for directory management
+  });
 
-    // Handle hide hours checkbox
-    const handleHideHoursChange = (e) => {
-        const checked = e.target.checked;
-        if (checked) {
-            // Reset all day fields when hiding hours
-            const resetFields = {};
-            daysOfWeek.forEach(day => {
-                resetFields[day.id] = false;
-                resetFields[`${day.id}_startTime`] = '';
-                resetFields[`${day.id}_endTime`] = '';
-            });
-            
-            setFormData(prev => ({
-                ...prev,
-                ...resetFields,
-                hide_hour: checked
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                hide_hour: checked
-            }));
+  const toggleMenu = (menu) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menu]: !prev[menu]
+    }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/logout', {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
-    };
+      });
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      navigate('/');
+    }
+  };
 
-    return (
-        <section className="sptb pt-5">
-            <div className="container">
-                <div className="row d-flex justify-content-center">
-                    <div className="col-xl-10" style={{ position: 'relative' }}>
-                        {/* ... existing conditional rendering for preview/feature selection ... */}
-                        
-                        {!showFeatureSelection && !showPreview && (
-                            <form onSubmit={handleSubmit} encType="multipart/form-data">
-                                {/* ... other form sections ... */}
-                                
-                                {/* Working Hours Section - Updated */}
-                                <div className="mb-4">
-                                    <h5 className="border-bottom pb-2 mb-3">Working Hours</h5>
-                                    
-                                    <div className="form-group">
-                                        <label className="form-label text-dark fw-semibold">
-                                            Working Hours Summary
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="workingHour"
-                                            value={formData.workingHour}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            placeholder="e.g., Mon-Fri: 9AM-5PM, Sat: 10AM-2PM"
-                                        />
-                                    </div>
-                                    
-                                    <div className="form-group mt-3">
-                                        <label className="form-label mb-0">
-                                            <span style={{ fontSize: '12pt' }}>Hide</span>
-                                            <input
-                                                type="checkbox"
-                                                id="hideHours"
-                                                name="hide_hour"
-                                                checked={formData.hide_hour}
-                                                onChange={handleHideHoursChange}
-                                                className="ms-2 me-2"
-                                            />
-                                            <span className="text-muted font-weight-semibold" style={{ fontSize: '14px' }}>
-                                                (Check the box if you prefer not to display the operating hours)
-                                            </span>
-                                        </label>
-                                    </div>
-                                    
-                                    {!formData.hide_hour && (
-                                        <div className="container px-0 mt-3" style={{ marginTop: '6px' }}>
-                                            <div className="card p-2 mb-1 hour_card">
-                                                <div className="m-0 p-0">
-                                                    {daysOfWeek.map(day => (
-                                                        <div className="row mb-2 align-items-center" key={day.id}>
-                                                            <div className="col-3">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    id={day.id}
-                                                                    name={day.id}
-                                                                    checked={formData[day.id]}
-                                                                    onChange={(e) => handleDayCheckboxChange(day.id, e.target.checked)}
-                                                                    className="me-2"
-                                                                />
-                                                                <label htmlFor={day.id} className="font-weight-bold">
-                                                                    {day.label}
-                                                                </label>
-                                                            </div>
-                                                            <div className="col-9 px-0">
-                                                                <div className="row m-0 p-0">
-                                                                    <div className="col-6">
-                                                                        <div className="input-group">
-                                                                            <label className="input-group-text">From</label>
-                                                                            <input
-                                                                                type="time"
-                                                                                name={`${day.id}_startTime`}
-                                                                                value={formData[`${day.id}_startTime`]}
-                                                                                onChange={(e) => handleTimeChange(`${day.id}_startTime`, e.target.value)}
-                                                                                className="form-control"
-                                                                                disabled={!formData[day.id]}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col-6">
-                                                                        <div className="input-group">
-                                                                            <label className="input-group-text">To</label>
-                                                                            <input
-                                                                                type="time"
-                                                                                name={`${day.id}_endTime`}
-                                                                                value={formData[`${day.id}_endTime`]}
-                                                                                onChange={(e) => handleTimeChange(`${day.id}_endTime`, e.target.value)}
-                                                                                className="form-control"
-                                                                                disabled={!formData[day.id]}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                                
-                                {/* ... rest of the form ... */}
-                            </form>
-                        )}
-                    </div>
-                </div>
+  const toggleSidebar = () => {
+    setIsSidebarExpanded(!isSidebarExpanded);
+  };
+
+  return (
+    <div className="admin-dashboard">
+      <aside className={`sidebar ${!isSidebarExpanded ? 'collapsed' : ''}`}>
+        <div className="brand">
+          <h2>
+            <Link to='/home'>
+              {isSidebarExpanded ? 'Admin Panel' : 'D'}
+            </Link>
+          </h2>
+          <button className="toggle-btn" onClick={toggleSidebar}>
+            {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
+          </button>
+        </div>
+      
+        <nav className="nav-menu">
+          {/* Dashboard Link */}
+          <div className='nav-item' data-tooltip="Analytics">
+            <FaChartLine className="nav-icon" />
+            {isSidebarExpanded && 'Dashboard'}
+          </div>
+
+          {/* Collapsible Ads Section */}
+          <div className="nav-parent">
+            <div 
+              className="nav-item" 
+              onClick={() => toggleMenu('ads')}
+              data-tooltip="Ads"
+            >
+              <FaBox className="nav-icon" />
+              {isSidebarExpanded && (
+                <>
+                  <span>Ads</span>
+                  <span className="chevron">
+                    {expandedMenus.ads ? <FaChevronDown /> : <FaChevronRight />}
+                  </span>
+                </>
+              )}
             </div>
             
-            {/* ... existing modals and components ... */}
-        </section>
-    );
+            {expandedMenus.ads && isSidebarExpanded && (
+              <div className="nav-children open">
+                <Link to="/home/ads/history" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  History
+                </Link>
+                <Link to="/home/ads/categories" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Categories
+                </Link>
+                <Link to="/home/ads/subcategories" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Sub Categories
+                </Link>
+                <Link to="/home/ads/rates" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Rates
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* New Directory Management Section */}
+          <div className="nav-parent">
+            <div 
+              className="nav-item" 
+              onClick={() => toggleMenu('directory')}
+              data-tooltip="Directory Management"
+            >
+              <FaFolderTree className="nav-icon" />
+              {isSidebarExpanded && (
+                <>
+                  <span>Directory</span>
+                  <span className="chevron">
+                    {expandedMenus.directory ? <FaChevronDown /> : <FaChevronRight />}
+                  </span>
+                </>
+              )}
+            </div>
+            
+            {expandedMenus.directory && isSidebarExpanded && (
+              <div className="nav-children open">
+                <Link to="/home/directory/categories" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Categories
+                </Link>
+                <Link to="/home/directory/subcategories" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Sub Categories
+                </Link>
+                <Link to="/home/directory/cities" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Cities
+                </Link>
+                <Link to="/home/directory/localities" className="nav-item child">
+                  <FaList className="nav-icon" />
+                  Localities
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Other Menu Items */}
+          <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
+            <FaComments className="nav-icon" />
+            {isSidebarExpanded && 'Manage Blogs'}
+          </Link>
+          <Link to="/home/users" className="nav-item" data-tooltip="Users">
+            <FaUsers className="nav-icon" />
+            {isSidebarExpanded && 'Users'}
+          </Link>
+        </nav>
+
+        <button onClick={handleLogout} className="logout-btn">
+          <FaSignOutAlt /> {isSidebarExpanded && 'Logout'}
+        </button>
+      </aside>
+
+      <main className={`main-content ${!isSidebarExpanded ? 'expanded' : ''}`}>
+        <header className="dashboard-header">
+          <div className="header-left">
+            <h3>
+              Welcome, {currentUser?.name || 'Admin'}
+            </h3>
+          </div>
+          <div className="quick-actions">
+            <NotificationBell />
+            <button 
+              onClick={toggleTheme}
+              className="theme-toggle"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? <FaSun /> : <FaMoon />}
+            </button>
+          </div>
+        </header>
+        
+        {location.pathname === '/home' ? (
+          // Dashboard content
+          <div className='admin-analytics'>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <FaList className="stat-icon" />
+                <h3>Total Orders</h3>
+                {/* <p>{stats.totalOrders}</p> */}
+              </div>
+              <div className="stat-card">
+                <FaUsers className="stat-icon" />
+                <h3>Total Users</h3>
+                {/* <p>{stats.totalUsers}</p> */}
+              </div>
+              <div className="stat-card">
+                <FaChartLine className="stat-icon" />
+                <h3>Total Revenue</h3>
+                {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Nested route content
+          <div className="content-container">
+            <Outlet /> {/* This renders nested routes */}
+          </div>
+        )}
+      </main>
+    </div>
+  );
 };
 
-export default BusinessCreateForm;
+export default Home;
