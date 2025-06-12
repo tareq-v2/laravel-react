@@ -130,4 +130,67 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
   background-color: #e9ecef;
   border-color: #86b7fe;
 }
+/* Subcategory Section */
+.subcategory-container {
+  margin-top: 10px;
+}
+
+.subcategory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.subcategory-option {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+  min-height: 60px; /* Ensure consistent height */
+}
+
+.subcategory-option:hover {
+  border-color: #ff6347;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 99, 71, 0.2);
+}
+
+.subcategory-option.selected {
+  border-color: #ff6347;
+  background-color: rgba(255, 99, 71, 0.1);
+}
+
+.subcategory-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ff6347;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  flex-shrink: 0;
+  margin-top: 2px; /* Align with top of text */
+}
+
+.subcategory-option.selected .subcategory-checkbox {
+  background-color: #ff6347;
+}
+
+.checkmark {
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.subcategory-name {
+  font-size: 14px;
+  word-wrap: break-word; /* Allow text to wrap */
+  white-space: normal; /* Allow multiple lines */
+  flex: 1; /* Take remaining space */
+}
 

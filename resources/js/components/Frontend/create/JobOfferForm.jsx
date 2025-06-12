@@ -167,21 +167,21 @@
         }));
       };
 
-      const handleDescCheckbox = (e) => {
-        const isChecked = e.target.checked;
-        setDescCheckbox(isChecked);
-        setTitleCheckbox(false);
-        setShowKeyboard(isChecked);
-        setKeyboardTarget(isChecked ? descInputRef.current : null);
-        if (isChecked) descInputRef.current.focus();
-      };
+      // const handleDescCheckbox = (e) => {
+      //   const isChecked = e.target.checked;
+      //   setDescCheckbox(isChecked);
+      //   setTitleCheckbox(false);
+      //   setShowKeyboard(isChecked);
+      //   setKeyboardTarget(isChecked ? descInputRef.current : null);
+      //   if (isChecked) descInputRef.current.focus();
+      // };
       
-      const handleKeyboardToggle = (inputRef) => {
-        const newState = !showKeyboard;
-        setShowKeyboard(newState);
-        setKeyboardTarget(newState ? inputRef.current : null);
-        if (newState && inputRef.current) inputRef.current.focus();
-      };
+      // const handleKeyboardToggle = (inputRef) => {
+      //   const newState = !showKeyboard;
+      //   setShowKeyboard(newState);
+      //   setKeyboardTarget(newState ? inputRef.current : null);
+      //   if (newState && inputRef.current) inputRef.current.focus();
+      // };
 
       // Invalidate error handling
       useEffect(() => {

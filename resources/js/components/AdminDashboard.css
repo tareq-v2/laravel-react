@@ -494,6 +494,11 @@ th {
     color: #cbd5e0;
     border-color: #4a5568;
 }
+
 .dark-mode .notification-item:hover {
     background: #4a5568;
+}
+
+.menu-title {
+  margin-left: 0.5rem;
 }

@@ -46,16 +46,10 @@ const Home = () => {
     fetchCurrentUser();
   }, []);
 
-  const [expandedMenus, setExpandedMenus] = useState({
-    ads: false,
-    directory: false
-  });
+  const [expandedMenu, setExpandedMenu] = useState(null);
 
   const toggleMenu = (menu) => {
-    setExpandedMenus(prev => ({
-      ...prev,
-      [menu]: !prev[menu]
-    }));
+    setExpandedMenu(prev => prev === menu ? null : menu);
   };
 
   const handleLogout = async () => {
@@ -98,7 +92,7 @@ const Home = () => {
           {/* Dashboard Link */}
           <div className='nav-item' data-tooltip="Analytics">
             <FaChartLine className="nav-icon" />
-            {isSidebarExpanded && 'Dashboard'}
+            {isSidebarExpanded && <span className='menu-title'>Dashboard</span>}
           </div>
 
           {/* Collapsible Ads Section */}
@@ -108,40 +102,40 @@ const Home = () => {
               onClick={() => toggleMenu('ads')}
               data-tooltip="Ads"
             >
-              <FaBox className="nav-icon" />
-              {isSidebarExpanded && (
-                <>
-                  <span style={{ marginLeft: '0.5rem' }}>Ads</span>
-                  <span className="chevron">
-                    {expandedMenus.ads ? <FaChevronDown /> : <FaChevronRight />}
-                  </span>
-                </>
-              )}
-            </div>
-            
-            {expandedMenus.ads && isSidebarExpanded && (
-              <div className="nav-children open">
-                <Link to="/home/ads/history" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  History
-                </Link>
-                <Link to="/home/ads/categories" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Categories
-                </Link>
-                <Link to="/home/ads/subcategories" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Sub Categories
-                </Link>
-                <Link to="/home/ads/rates" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Rates
-                </Link>
-              </div>
+            <FaBox className="nav-icon" />
+            {isSidebarExpanded && (
+              <>
+                <span className='menu-title'>Ads</span>
+                <span className="chevron">
+                  {expandedMenu === 'ads' ? <FaChevronDown /> : <FaChevronRight />}
+                </span>
+              </>
             )}
           </div>
+          
+          {expandedMenu === 'ads' && isSidebarExpanded && (
+            <div className="nav-children open">
+              <Link to="/home/ads/history" className="nav-item child">
+                <FaList className="nav-icon" />
+                <span className="menu-title">History</span>
+              </Link>
+              <Link to="/home/ads/categories" className="nav-item child">
+                <FaList className="nav-icon" />
+                <span className="menu-title">Categories</span>
+              </Link>
+              <Link to="/home/ads/subcategories" className="nav-item child">
+                <FaList className="nav-icon" />
+                <span className="menu-title">Sub Categories</span>
+              </Link>
+              <Link to="/home/ads/rates" className="nav-item child">
+                <FaList className="nav-icon" />
+                <span className="menu-title">Rates</span>
+              </Link>
+            </div>
+          )}
+          </div>
 
-          {/* Directories Section */}
+          {/* Directory Section */}
           <div className="nav-parent">
             <div 
               className="nav-item" 
@@ -151,27 +145,27 @@ const Home = () => {
               <FaFolder className="nav-icon" />
               {isSidebarExpanded && (
                 <>
-                  <span>Directory</span>
+                  <span className='menu-title'>Directory</span>
                   <span className="chevron">
-                    {expandedMenus.directory ? <FaChevronDown /> : <FaChevronRight />}
+                    {expandedMenu === 'directory' ? <FaChevronDown /> : <FaChevronRight />}
                   </span>
                 </>
               )}
             </div>
             
-            {expandedMenus.directory && isSidebarExpanded && (
+            {expandedMenu === 'directory' && isSidebarExpanded && (
               <div className="nav-children open">
                 <Link to="/home/directory/history" className="nav-item child">
                   <FaList className="nav-icon" />
-                  History
+                  <span className='menu-title'>History</span>
                 </Link>
                 <Link to="/home/directory/category/status" className="nav-item child">
                   <FaList className="nav-icon" />
-                  Category Status
+                  <span className='menu-title'>Category Status</span>
                 </Link>
                 <Link to="/home/directory/rates" className="nav-item child">
                   <FaList className="nav-icon" />
-                  Rates
+                  <span className="menu-title">Rates</span>
                 </Link>
               </div>
             )}
@@ -180,12 +174,13 @@ const Home = () => {
           {/* Other Menu Items */}
           <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
             <FaComments className="nav-icon" />
-            {isSidebarExpanded && 'Manage Blogs'}
+            {isSidebarExpanded && <span className='menu-title'>Manage Blogs</span>}
           </Link>
           <Link to="/home/users" className="nav-item" data-tooltip="Users">
             <FaUsers className="nav-icon" />
-            {isSidebarExpanded && 'Users'}
+            {isSidebarExpanded && <span className='menu-title'>Users</span>}
           </Link>
+          
         </nav>
 
         <button onClick={handleLogout} className="logout-btn">

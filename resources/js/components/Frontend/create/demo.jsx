@@ -1,251 +1,252 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
-import { Link, useNavigate } from 'react-router-dom';
-import { 
-  FaBox, 
-  FaUsers, 
-  FaChartLine, 
-  FaSignOutAlt, 
-  FaPlus, 
-  FaComments,
-  FaList, 
-  FaChevronLeft, 
-  FaChevronRight, 
-  FaChevronDown,
-  FaMoon, 
-  FaSun,
-  FaFolderTree // New icon for Directory Management
-} from 'react-icons/fa';
-import './AdminDashboard.css';
-import { useTheme } from './Frontend/src/context/ThemeContext';
-import { Outlet, useLocation } from 'react-router-dom';
-import NotificationBell from './Backend/Notification';
+// Helper function to format time
+const formatTime = (timeString) => {
+  if (!timeString) return '';
+  
+  // Convert "HH:MM" to "HH:MM AM/PM" format
+  const [hours, minutes] = timeString.split(':');
+  const parsedHours = parseInt(hours, 10);
+  const period = parsedHours >= 12 ? 'PM' : 'AM';
+  const displayHours = parsedHours % 12 || 12;
+  
+  return `${displayHours}:${minutes} ${period}`;
+};
 
-const Home = () => {
-  const location = useLocation();
-  const { darkMode, toggleTheme } = useTheme();
-  const navigate = useNavigate();
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
+
+const Preview = ({ 
+  formData, 
+  logoPreview, 
+  thumbnailPreviews,
+  daysOfWeek,
+  onEdit, 
+  onSubmit 
+}) => {
+  const [category, setCategory] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    return () => {
+      // This will run when component unmounts
+      localStorage.removeItem('businessFormDraft');
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchCategory = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/currentUser', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setCurrentUser(response.data.data);
+        const response = await axios.get(`/get/directory/category/${formData.category}`);
+        
+        if (response.data.success && response.data.category) {
+          setCategory(response.data.category.name); 
+        }
       } catch (err) {
-        console.error('Error fetching user:', err);
+        console.error('Error fetching category:', err);
       }
     };
     
-    fetchCurrentUser();
-  }, []);
-
-  const [expandedMenus, setExpandedMenus] = useState({
-    ads: false,
-    directory: false // Added new state for directory management
-  });
-
-  const toggleMenu = (menu) => {
-    setExpandedMenus(prev => ({
-      ...prev,
-      [menu]: !prev[menu]
-    }));
-  };
-
-  const handleLogout = async () => {
-    try {
-      await axios.post('/logout', {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+    const fetchSubCategories = async () => {
+      try {
+        const response = await axios.get(`/get/directory/sub/categories/${formData.category}`);
+        if (response.data.success && response.data.subCategories) {
+          // Filter to only show selected subcategories
+          const selectedSubs = response.data.subCategories.filter(sub => 
+            formData.subCategories.includes(sub.id)
+          );
+          setSubCategories(selectedSubs.map(sub => sub.name));
         }
-      });
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      navigate('/');
+      } catch (err) {
+        console.error('Error fetching subcategories:', err);
+      }
+    };
+    
+    fetchCategory();
+    if (formData.subCategories.length > 0) {
+      fetchSubCategories();
     }
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarExpanded(!isSidebarExpanded);
-  };
+  }, [formData.category, formData.subCategories]);
 
   return (
-    <div className="admin-dashboard">
-      <aside className={`sidebar ${!isSidebarExpanded ? 'collapsed' : ''}`}>
-        <div className="brand">
-          <h2>
-            <Link to='/home'>
-              {isSidebarExpanded ? 'Admin Panel' : 'D'}
-            </Link>
-          </h2>
-          <button className="toggle-btn" onClick={toggleSidebar}>
-            {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
+    <div className="card">
+      <div className="card-header">
+        <h4 className="mb-0"><strong>Preview Your Business Listing</strong></h4>
+      </div>
+      <div className="card-body">
+        <div className="row">
+          {/* Left Column */}
+          <div className="col-md-7">
+            <div className="mb-4">
+              <h3>{formData.businessName}</h3>
+              <p className="text-muted">
+                {formData.category && <><strong>Category:</strong> {category}<br /></>}
+                
+                {subCategories.length > 0 && (
+                  <>
+                    <strong>Sub-Categories:</strong> 
+                    <div className="d-flex flex-wrap gap-1 mt-1">
+                      {subCategories.map((sub, index) => (
+                        <span key={index} style={{ marginRight: '5px' }}>
+                          {sub}
+                          {index < subCategories.length - 1 && ','}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+                
+                {formData.address && <><strong>Address:</strong> {formData.address}</>}
+                {formData.suite && `, ${formData.suite}`}<br />
+                {formData.city && <>{formData.city}</>}
+              </p>
+            </div>
+
+            {formData.description && (
+              <div className="mb-4">
+                <h5>Description</h5>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{formData.description}</p>
+              </div>
+            )}
+
+            {!formData.hide_hour && (
+              <div className="mb-4">
+                <h5>Working Hours</h5>
+                <table className="table table-sm">
+                  <tbody>
+                    {daysOfWeek.map(day => {
+                      if (formData[day.id]) {
+                        const startTime = formData[`${day.id}_startTime`];
+                        const endTime = formData[`${day.id}_endTime`];
+                        return (
+                          <tr key={day.id}>
+                            <td><strong>{day.label}</strong></td>
+                            <td>
+                              {startTime && endTime 
+                                ? `${formatTime(startTime)} - ${formatTime(endTime)}` 
+                                : 'Hours not set'}
+                            </td>
+                          </tr>
+                        );
+                      }
+                      return null;
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="mb-4">
+              <h5>Contact Information</h5>
+              <p>
+                {formData.telNo && (
+                  <><strong>Phone:</strong> {formData.telNo}
+                  {formData.tel_ext && ` ext.${formData.tel_ext}`}<br /></>
+                )}
+                {formData.altTelNo && (
+                  <><strong>Alt Phone:</strong> {formData.altTelNo}
+                  {formData.alt_tel_ext && ` ext.${formData.alt_tel_ext}`}<br /></>
+                )}
+                {formData.email && <><strong>Email:</strong> {formData.email}<br /></>}
+                {formData.website && <><strong>Website:</strong> {formData.website}<br /></>}
+              </p>
+              
+              {(formData.facebook || formData.instagram || formData.yelp || formData.youtube) && (
+                <div className="mt-3">
+                  <strong>Social Media:</strong>
+                  <div className="d-flex flex-wrap gap-2 mt-2">
+                    {formData.facebook && (
+                      <a href={formData.facebook} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
+                        Facebook
+                      </a>
+                    )}
+                    {formData.instagram && (
+                      <a href={formData.instagram} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
+                        Instagram
+                      </a>
+                    )}
+                    {formData.yelp && (
+                      <a href={formData.yelp} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
+                        Yelp
+                      </a>
+                    )}
+                    {formData.youtube && (
+                      <a href={formData.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
+                        YouTube
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {(formData.contactName || formData.contactTelNo || formData.contactEmail) && (
+              <div className="mb-4">
+                <h5>Contact Person</h5>
+                <p>
+                  {formData.contactName && <><strong>Name:</strong> {formData.contactName}<br /></>}
+                  {formData.contactTelNo && <><strong>Phone:</strong> {formData.contactTelNo}<br /></>}
+                  {formData.contactEmail && <><strong>Email:</strong> {formData.contactEmail}</>}
+                </p>
+              </div>
+            )}
+          </div>
+          
+          {/* Right Column */}
+          <div className="col-md-5">
+            {/* Logo Preview */}
+            {logoPreview && (
+              <div className="mb-4">
+                <h5>Business Logo</h5>
+                <img 
+                  src={logoPreview} 
+                  alt="Logo preview" 
+                  className="img-fluid rounded border p-2"
+                  style={{ maxHeight: '200px' }}
+                />
+              </div>
+            )}
+
+            {/* Thumbnails Preview */}
+            {thumbnailPreviews.length > 0 && (
+              <div className="mt-4">
+                <h5>Business Images</h5>
+                <div className="d-flex flex-wrap gap-2">
+                  {thumbnailPreviews.map((preview, index) => (
+                    <img
+                      key={index}
+                      src={preview}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="img-thumbnail"
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-between mt-4">
+          <button 
+            type="button" 
+            className="btn btn-lg btn-outline-secondary"
+            onClick={onEdit}
+          >
+            <i className="fas fa-edit me-2"></i>
+            Edit Listing
+          </button>
+          
+          <button 
+            type="button" 
+            className="btn btn-lg btn-primary"
+            onClick={onSubmit}
+          >
+            <i className="fas fa-check-circle me-2"></i>
+            Submit Listing
           </button>
         </div>
-      
-        <nav className="nav-menu">
-          {/* Dashboard Link */}
-          <div className='nav-item' data-tooltip="Analytics">
-            <FaChartLine className="nav-icon" />
-            {isSidebarExpanded && 'Dashboard'}
-          </div>
-
-          {/* Collapsible Ads Section */}
-          <div className="nav-parent">
-            <div 
-              className="nav-item" 
-              onClick={() => toggleMenu('ads')}
-              data-tooltip="Ads"
-            >
-              <FaBox className="nav-icon" />
-              {isSidebarExpanded && (
-                <>
-                  <span>Ads</span>
-                  <span className="chevron">
-                    {expandedMenus.ads ? <FaChevronDown /> : <FaChevronRight />}
-                  </span>
-                </>
-              )}
-            </div>
-            
-            {expandedMenus.ads && isSidebarExpanded && (
-              <div className="nav-children open">
-                <Link to="/home/ads/history" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  History
-                </Link>
-                <Link to="/home/ads/categories" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Categories
-                </Link>
-                <Link to="/home/ads/subcategories" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Sub Categories
-                </Link>
-                <Link to="/home/ads/rates" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Rates
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* New Directory Management Section */}
-          <div className="nav-parent">
-            <div 
-              className="nav-item" 
-              onClick={() => toggleMenu('directory')}
-              data-tooltip="Directory Management"
-            >
-              <FaFolderTree className="nav-icon" />
-              {isSidebarExpanded && (
-                <>
-                  <span>Directory</span>
-                  <span className="chevron">
-                    {expandedMenus.directory ? <FaChevronDown /> : <FaChevronRight />}
-                  </span>
-                </>
-              )}
-            </div>
-            
-            {expandedMenus.directory && isSidebarExpanded && (
-              <div className="nav-children open">
-                <Link to="/home/directory/categories" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Categories
-                </Link>
-                <Link to="/home/directory/subcategories" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Sub Categories
-                </Link>
-                <Link to="/home/directory/cities" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Cities
-                </Link>
-                <Link to="/home/directory/localities" className="nav-item child">
-                  <FaList className="nav-icon" />
-                  Localities
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Other Menu Items */}
-          <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
-            <FaComments className="nav-icon" />
-            {isSidebarExpanded && 'Manage Blogs'}
-          </Link>
-          <Link to="/home/users" className="nav-item" data-tooltip="Users">
-            <FaUsers className="nav-icon" />
-            {isSidebarExpanded && 'Users'}
-          </Link>
-        </nav>
-
-        <button onClick={handleLogout} className="logout-btn">
-          <FaSignOutAlt /> {isSidebarExpanded && 'Logout'}
-        </button>
-      </aside>
-
-      <main className={`main-content ${!isSidebarExpanded ? 'expanded' : ''}`}>
-        <header className="dashboard-header">
-          <div className="header-left">
-            <h3>
-              Welcome, {currentUser?.name || 'Admin'}
-            </h3>
-          </div>
-          <div className="quick-actions">
-            <NotificationBell />
-            <button 
-              onClick={toggleTheme}
-              className="theme-toggle"
-              aria-label="Toggle theme"
-            >
-              {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
-          </div>
-        </header>
-        
-        {location.pathname === '/home' ? (
-          // Dashboard content
-          <div className='admin-analytics'>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <FaList className="stat-icon" />
-                <h3>Total Orders</h3>
-                {/* <p>{stats.totalOrders}</p> */}
-              </div>
-              <div className="stat-card">
-                <FaUsers className="stat-icon" />
-                <h3>Total Users</h3>
-                {/* <p>{stats.totalUsers}</p> */}
-              </div>
-              <div className="stat-card">
-                <FaChartLine className="stat-icon" />
-                <h3>Total Revenue</h3>
-                {/* <p>${stats.totalRevenue.toLocaleString()}</p> */}
-              </div>
-            </div>
-          </div>
-        ) : (
-          // Nested route content
-          <div className="content-container">
-            <Outlet /> {/* This renders nested routes */}
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 };
 
-export default Home;
+export default Preview;

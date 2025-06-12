@@ -24,6 +24,7 @@ const Preview = ({
   onSubmit 
 }) => {
   const [category, setcategory] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const daysOfWeek = [
       { id: 'monday', label: 'Monday' },
       { id: 'tuesday', label: 'Tuesday' },
@@ -39,14 +40,33 @@ const Preview = ({
         const response = await axios.get(`/get/directory/category/${formData.category}`);
         
         if (response.data.success && response.data.category) {
-          setcategory(response.data.category.name); 
+          setCategory(response.data.category.name); 
         }
       } catch (err) {
         console.error('Error fetching category:', err);
       }
     };
+    
+    const fetchSubCategories = async () => {
+      try {
+        const response = await axios.get(`/get/directory/sub/categories/${formData.category}`);
+        if (response.data.success && response.data.subCategories) {
+          // Filter to only show selected subcategories
+          const selectedSubs = response.data.subCategories.filter(sub => 
+            formData.subCategories.includes(sub.id)
+          );
+          setSubCategories(selectedSubs.map(sub => sub.name));
+        }
+      } catch (err) {
+        console.error('Error fetching subcategories:', err);
+      }
+    };
+    
     fetchCategory();
-  }, [formData.category]);
+    if (formData.subCategories.length > 0) {
+      fetchSubCategories();
+    }
+  }, [formData.category, formData.subCategories]);
   return (
     <div className="card">
       <div className="card-header">
@@ -60,7 +80,19 @@ const Preview = ({
               <h3>{formData.businessName}</h3>
               <p className="text-muted">
                 {formData.category && <><strong>Category:</strong> {category}<br /></>}
-                {formData.subCategory && <><strong>Sub-Category:</strong> {formData.subCategory}<br /></>}
+                {subCategories.length > 0 && (
+                  <>
+                    <strong>Sub-Categories:</strong> 
+                    <div className="d-flex flex-wrap gap-1 mt-1">
+                      {subCategories.map((sub, index) => (
+                        <span key={index} style={{ marginRight: '5px' }}>
+                          {sub}
+                          {index < subCategories.length - 1 && ','}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
                 {formData.address && <><strong>Address:</strong> {formData.address}</>}
                 {formData.suite && `, ${formData.suite}`}<br />
                 {formData.city && <>{formData.city}</>}

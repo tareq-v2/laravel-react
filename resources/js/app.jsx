@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Router, Route } from 'react-router-dom';
@@ -55,12 +54,11 @@ import AdHistory from './components/Backend/ads/AdHistory';
 import AdCategories from './components/Backend/ads/AdCategories';
 import AdminAdSubCategories from './components/Backend/ads/AdSubCategories';
 import AdRates from './components/Backend/ads/AdRates';
+import DirectoryRates from './components/Backend/directory/DirectoryRates';
 import PostVerification from './components/Backend/PostVerification';
 
 function App() {
   const googleClientId = '219618520859-ov7gt3l7b0rqjorih253tndtml7nkvvd.apps.googleusercontent.com';
-  // const googleId = "219618520859-ov7gt3l7b0rqjorih253tndtml7nkvvd.apps.googleusercontent.com";
-  // const googleClientId = "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";
   return (
     <LanguageProvider>
       <BrowserRouter>
@@ -75,21 +73,13 @@ function App() {
                   </ProtectedRoute>
               }
           />
-          {/* <Route
-            path="/payment"
-            element={
-              <ProtectedRoute allowedRoles={['customer', 'admin']}>
-                <Layout><Payment /></Layout>
-              </ProtectedRoute>
-            }
-          /> */}
           <Route
             path="/payment"
             element={
               <Elements stripe={stripePromise}>
               <ProtectedRoute 
                 allowedRoles={['customer', 'admin']} 
-                allowGuest={true}  // Enable guest access
+                allowGuest={true}
               >
                 <Layout><Payment /></Layout>
               </ProtectedRoute>
@@ -101,7 +91,7 @@ function App() {
             element={
                <ProtectedRoute 
                   allowedRoles={['customer', 'admin']} 
-                  allowGuest={true}  // Enable guest access
+                  allowGuest={true}
                 >
                   <Layout><PostConfirmation /></Layout>
               </ProtectedRoute>
@@ -221,19 +211,6 @@ function App() {
           <Route path="/login" element={<Layout><Login /></Layout>} />
           <Route path="/register" element={<Layout><Register /></Layout>} />
 
-          {/* Protected Routes */}
-          {/* <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                    <ThemeProvider>
-                      <Home />
-                    </ThemeProvider>
-                </Layout>
-              </ProtectedRoute>
-            }
-          /> */}
           <Route
             path="/admin-dashboard"
             element={
@@ -275,6 +252,7 @@ function App() {
             <Route path="ads/categories" element={<AdCategories/>} />
             <Route path="ads/Subcategories" element={<AdminAdSubCategories/>} />
             <Route path="ads/rates" element={<AdRates/>} />
+            <Route path="directory/rates" element={<DirectoryRates/>} />
             <Route path="chat" element={<AdminChat />} />
             <Route path="admin/post/verify/:id" element={<PostVerification />} />
           </Route>

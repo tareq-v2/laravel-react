@@ -33,7 +33,7 @@ const [formData, setFormData] = useState({
     suite: '',
     city: '',
     category: '',
-    subCategory: '',
+    subCategories: [],
     description: '',
     workingHour: '',
     days: [],
@@ -59,6 +59,7 @@ const [formData, setFormData] = useState({
     rate: 0,
     featureRate: 0,
     socialMediaRate: 0,
+    extendedRate: 0, // Added for extended subcategories
     sessionId: localStorage.getItem('draft_session'),
     monday: false,
     monday_startTime: '',
@@ -100,7 +101,12 @@ const [isReturningFromPreview, setIsReturningFromPreview] = useState(false);
 const [logoPreview, setLogoPreview] = useState(null);
 const [showFeatureSelection, setShowFeatureSelection] = useState(false);
 const [showAuthModal, setShowAuthModal] = useState(false);
-const [getRate, setRate] = useState([]);
+const [getRate, setRate] = useState({ 
+  base: 0, 
+  feature: 0, 
+  social: 0,
+  extended: 0 // Added for extended subcategories
+});
 const [socialMediaPromotion, setSocialMediaPromotion] = useState(false);
 const fileInputRef = useRef(null);
 const [dragActive, setDragActive] = useState(false);
@@ -152,6 +158,31 @@ const handleHideHoursChange = (e) => {
         }));
     }
 };
+
+// Handle subcategory selection
+const handleSubcategoryChange = (e, subcategory) => {
+  const isChecked = e.target.checked;
+  setFormData(prev => {
+    let newSubs = [...prev.subCategories];
+    
+    if (isChecked) {
+      newSubs.push(subcategory);
+    } else {
+      newSubs = newSubs.filter(id => id !== subcategory);
+    }
+    
+    // Calculate extended rate
+    const extendedCount = Math.max(0, newSubs.length - 2);
+    const extendedRate = extendedCount * (getRate.extended || 0);
+    
+    return {
+      ...prev,
+      subCategories: newSubs,
+      extendedRate
+    };
+  });
+};
+
 // Handle thumbnail upload
 const handleThumbnailsChange = (e) => {
   const files = Array.from(e.target.files || e.dataTransfer.files);
@@ -206,7 +237,7 @@ useEffect(() => {
   }
 }, [isEditMode, initialData]);
 
-// Initialize session
+// Initialize session and restore form state
 useEffect(() => {
   const initializeSession = async () => {
     try {
@@ -220,7 +251,22 @@ useEffect(() => {
     }
   };
 
-  if (!localStorage.getItem('draft_session')) {
+  // Restore form state from localStorage
+  const savedForm = localStorage.getItem('businessFormDraft');
+  if (savedForm) {
+    const parsed = JSON.parse(savedForm);
+    
+    if (!parsed.isReturningFromPreview) {
+      setFormData(parsed.formData);
+      setLogoPreview(parsed.logoPreview);
+      setThumbnailPreviews(parsed.thumbnailPreviews);
+      setShowPreview(parsed.showPreview);
+      setShowFeatureSelection(parsed.showFeatureSelection);
+    }
+
+  } 
+  // Only initialize new session if no saved form exists
+  else if (!localStorage.getItem('draft_session')) {
     initializeSession();
   } else {
     const existingSession = localStorage.getItem('draft_session');
@@ -228,6 +274,33 @@ useEffect(() => {
     setFormData(prev => ({ ...prev, sessionId: existingSession }));
   }
 }, []);
+
+useEffect(() => {
+  if (isReturningFromPreview) {
+    localStorage.removeItem('businessFormDraft');
+    setIsReturningFromPreview(false);
+  }
+}, [isReturningFromPreview]);
+
+// Save form state to localStorage
+useEffect(() => {
+  const saveFormState = () => {
+    const formState = {
+      formData,
+      logoPreview,
+      thumbnailPreviews,
+      showPreview,
+      showFeatureSelection,
+      isReturningFromPreview
+    };
+    localStorage.setItem('businessFormDraft', JSON.stringify(formState));
+  };
+
+  // Save state when entering preview or feature selection
+  if (showPreview || showFeatureSelection) {
+    saveFormState();
+  }
+}, [formData, logoPreview, thumbnailPreviews, showPreview, showFeatureSelection]);
 
 // Handle input changes
 const handleInputChange = (e) => {
@@ -261,18 +334,6 @@ const handleSubCategoryInputChange = (e) => {
     .catch(error => {
       console.error('Error fetching sub categories:', error);
     });
-};
-
-// Handle day selection for working hours
-const handleDaySelection = (day) => {
-  setFormData(prev => {
-    const newDays = [...prev.days];
-    if (newDays.includes(day)) {
-      return { ...prev, days: newDays.filter(d => d !== day) };
-    } else {
-      return { ...prev, days: [...newDays, day] };
-    }
-  });
 };
 
 // Handle logo upload
@@ -360,22 +421,25 @@ useEffect(() => {
       const base = parseFloat(response.data?.base_rate) || 0;
       const feature = parseFloat(response.data?.feature_rate) || 0;
       const social = parseFloat(response.data?.social_share_rate) || 0;
+      const extended = parseFloat(response.data?.extended_rate) || 0; // Extended rate
 
-      setRate({ base, feature, social });
+      setRate({ base, feature, social, extended });
       setFormData(prev => ({
         ...prev,
         rate: base,
         featureRate: 0,
-        socialMediaRate: 0
+        socialMediaRate: 0,
+        extendedRate: 0
       }));
     } catch (error) {
       console.error('Error fetching rates:', error);
-      setRate({ base: 75, feature: 35, social: 25 });
+      setRate({ base: 75, feature: 35, social: 25, extended: 10 });
       setFormData(prev => ({
         ...prev,
         rate: 75,
         featureRate: 0,
-        socialMediaRate: 0
+        socialMediaRate: 0,
+        extendedRate: 0
       }));
     }
   };
@@ -438,7 +502,7 @@ const handleSubmit = async (e) => {
   if (!formData.businessName) newErrors.businessName = 'Business name is required';
   if (!formData.address) newErrors.address = 'Address is required';
   if (!formData.city) newErrors.city = 'City is required';
-  // if (!formData.category) newErrors.category = 'Category is required';
+  if (!formData.category) newErrors.category = 'Category is required';
   if (!formData.description) newErrors.description = 'Description is required';
   if (!formData.telNo) newErrors.telNo = 'Phone number is required';
   if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Invalid email format';
@@ -464,7 +528,7 @@ const handleSubmit = async (e) => {
       }
      
       if (formData[startField] && formData[endField] && 
-          formData[startField] >= formData[endField]) {
+          formData[startField] >= formData[endTime]) {
         newErrors[endField] = `End time must be after start time for ${day.label}`;
       }
     }
@@ -498,21 +562,31 @@ const handleFeaturedSubmit = async () => {
   try {
     // Check authentication
     const isAuthenticated = localStorage.getItem('token') !== null;
-
+    localStorage.removeItem('businessFormDraft');
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
     }
 
+    // Calculate total amount
+    const totalAmount = 
+      formData.rate + 
+      formData.featureRate + 
+      formData.socialMediaRate +
+      formData.extendedRate;
+    
     navigate('/payment', { 
       state: { 
         draftData: {
           ...formData,
-          totalAmount: formData.rate + formData.featureRate + formData.socialMediaRate
+          totalAmount
         },
         model: 'Directory'
       } 
     });
+    
+    // Clear saved form state after successful submission
+    localStorage.removeItem('businessFormDraft');
   } catch (error) {
     console.error('Submission error:', error);
   }
@@ -544,6 +618,7 @@ const handleFeaturedSubmit = async () => {
                 onEdit={() => {
                   setShowPreview(false);
                   setIsReturningFromPreview(true);
+                  localStorage.removeItem('businessFormDraft');
                 }}
                 onSubmit={() => setShowFeatureSelection(true)}
               />
@@ -632,6 +707,7 @@ const handleFeaturedSubmit = async () => {
                         />
                         {errors.city && <div className="invalid-feedback">{errors.city}</div>}
                       </div>
+
                       <div className="form-group mt-3">
                         <label className="form-label text-dark fw-semibold">
                           Category <span className="text-danger">*</span>
@@ -655,18 +731,40 @@ const handleFeaturedSubmit = async () => {
 
                       <div className="form-group mt-3">
                         <label className="form-label text-dark fw-semibold">Sub-Category</label>
-
-                         <select
-                              name="subCategory"
-                              value={formData.subCategory}
-                              onChange={handleInputChange}
-                              className={`form-control ${errors.category ? 'is-invalid' : ''}`}
-                            >
-                              <option value="">Select Sub Category</option>
-                              {subCategories.length > 0 && subCategories.map((subCategory) => (
-                                <option key={subCategory.id} value={subCategory.name}>{subCategory.name}</option>
+                        <div className="subcategory-container">
+                          {subCategories.length > 0 ? (
+                            <div className="subcategory-grid">
+                              {subCategories.map((subCategory) => (
+                                <div 
+                                  key={subCategory.id} 
+                                  className={`subcategory-option ${formData.subCategories.includes(subCategory.id) ? 'selected' : ''}`}
+                                  onClick={(e) => {
+                                    const isChecked = !formData.subCategories.includes(subCategory.id);
+                                    handleSubcategoryChange({
+                                      target: { checked: isChecked }
+                                    }, subCategory.id);
+                                  }}
+                                >
+                                  <div className="subcategory-checkbox">
+                                    {formData.subCategories.includes(subCategory.id) && (
+                                      <div className="checkmark">✓</div>
+                                    )}
+                                  </div>
+                                  <span className="subcategory-name">{subCategory.name}</span>
+                                </div>
                               ))}
-                            </select>
+                            </div>
+                          ) : (
+                            <div className="text-muted p-2 border rounded">
+                              Select a category first to see available sub-categories
+                            </div>
+                          )}
+                          <div className="mt-2">
+                            <small className="text-muted">
+                              First 2 subcategories included. Additional: ${getRate.extended} each
+                            </small>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="form-group mt-3">
@@ -1170,7 +1268,7 @@ const handleFeaturedSubmit = async () => {
                         )}
                     </div> 
                     {/* CAPTCHA */}
-                    {!isEditMode && !isReturningFromPreview && (
+                    {!isEditMode && !isReturningFromPreview && !showPreview && (
                       <div className="form-group mt-3">
                         <div className="d-flex flex-nowrap align-items-center gap-2">
                           <div 
@@ -1216,7 +1314,7 @@ const handleFeaturedSubmit = async () => {
                         <div className="text-danger">{captchaError}</div>
                       </div>
                     )}
-
+                    
                     {/* Submit Button */}
                     <div className="form-group mt-4">
                       <button type="submit" className="btn btn-primary w-100">

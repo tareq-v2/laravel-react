@@ -1,4 +1,3 @@
-// FeatureSelection.jsx
 import React from 'react';
 
 const FeatureSelection = ({ 
@@ -11,11 +10,22 @@ const FeatureSelection = ({
   socialMediaPromotion,
   setSocialMediaPromotion
 }) => {
+  // Calculate extended cost
+  const extendedCount = Math.max(0, formData.subCategories.length - 2);
+  const extendedCost = extendedCount * (getRate.extended || 0);
+  
+  // Calculate total
+  const total = 
+    formData.rate + 
+    formData.featureRate + 
+    formData.socialMediaRate +
+    extendedCost;
+    
   return (
     <div className="card feature-card">
       <div className="card-header">
         <h4 className="mb-0">
-          <strong>Business Directory Listing - {getRate.base === 0 ? 'Free' : `$${getRate.base}`}</strong>
+          <strong>Business Directory Listing - ${formData.rate}</strong>
         </h4>
       </div>
       
@@ -27,7 +37,30 @@ const FeatureSelection = ({
             year: 'numeric' 
           })}.</p>
         </div>
-
+        
+        {/* Base Rate */}
+        <div className="rate-breakdown mb-3">
+          <div className="d-flex justify-content-between">
+            <span>Base Rate:</span>
+            <span>${formData.rate}</span>
+          </div>
+        </div>
+        
+        {/* Extended Subcategories */}
+        {extendedCount > 0 && (
+          <div className="rate-breakdown mb-3">
+            <div className="d-flex justify-content-between">
+              <span>
+                {extendedCount} Additional Subcategor{extendedCount > 1 ? 'ies' : 'y'} 
+                <br />
+                <small className="text-muted">(${getRate.extended} each)</small>
+              </span>
+              <span>${extendedCost}</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Feature Option */}
         <div className="feature-option active">
           <div className="form-check">
             <input
@@ -42,11 +75,12 @@ const FeatureSelection = ({
               }))}
             />
             <label className="form-check-label package_label" htmlFor="featured_post">
-              <strong>Feature your business on directory homepage - {getRate.feature === 0 ? 'Free' : `$${getRate.feature}`}</strong>
+              <strong>Feature your business on directory homepage - ${getRate.feature}</strong>
             </label>
           </div>
         </div>  
-
+        
+        {/* Social Promotion */}
         <div className="social-promotion-section mt-4">
           <div className="form-check">
             <input
@@ -63,8 +97,16 @@ const FeatureSelection = ({
               }}
             />
             <label className="form-check-label package_label" htmlFor="social_media">
-              <strong>Promote your business on our social media - {getRate.social === 0 ? 'Free' : `$${getRate.social}`}</strong>
+              <strong>Promote your business on our social media - ${getRate.social}</strong>
             </label>
+          </div>
+        </div>
+        
+        {/* Total */}
+        <div className="total-section mt-4 pt-3 border-top">
+          <div className="d-flex justify-content-between fw-bold fs-5">
+            <span>Total:</span>
+            <span>${total}</span>
           </div>
         </div>
 

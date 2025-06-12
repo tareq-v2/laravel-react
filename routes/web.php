@@ -10,6 +10,7 @@ use App\Http\Controllers\DraftController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChatController;
 use App\Models\HomeVideo;
+use App\Models\DirectoryRate;
 use Illuminate\Http\Request;
 use App\Models\GuestMessage;
 use App\Models\AdSubCategory;
@@ -94,6 +95,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/get/directory/categories', [DirectoryController::class, 'getDirectoryCategories']);
 Route::get('/get/directory/category/{id}', [DirectoryController::class, 'getDirectoryCategory']);
 Route::get('/get/directory/sub/categories/{id}', [DirectoryController::class, 'getDirectorySubCategories']);
+Route::get('/directory/rate', [DirectoryController::class, 'getDirectoryRate']);
 // Authenticate Routes
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('/logout', [AuthController::class, 'logout']);
@@ -110,6 +112,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('/user/delete/{id}', [UserController::class, 'delete']);
   Route::get('/admin/ad-subcategories', [FrontendController::class, 'getAdSubCategories']);
   Route::get('/admin/ad-categories', [FrontendController::class, 'getAdCategories']);
+  Route::get('/admin/directory/rates', [DirectoryController::class, 'getDirectoryRates']);
+  Route::post('/admin/update-directory-rates/{id}', [DirectoryController::class, 'updateDirectoryRate']);
   Route::post('/admin/update-subcategories/{type}/{id}', [FrontendController::class, 'updateRate']);
   Route::post('/send-message', [ChatController::class, 'sendMessage']);
   Route::get('/messages/{userId}', [ChatController::class, 'getMessages']);
