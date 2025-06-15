@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             BannerSeeder::class,
             BannerCategorySeeder::class,
             HomeVideoSeeder::class,
+            DirectoryRatesSeeder::class,
+            DirectorySubCategorySeeder::class
         ]);
     }
 }

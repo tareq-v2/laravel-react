@@ -40,7 +40,7 @@ const Preview = ({
         const response = await axios.get(`/get/directory/category/${formData.category}`);
         
         if (response.data.success && response.data.category) {
-          setCategory(response.data.category.name); 
+          setCategory(response.data.category.name);
         }
       } catch (err) {
         console.error('Error fetching category:', err);

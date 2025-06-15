@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blog_likes', function (Blueprint $table) {
+        Schema::create('directory_images', function (Blueprint $table) {
             $table->id();
-            $table->integer('blog_id')->nullable();
-            $table->integer('user_id')->nullable();
+            $table->integer('directory_id')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blog_likes');
+        Schema::dropIfExists('directory_images');
     }
 };

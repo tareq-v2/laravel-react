@@ -17,10 +17,10 @@ const AuthModal = ({ show, onHide, onGuestSubmit, saveDraftData }) => {
           border: '1px solid rgba(255, 99, 71, 0.48)',
           boxShadow: '0 4px 10px rgba(255, 99, 71, 0.48)'
         }}>
-          <div className="modal-header border-0 pb-0">
-            <h5 className="modal-title w-100 text-center text-dark">
+            <h5 className="modal-title w-100 text-center text-danger">
               Continue to Checkout
             </h5>
+          <div className="modal-header border-0 pb-0">
             <button 
                 type="button" 
                 className="close-button" 

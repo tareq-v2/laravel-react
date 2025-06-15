@@ -11,6 +11,7 @@ class DraftController extends Controller
 {
     public function store(Request $request) {
         $data = [];
+        // dd($request->all());
         // Handle attachments
         if (isset($request->formData['attachments']) && is_array($request->formData['attachments'])) {
             foreach ($request->formData['attachments'] as $image) {

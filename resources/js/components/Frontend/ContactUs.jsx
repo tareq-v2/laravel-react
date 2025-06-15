@@ -52,7 +52,7 @@ const ContactForm = () => {
                 style={{ height: 200 }} 
                 loop={false}
               />
-              <h4 className="text-success">Message Sent Successfully!</h4>
+              <h4 style={{ color: 'tomato' }}>Message Sent Successfully!</h4>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -130,21 +130,6 @@ const ContactForm = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer Links */}
-      {/* <div className="mt-5 pt-4 border-top text-center">
-        <div className="d-flex flex-wrap justify-content-center gap-4 mb-3">
-          <a href="/about">About Us</a>
-          <a href="/advertise">Advertise With Us</a>
-          <a href="/classifieds">Classified Ads</a>
-          <a href="/directory">Business Directory</a>
-          <a href="/terms">Terms Of Service</a>
-          <a href="/privacy">Privacy Policy</a>
-        </div>
-        <div className="text-muted">
-          © {new Date().getFullYear()} Armenian Advertiser. All Rights Reserved.
-        </div>
-      </div> */}
     </div>
   );
 };

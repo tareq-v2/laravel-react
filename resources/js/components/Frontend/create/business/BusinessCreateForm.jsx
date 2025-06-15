@@ -259,7 +259,8 @@ useEffect(() => {
     if (!parsed.isReturningFromPreview) {
       setFormData(parsed.formData);
       setLogoPreview(parsed.logoPreview);
-      setThumbnailPreviews(parsed.thumbnailPreviews);
+      setThumbnailPreviews(parsed.thumbnailPreviews || []);
+      setThumbnails(parsed.thumbnails || []);
       setShowPreview(parsed.showPreview);
       setShowFeatureSelection(parsed.showFeatureSelection);
     }
@@ -290,6 +291,7 @@ useEffect(() => {
       logoPreview,
       thumbnailPreviews,
       showPreview,
+      thumbnails,
       showFeatureSelection,
       isReturningFromPreview
     };
@@ -300,7 +302,7 @@ useEffect(() => {
   if (showPreview || showFeatureSelection) {
     saveFormState();
   }
-}, [formData, logoPreview, thumbnailPreviews, showPreview, showFeatureSelection]);
+}, [formData, logoPreview, thumbnailPreviews, showPreview, thumbnails, showFeatureSelection]);
 
 // Handle input changes
 const handleInputChange = (e) => {
@@ -472,13 +474,18 @@ const saveDraftData = async () => {
     if (formData.logo) {
       formPayload.append('logo', formData.logo);
     }
-    
+
+    // Append thumbnails
+    thumbnails.forEach((file, index) => {
+      formPayload.append(`thumbnails[${index}]`, file);
+    });
+
     formPayload.append('ip', await getClientIP());
     
-    const response = await axios.post('/save-directory-draft', formPayload);
+    const response = await axios.post('/save-draft', formPayload);
     return response.data.draftId;
   } catch (error) {
-    console.error('Draft save failed:', error);
+    console.error('Draft save failed:', error); 
   }
 };
 
@@ -841,7 +848,7 @@ const handleFeaturedSubmit = async () => {
                                     </label>
                                   </div>
                                   <div className="col-10 px-0">
-                                    <div className="d-flex align-items-center gap-2">
+                                    <div className="d-flex align-items-center gap-2" style={{margin: '0 15px 0 0'}}>
                                       {/* Start Time */}
                                       <div className="flex-grow-1 position-relative">
                                         <div className="input-group">
@@ -1356,6 +1363,7 @@ const handleFeaturedSubmit = async () => {
                 </div>
               </form>
             )}
+
           </div>
         </div>
       </div>

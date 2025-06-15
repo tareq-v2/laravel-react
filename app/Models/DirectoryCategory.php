@@ -14,4 +14,9 @@ class DirectoryCategory extends Model
     {
         return asset('storage/'.$this->attributes['icon']);
     }
+
+    public function subCategories()
+    {
+        return $this->hasMany(DirectorySubCategory::class);
+    }
 }

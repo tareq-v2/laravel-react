@@ -12,4 +12,19 @@ class Directory extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function category()
+    {
+        return $this->belongsTo(DirectoryCategory::class);
+    }
+
+    public function subCategories()
+    {
+        return $this->belongsToMany(DirectorySubCategory::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(DirectoryImage::class);
+    }
 }
