@@ -1,94 +1,93 @@
 <?php
 
-
-namespace App\Http\Controllers;
-
-use App\Models\Blog;
-use App\Models\BlogComment;
-use App\Models\Like;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-class BlogController extends Controller
-{
-    // Get single blog with like status
-    public function show($id)
-    {
-        $blog = Blog::withCount('likes')->findOrFail($id);
+public function store(Request $request) {
+    $model = $request->input('model', $request->formData['model'] ?? null);
+    
+    if ($model === 'Directory') {
+        $data = $request->except(['_token', 'ip', 'logo', 'thumbnails']);
         
-        $blog->user_liked = false;
-        if (Auth::check()) {
-            $blog->user_liked = $blog->likes()->where('user_id', Auth::id())->exists();
-        }
-
-        return response()->json($blog);
-    }
-
-    // Get adjacent blogs
-    public function adjacent($id)
-    {
-        $blog = Blog::findOrFail($id);
-        
-        $prev = Blog::where('id', '<', $blog->id)
-            ->latest('id')
-            ->select('id', 'title')
-            ->first();
+        // Process logo
+        if ($request->hasFile('logo')) {
+            $logoFile = $request->file('logo');
+            $fileName = uniqid() . '-' . rand() . '.' . $logoFile->extension();
+            $location = public_path('drafts/attachments');
+            $logoFile->move($location, $fileName);
             
-        $next = Blog::where('id', '>', $blog->id)
-            ->oldest('id')
-            ->select('id', 'title')
-            ->first();
-
-        return response()->json([
-            'prev' => $prev,
-            'next' => $next
-        ]);
-    }
-
-    // Get blog comments with user data
-    public function comments($id)
-    {
-        $comments = BlogComment::with('user:id,name')
-            ->where('blog_id', $id)
-            ->latest()
-            ->get();
-        
-        return response()->json($comments);
-    }
-
-    // Handle like/unlike action
-    public function like($id)
-    {
-        $blog = Blog::findOrFail($id);
-        $user = Auth::user();
-
-        $like = $blog->likes()->where('user_id', $user->id)->first();
-
-        if ($like) {
-            $like->delete();
-            $liked = false;
-        } else {
-            $blog->likes()->create(['user_id' => $user->id]);
-            $liked = true;
+            AdDraftAttachment::create([
+                'user_ip' => $request->ip(),
+                'session_id' => $request->sessionId,
+                'image' => $fileName,
+                'type' => 'logo'
+            ]);
         }
-
-        return response()->json([
-            'likes' => $blog->likes()->count(),
-            'liked' => $liked
-        ]);
+        
+        // Process thumbnails
+        if ($request->has('thumbnails')) {
+            foreach ($request->file('thumbnails') as $thumbnail) {
+                if ($thumbnail->isValid()) {
+                    $fileName = uniqid() . '-' . rand() . '.' . $thumbnail->extension();
+                    $location = public_path('drafts/attachments');
+                    $thumbnail->move($location, $fileName);
+                    
+                    AdDraftAttachment::create([
+                        'user_ip' => $request->ip(),
+                        'session_id' => $request->sessionId,
+                        'image' => $fileName,
+                        'type' => 'thumbnail'
+                    ]);
+                }
+            }
+        }
+        
+        // Handle array fields
+        if (isset($data['subCategories'])) {
+            $data['subCategories'] = json_encode($data['subCategories']);
+        }
+        
+        // ... rest of the code ...
     }
+    // ... other models ...
+}
 
-    // Post new comment
-    public function postComment(Request $request, $id)
-    {
-        $request->validate(['text' => 'required|string|max:500']);
-
-        $comment = Comment::create([
-            'text' => $request->text,
-            'blog_id' => $id,
-            'user_id' => Auth::id()
-        ]);
-
-        return response()->json($comment->load('user:id,name'));
+public function getDraft(Request $request) {
+    $draft = DraftPost::where('session_id', $request->sessionId)
+          ->where('model', $request->model)
+          ->where('expires_at', '>', now())
+          ->first();
+          
+    if (!$draft) {
+        return response()->json(['exists' => false]);
     }
+    
+    $data = json_decode($draft->data, true);
+    
+    if ($request->model === 'Directory') {
+        // Get logo
+        $logoAttachment = AdDraftAttachment::where('session_id', $request->sessionId)
+            ->where('type', 'logo')
+            ->first();
+        if ($logoAttachment) {
+            $data['logo'] = asset('drafts/attachments/' . $logoAttachment->image);
+        }
+        
+        // Get thumbnails
+        $thumbnailAttachments = AdDraftAttachment::where('session_id', $request->sessionId)
+            ->where('type', 'thumbnail')
+            ->get();
+        $thumbnails = [];
+        foreach ($thumbnailAttachments as $attachment) {
+            $thumbnails[] = asset('drafts/attachments/' . $attachment->image);
+        }
+        $data['thumbnails'] = $thumbnails;
+        
+        if (isset($data['subCategories'])) {
+            $data['subCategories'] = json_decode($data['subCategories'], true);
+        }
+    }
+    
+    return response()->json([
+        'exists' => true,
+        'data' => $data,
+        'draft_id' => $draft->id
+    ]);
 }

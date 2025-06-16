@@ -296,6 +296,7 @@ useEffect(() => {
       isReturningFromPreview
     };
     localStorage.setItem('businessFormDraft', JSON.stringify(formState));
+    sessionStorage.setItem('inFormFlow', 'true');
   };
 
   // Save state when entering preview or feature selection
@@ -519,25 +520,24 @@ const handleSubmit = async (e) => {
   if (formData.alt_tel_ext && !formData.altTelNo) {
     newErrors.altTelNo = 'Alternate phone is required when extension is provided';
   }
-
   daysOfWeek.forEach(day => {
     if (formData[day.id]) {
-
-      const startField = `${day.id}_startTime`;
-      const endField = `${day.id}_endTime`;
-      
-      if (!formData[startField]) {
-        newErrors[startField] = `Start time is required for ${day.label}`;
-      }
-      
-      if (!formData[endField]) {
-        newErrors[endField] = `End time is required for ${day.label}`;
-      }
-     
-      if (formData[startField] && formData[endField] && 
-          formData[startField] >= formData[endTime]) {
-        newErrors[endField] = `End time must be after start time for ${day.label}`;
-      }
+        const startField = `${day.id}_startTime`;
+        const endField = `${day.id}_endTime`;
+        
+        if (!formData[startField]) {
+            newErrors[startField] = `Start time is required for ${day.label}`;
+        }
+        
+        if (!formData[endField]) {
+            newErrors[endField] = `End time is required for ${day.label}`;
+        }
+        
+        // CORRECTED: Use endField instead of endTime
+        if (formData[startField] && formData[endField] && 
+            formData[startField] >= formData[endField]) {
+            newErrors[endField] = `End time must be after start time for ${day.label}`;
+        }
     }
   });
 
@@ -569,7 +569,10 @@ const handleFeaturedSubmit = async () => {
   try {
     // Check authentication
     const isAuthenticated = localStorage.getItem('token') !== null;
-    localStorage.removeItem('businessFormDraft');
+    
+    sessionStorage.removeItem('inFormFlow');
+    sessionStorage.removeItem('fromHome');
+
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;

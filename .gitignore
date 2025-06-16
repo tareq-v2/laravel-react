@@ -20,9 +20,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-/public/jobOffers
-/public/public
-/public/uploads
-/public/users
-/public/drafts
+/public/*
+# /public/public
+# /public/uploads
+# /public/users
+# /public/drafts
 /storage

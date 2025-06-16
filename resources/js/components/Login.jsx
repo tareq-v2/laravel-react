@@ -54,7 +54,7 @@ export default function Login() {
     
     // Get draft session ID from localStorage if exists
     const sessionId = localStorage.getItem('draft_session');
-    
+    console.log(sessionId);
     // Prepare request data
     const requestData = { ip: clientIP };
     if (sessionId) {
