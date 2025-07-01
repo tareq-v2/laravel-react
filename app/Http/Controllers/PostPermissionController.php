@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\JobOffer;
+use App\Models\Directory;
 use App\Mail\AdApproveMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
@@ -25,19 +26,29 @@ class PostPermissionController extends Controller
         Mail::to($post['email'])->send(new AdApproveMail($post, $userName));
         return response()->json(['success' => true]);
     }
-    public function getUnVerifiedPost($id)
+    public function getUnVerifiedPost($model, $id)
     {
-        $post = JobOffer::with('images')->findOrFail($id);
-        
-        return response()->json([
-            'success' => true, 
-            'data' => $post,
-            'images' => $post->images->map(function($image) {
+        if($model == 'Directory'){
+            $post = Directory::with('images')->findOrFail($id);
+            $images = $post->images->map(function($image) {
+                return [
+                    'url' => asset("/directory/attachments/{$image->image}"),
+                ];
+            });
+        }elseif($model == 'JobOffer'){
+            $post = JobOffer::with('images')->findOrFail($id);
+            $images = $post->images->map(function($image) {
                 return [
                     'url' => asset("/jobOffers/attachments/{$image->image_path}"),
                     'original_name' => $image->original_name
                 ];
-            })
+            });
+        }
+        
+        return response()->json([
+            'success' => true, 
+            'data' => $post,
+            'images' => $images
         ]);
     }
 }

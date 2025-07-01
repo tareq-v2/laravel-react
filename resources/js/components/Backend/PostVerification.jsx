@@ -16,7 +16,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './PostVerification.css';
 
 const PostVerification = () => {
-    const { id } = useParams();
+    const { model, id } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [images, setImages] = useState([]);
@@ -49,7 +49,7 @@ const PostVerification = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get(`/admin/get/un-verified/post/${id}`, {
+                const response = await axios.get(`/admin/get/un-verified/post/${model}/${id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
@@ -67,7 +67,7 @@ const PostVerification = () => {
         };
 
         fetchPost();
-    }, [id]);
+    }, [model, id]);
 
     const handleVerify = async () => {
         setVerifying(true);

@@ -254,7 +254,7 @@ function App() {
             <Route path="ads/rates" element={<AdRates/>} />
             <Route path="directory/rates" element={<DirectoryRates/>} />
             <Route path="chat" element={<AdminChat />} />
-            <Route path="admin/post/verify/:id" element={<PostVerification />} />
+            <Route path="admin/post/verify/:model/:id" element={<PostVerification />} />
           </Route>
           
         </Routes>

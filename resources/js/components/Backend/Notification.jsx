@@ -70,7 +70,7 @@ const NotificationBell = () => {
             const targetPostId = notification.post_id || postId;
             
             if (targetPostId) {
-                navigate(`admin/post/verify/${targetPostId}`);
+                navigate(`admin/post/verify/${notification.post_type}/${targetPostId}`);
             }
         } catch (err) {
             console.error('Mark read error:', err);

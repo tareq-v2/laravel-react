@@ -162,7 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/admin/notifications', [NotificationController::class, 'index']);
   Route::post('/admin/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
   Route::post('/posts/{id}/verify', [PostPermissionController::class, 'verify']);
-  Route::get('/admin/get/un-verified/post/{id}', [PostPermissionController::class, 'getUnVerifiedPost']);
+  Route::get('/admin/get/un-verified/post/{model}/{id}', [PostPermissionController::class, 'getUnVerifiedPost']);
   Route::get('/admin/ads/history', [FrontendController::class, 'adsHistory']);
   // Route::resource('/home/blogs', BlogController::class);
   Route::get('/admin/blogs', [BlogController::class, 'index']);
