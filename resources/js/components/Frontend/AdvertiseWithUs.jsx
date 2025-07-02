@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/AdvertiseWithUs.css';
 
@@ -30,7 +31,7 @@ const AdvertiseWithUs = () => {
       <section className="classified-ads py-4">
         <h2 className="section-heading mb-4">Classified Ad Rates</h2>
         <p className="text-muted mb-4">Classified ads are active online for 30 days</p>
-        
+
         <div className="row">
           <div className="col-md-6">
             <ul className="rate-list">
@@ -73,7 +74,7 @@ const AdvertiseWithUs = () => {
       {/* Business Directory Section */}
       <section className="business-directory py-4 bg-light">
         <h2 className="section-heading mb-4">Business Directory Rates</h2>
-        
+
         <div className="featured-listing mb-5 p-4">
           <h5 className="text-primary">Featured Directory Listing Option:</h5>
           <ul>
@@ -103,7 +104,7 @@ const AdvertiseWithUs = () => {
       {/* Banner Advertising Section */}
       <section className="banner-ads py-4">
         <h2 className="section-heading mb-4">Graphic Banner & Video Rates</h2>
-        
+
         <div className="table-responsive">
             <table className="table table-striped table-bordered table-hover mb-5">
                 <thead className="table-dark">
@@ -132,7 +133,7 @@ const AdvertiseWithUs = () => {
 
         <div className="text-center my-5">
           <button size="lg" className="btn btn-primary px-5">
-            Add Your Banner
+            <Link to="/create/banner">Add Your Banner</Link>
           </button>
         </div>
       </section>

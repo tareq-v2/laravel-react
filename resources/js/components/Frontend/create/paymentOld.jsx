@@ -11,9 +11,6 @@ const Payment = () => {
   const stripe = useStripe();
   const elements = useElements();
 
-  // Determine payment type
-  const paymentType = draftData?.type || 'jobOffer';
-
   const initialState = {
     card_holder_name: '',
     street: '',
@@ -31,48 +28,49 @@ const Payment = () => {
     socialMediaRate: draftData.socialMediaRate || 0
   });
 
-    // Fetch rates based on payment type
     useEffect(() => {
-        const fetchRates = async () => {
+      const fetchRates = async () => {
         try {
-            let response;
+          const response = await axios.get('/job/offer/rate');
+          const base = parseFloat(response.data?.base_rate) || 0;
+          const feature = draftData.featured === 'Yes'
+            ? parseFloat(response.data?.feature_rate) || 0
+            : 0;
+          const social = draftData.socialShare
+            ? parseFloat(response.data?.social_share_rate) || 0
+            : 0;
 
-            if (paymentType === 'jobOffer') {
-            response = await axios.get('/job/offer/rate');
-            const base = parseFloat(response.data?.base_rate) || 0;
-            const feature = draftData.featured === 'Yes'
-                ? parseFloat(response.data?.feature_rate) || 0
-                : 0;
-            const social = draftData.socialShare
-                ? parseFloat(response.data?.social_share_rate) || 0
-                : 0;
-
-            setRates({ baseRate: base, featureRate: feature, socialMediaRate: social });
-            }
-            else if (paymentType === 'banner') {
-            response = await axios.get('/banner/rates');
-            setRates({
-                baseRate: response.data.base_rate || 0,
-                featureRate: 0,
-                socialMediaRate: 0
-            });
-            }
+          setRates({
+            baseRate: base,
+            featureRate: feature,
+            socialMediaRate: social
+          });
         } catch (error) {
-            console.error('Error fetching rates:', error);
-            // Set default rates
-            setRates({
-            baseRate: paymentType === 'banner' ? 50 : 50,
-            featureRate: 0,
-            socialMediaRate: 0
-            });
+          console.error('Error fetching rates:', error);
+          // Set default rates if API fails
+          setRates({
+            baseRate: 50, // Default fallback value
+            featureRate: 25,
+            socialMediaRate: 15
+          });
         } finally {
-            setLoadingRates(false);
+          setLoadingRates(false);
         }
-        };
+      };
 
+      // Always fetch rates if no draft data
+      if (!draftData.rate && !draftData.featureRate && !draftData.socialMediaRate) {
         fetchRates();
-    }, [draftData, paymentType]);
-
+      } else {
+        // Use draft data if available
+        setRates({
+          baseRate: draftData.rate || 0,
+          featureRate: draftData.featureRate || 0,
+          socialMediaRate: draftData.socialMediaRate || 0
+        });
+        setLoadingRates(false);
+      }
+    }, [draftData]);
   const [paymentDetails, setPaymentDetails] = useState({
     card_holder_name: '',
     street: '',
@@ -208,9 +206,7 @@ const Payment = () => {
       setIsSubmitting(false);
       return;
     }
-
     const clientIP = await getClientIP();
-
     try {
       let paymentMethod = null;
       if (totalAmount > 0) {
@@ -248,33 +244,25 @@ const Payment = () => {
         paymentMethodId: paymentMethod?.id,
         postId: draftData.id,
         clientIP,
-        type: paymentType,
-        sessionId: sessionId,
-        bannerData: draftData.bannerData || null
+        type: 'jobOffer',
+        sessionId: sessionId
       };
 
-      let endpoint = '/ads/final/post';
-      if (paymentType === 'banner') {
-        endpoint = '/banner/final/post';
-      }
-
-      const response = await axios.post(endpoint, formPayload);
+      const response = await axios.post('/ads/final/post', formPayload);
       if (response.data && response.data.success) {
         // Clear ALL related data
         localStorage.removeItem('jobOfferFormState');
-        localStorage.removeItem('bannerFormState');
-        localStorage.removeItem('draft_session');
+         localStorage.removeItem('draft_session');
         setPaymentDetails(initialState);
 
+        console.log('Payment success:', response.data);
         // Navigate with history replacement
         navigate(`/post-confirmation/${response.data.post_id}`, {
           replace: true,
-          state: {
-            paymentCompleted: true,
-            type: paymentType
-          }
+          state: { paymentCompleted: true }
         });
       }
+
     } catch (error) {
       if (error.response?.status === 409) {
         navigate('/', { replace: true });
@@ -282,18 +270,11 @@ const Payment = () => {
       } else if (error.response?.status === 410) {
         navigate('/', { replace: true });
         alert('Session expired. Please start over.');
-      } else {
-        console.error('Payment error:', error);
-        setErrors(prev => ({
-          ...prev,
-          form: error.response?.data?.message || 'Payment processing failed'
-        }));
       }
     } finally {
       setIsSubmitting(false);
     }
   };
-
   useEffect(() => {
     if (!draftData || Object.keys(draftData).length === 0) {
       navigate('/', { replace: true });
@@ -715,36 +696,27 @@ const Payment = () => {
                   <div className="card border-0 shadow-sm mb-4">
                     <div className="card-body">
                       <div className="price-breakdown">
-                        {paymentType === 'jobOffer' ? (
-                          <>
-                            <div className="d-flex justify-content-between mb-2">
-                              <span className="text-muted">Base Job Posting:</span>
-                              <span className="fw-bold">
-                                {(rates.baseRate || 0) === 0 ? 'Free' : `$${Number(rates.baseRate).toFixed(2)}`}
-                              </span>
-                            </div>
-                            {(rates.featureRate || 0) > 0 && (
-                              <div className="d-flex justify-content-between mb-2">
-                                <span className="text-muted">Featured Upgrade:</span>
-                                <span className="fw-bold">
-                                  +${Number(rates.featureRate).toFixed(2)}
-                                </span>
-                              </div>
-                            )}
-                            {(rates.socialMediaRate || 0) > 0 && (
-                              <div className="d-flex justify-content-between mb-2">
-                                <span className="text-muted">Social Media Promotion:</span>
-                                <span className="fw-bold">
-                                  +${Number(rates.socialMediaRate).toFixed(2)}
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        ) : (
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="text-muted">Base Job Posting:</span>
+                          <span className="fw-bold">
+                            {(rates.baseRate || 0) === 0 ? 'Free' : `$${Number(rates.baseRate).toFixed(2)}`}
+                          </span>
+                        </div>
+
+                        {(rates.featureRate || 0) > 0 && (
                           <div className="d-flex justify-content-between mb-2">
-                            <span className="text-muted">Banner Advertising:</span>
+                            <span className="text-muted">Featured Upgrade:</span>
                             <span className="fw-bold">
-                              ${Number(rates.baseRate).toFixed(2)}
+                              +${Number(rates.featureRate).toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+
+                        {(rates.socialMediaRate || 0) > 0 && (
+                          <div className="d-flex justify-content-between mb-2">
+                            <span className="text-muted">Social Media Promotion:</span>
+                            <span className="fw-bold">
+                              +${Number(rates.socialMediaRate).toFixed(2)}
                             </span>
                           </div>
                         )}
@@ -760,7 +732,7 @@ const Payment = () => {
                                 value={promoCode}
                                 onChange={(e) => setPromoCode(e.target.value)}
                               />
-                              <button 
+                              <button
                                 className="btn btn-outline-primary"
                                 type="button"
                                 onClick={applyPromoCode}
@@ -770,7 +742,7 @@ const Payment = () => {
                               </button>
                             </div>
                           </div>
-                          
+
                           {promoCodeMsg.text && (
                             <div className={`text-small ${promoCodeMsg.type === 'success' ? 'text-success' : 'text-danger'}`}>
                               {promoCodeMsg.text}
@@ -786,6 +758,7 @@ const Payment = () => {
                             </div>
                           )}
                         </div>
+                        {/* End Promo Code Section */}
 
                         <hr className="my-3" />
 

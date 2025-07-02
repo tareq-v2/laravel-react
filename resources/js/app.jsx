@@ -56,13 +56,14 @@ import AdminAdSubCategories from './components/Backend/ads/AdSubCategories';
 import AdRates from './components/Backend/ads/AdRates';
 import DirectoryRates from './components/Backend/directory/DirectoryRates';
 import PostVerification from './components/Backend/PostVerification';
+import CreateBannerForm from './components/Frontend/create/banner/CreateBannerForm';
 
 function App() {
   const googleClientId = '219618520859-ov7gt3l7b0rqjorih253tndtml7nkvvd.apps.googleusercontent.com';
   return (
     <LanguageProvider>
       <BrowserRouter>
-      
+
       <GoogleOAuthProvider clientId={googleClientId}>
         <Routes>
           <Route
@@ -77,8 +78,8 @@ function App() {
             path="/payment"
             element={
               <Elements stripe={stripePromise}>
-              <ProtectedRoute 
-                allowedRoles={['customer', 'admin']} 
+              <ProtectedRoute
+                allowedRoles={['customer', 'admin']}
                 allowGuest={true}
               >
                 <Layout><Payment /></Layout>
@@ -89,8 +90,8 @@ function App() {
           <Route
             path="/post-confirmation/:post_id"
             element={
-               <ProtectedRoute 
-                  allowedRoles={['customer', 'admin']} 
+               <ProtectedRoute
+                  allowedRoles={['customer', 'admin']}
                   allowGuest={true}
                 >
                   <Layout><PostConfirmation /></Layout>
@@ -255,11 +256,23 @@ function App() {
             <Route path="directory/rates" element={<DirectoryRates/>} />
             <Route path="chat" element={<AdminChat />} />
             <Route path="admin/post/verify/:model/:id" element={<PostVerification />} />
+
           </Route>
-          
+           <Route
+              path="/create/banner"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['customer', 'admin']}
+                >
+                  <Layout>
+                    <CreateBannerForm />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
         </Routes>
       </GoogleOAuthProvider>
-      
+
     </BrowserRouter>
     </LanguageProvider>
   );

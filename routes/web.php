@@ -21,6 +21,11 @@ use App\Http\Controllers\PostPermissionController;
 use App\Http\Controllers\JobOfferController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
+use App\Models\BannerCategory;
+use App\Models\Banner;
+use Carbon\Carbon;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 
@@ -72,7 +77,7 @@ Route::post('/contact', function (Request $request) {
   // Store in database
   GuestMessage::create($validated);
   return response()->json(['message' => 'Contact form submitted successfully']);
-  
+
 });
 Route::get('/auth/google', [AuthController::class, 'handleGoogleLogin']);
 Route::get('/proxy/horoscope', [FrontendController::class, 'horoscopeProxy']);
@@ -84,6 +89,109 @@ Route::get('/banners/spot-3', [BannerController::class, 'getSpot3Banners']);
 Route::get('/banners/spot-4', [BannerController::class, 'getSpot4Banners']);
 Route::get('/banners/spot-5', [BannerController::class, 'getSpot5Banners']);
 Route::get('/banners/spot-6', [BannerController::class, 'getSpot6Banners']);
+
+Route::get('/banner-categories', function () {
+    return BannerCategory::all();
+});
+
+// routes/api.php
+
+// Banner Rates
+Route::get('/banner/rates', function () {
+    return response()->json([
+        'base_rate' => 50 // Default rate, customize as needed
+    ]);
+});
+
+// Final Banner Payment Processing
+Route::post('/banner/final/post', function (Request $request) {
+    dd($request->all());
+    // Validate request
+    $validated = $request->validate([
+        'card_holder_name' => 'required',
+        'street' => 'required',
+        'city' => 'required',
+        'state' => 'required',
+        'zip' => 'required',
+        'country' => 'required',
+        'phone' => 'required',
+        'email' => 'required|email',
+        'totalAmount' => 'required|numeric',
+        'bannerData' => 'required|array'
+    ]);
+
+    // Process payment
+    if ($request->totalAmount > 0) {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            PaymentIntent::create([
+                'amount' => $request->totalAmount * 100,
+                'currency' => 'usd',
+                'payment_method' => $request->paymentMethodId,
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never' // Explicitly disable redirects
+                ],
+                'confirm' => true,
+                'metadata' => [
+                    'email' => $request->email
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment failed: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+
+    // Save banner to database
+    try {
+        $banner = new Banner();
+        $banner->user_id = Auth::id() ?? null;
+        $banner->spot = $request->bannerData['banner_category'];
+        $banner->external_link = $request->bannerData['external_link'] ?? null;
+        $banner->customer_email = $request->bannerData['customer_email'];
+        $banner->expire_date = Carbon::now()->addDays((int)$request->bannerData['expire_date']);
+        $banner->override = $request->bannerData['override'];
+        $banner->payment_status = 1;
+        $banner->status = 0; // Pending admin approval
+
+        // Save image
+        if (!empty($request->bannerData['banner_images'])) {
+            $banner = $request->bannerData['banner_images'];
+            $fileName = uniqid() . '-' . rand() . '.' . $banner->extension();
+            $location = public_path('uploads/banners');
+            $banner->move($location, $fileName);
+            $banner->images = $fileName;
+        }
+
+        // Save payment details
+        $banner->card_holder_name = $request->card_holder_name;
+        $banner->street = $request->street;
+        $banner->city = $request->city;
+        $banner->state = $request->state;
+        $banner->zip = $request->zip;
+        $banner->country = $request->country;
+        $banner->phone = $request->phone;
+        $banner->email = $request->email;
+        $banner->amount = $request->totalAmount;
+        $banner->save();
+
+        return response()->json([
+            'success' => true,
+            'post_id' => $banner->id
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Banner creation failed: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::post('/save-draft', [DraftController::class, 'store']);
 Route::post('/get-draft', [DraftController::class, 'getDraft']);
 Route::post('/drafts/{id}/confirm', [DraftController::class, 'confirmDraftUsage']);
