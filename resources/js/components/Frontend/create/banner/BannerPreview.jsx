@@ -1,7 +1,7 @@
 // src/components/BannerCreation/BannerPreview.jsx
 import React from 'react';
 
-const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onSubmit, isSubmitting }) => {
+const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onProceed }) => {
   const getCategoryName = () => {
     const category = bannerCategories.find(cat => cat.id === formData.banner_category);
     return category ? category.name : 'Unknown Category';
@@ -61,17 +61,16 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onSub
         </div>
       </div>
 
-      <div className="preview-actions">
+     <div className="preview-actions">
         <button type="button" onClick={onEdit} className="btn btn-edit">
           Edit Details
         </button>
         <button
           type="button"
-          onClick={onSubmit}
+          onClick={onProceed}
           className="btn btn-submit"
-          disabled={isSubmitting}
         >
-          {isSubmitting ? 'Creating Banner...' : 'Create Banner'}
+          Proceed to Payment
         </button>
       </div>
     </div>

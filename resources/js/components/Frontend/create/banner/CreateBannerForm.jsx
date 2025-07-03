@@ -161,51 +161,52 @@ const CreateBannerForm = () => {
   };
 
   // Handle form submission to preview
-//   const handlePreview = () => {
+  const handlePreview = () => {
+    if (validateForm()) {
+      setStep('preview');
+    }
+  };
+
+//  const handlePreview = () => {
 //     if (validateForm()) {
-//       setStep('preview');
+//       // Convert image to base64 for payment page
+//       const reader = new FileReader();
+//       reader.onload = () => {
+//         const bannerData = {
+//           ...formData,
+//           banner_images: reader.result,
+//           totalAmount: calculateTotal()
+//         };
+
+//         navigate('/payment', {
+//           state: {
+//             draftData: {
+//               type: 'banner',
+//               bannerData,
+//               rate: calculateTotal(),
+//               email: formData.customer_email
+//             }
+//           }
+//         });
+//       };
+
+//       if (formData.banner_images) {
+//         reader.readAsDataURL(formData.banner_images);
+//       } else {
+//         navigate('/payment', {
+//           state: {
+//             draftData: {
+//               type: 'banner',
+//               bannerData: { ...formData, banner_images: null },
+//               totalAmount: calculateTotal(),
+//               email: formData.customer_email
+//             }
+//           }
+//         });
+//       }
 //     }
 //   };
 
- const handlePreview = () => {
-    if (validateForm()) {
-      // Convert image to base64 for payment page
-      const reader = new FileReader();
-      reader.onload = () => {
-        const bannerData = {
-          ...formData,
-          banner_images: reader.result,
-          totalAmount: calculateTotal()
-        };
-
-        navigate('/payment', {
-          state: {
-            draftData: {
-              type: 'banner',
-              bannerData,
-              rate: calculateTotal(),
-              email: formData.customer_email
-            }
-          }
-        });
-      };
-
-      if (formData.banner_images) {
-        reader.readAsDataURL(formData.banner_images);
-      } else {
-        navigate('/payment', {
-          state: {
-            draftData: {
-              type: 'banner',
-              bannerData: { ...formData, banner_images: null },
-              totalAmount: calculateTotal(),
-              email: formData.customer_email
-            }
-          }
-        });
-      }
-    }
-  };
 
   // Handle final form submission
   const handleSubmit = async () => {
@@ -243,6 +244,47 @@ const CreateBannerForm = () => {
   };
 
   // Reset form
+  
+
+
+  const handleProceedToPayment = () => {
+    // Convert image to base64 for payment page
+    const reader = new FileReader();
+    reader.onload = () => {
+      const bannerData = {
+        ...formData,
+        banner_images: reader.result,
+        totalAmount: calculateTotal()
+      };
+
+      navigate('/payment', {
+        state: {
+          draftData: {
+            type: 'banner',
+            bannerData,
+            rate: calculateTotal(),
+            email: formData.customer_email
+          }
+        }
+      });
+    };
+
+    if (formData.banner_images) {
+      reader.readAsDataURL(formData.banner_images);
+    } else {
+      navigate('/payment', {
+        state: {
+          draftData: {
+            type: 'banner',
+            bannerData: { ...formData, banner_images: null },
+            totalAmount: calculateTotal(),
+            email: formData.customer_email
+          }
+        }
+      });
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       banner_category: '',
@@ -462,7 +504,7 @@ const CreateBannerForm = () => {
           previewImage={previewImage}
           bannerCategories={bannerCategories}
           onEdit={handleEdit}
-          onSubmit={handleSubmit}
+          onProceed={handleProceedToPayment}
           isSubmitting={isSubmitting}
         />
       )}
