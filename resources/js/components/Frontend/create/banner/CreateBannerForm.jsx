@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import BannerPreview from './BannerPreview';
 import './CreateBannerForm.css';
 
+const STORAGE_KEY = 'bannerFormState';
+
 const CreateBannerForm = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState('form');
@@ -44,6 +46,7 @@ const CreateBannerForm = () => {
 
     return baseRate * multiplier;
   };
+
   // Fetch banner categories on component mount
   useEffect(() => {
     const fetchBannerCategories = async () => {
@@ -58,6 +61,32 @@ const CreateBannerForm = () => {
     fetchBannerCategories();
   }, []);
 
+  // Load saved state on component mount
+  useEffect(() => {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      setFormData(parsedState.formData);
+      setStep(parsedState.step);
+    }
+    
+    // Clear state when navigating away
+    return () => {
+      if (window.location.pathname !== '/create-banner') {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    };
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    const stateToSave = {
+      formData,
+      step
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  }, [formData, step]);
+  
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -160,11 +189,23 @@ const CreateBannerForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission to preview
+  // Validate and move to preview
   const handlePreview = () => {
-    if (validateForm()) {
-      setStep('preview');
+    // Simple validation - expand as needed
+    if (!formData.banner_category) {
+      alert('Please select a banner spot');
+      return;
     }
+    if (!formData.banner_images) {
+      alert('Please upload an image');
+      return;
+    }
+    if (!formData.customer_email && !formData.override) {
+      alert('Please enter customer email');
+      return;
+    }
+    
+    setStep('preview');
   };
 
 //  const handlePreview = () => {
@@ -261,7 +302,7 @@ const CreateBannerForm = () => {
         state: {
           draftData: {
             type: 'banner',
-            bannerData,
+            bannerData: formData,
             rate: calculateTotal(),
             email: formData.customer_email
           }
@@ -297,6 +338,7 @@ const CreateBannerForm = () => {
     setPreviewImage(null);
     setBannerSize('');
     setErrors({});
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   // Go back to form from preview
@@ -503,9 +545,11 @@ const CreateBannerForm = () => {
           formData={formData}
           previewImage={previewImage}
           bannerCategories={bannerCategories}
-          onEdit={handleEdit}
+          // onEdit={handleEdit}
+          onEdit={() => setStep('form')}
           onProceed={handleProceedToPayment}
           isSubmitting={isSubmitting}
+          onSubmit={handlePreview}
         />
       )}
     </div>

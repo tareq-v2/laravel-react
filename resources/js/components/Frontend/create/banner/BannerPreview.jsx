@@ -1,7 +1,7 @@
 // src/components/BannerCreation/BannerPreview.jsx
 import React from 'react';
 
-const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onProceed }) => {
+const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onProceed, onSubmit }) => {
   const getCategoryName = () => {
     const category = bannerCategories.find(cat => cat.id === formData.banner_category);
     return category ? category.name : 'Unknown Category';
@@ -67,7 +67,7 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
         </button>
         <button
           type="button"
-          onClick={onProceed}
+          onClick={onSubmit}
           className="btn btn-submit"
         >
           Proceed to Payment

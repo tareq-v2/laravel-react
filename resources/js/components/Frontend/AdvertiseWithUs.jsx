@@ -4,6 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/AdvertiseWithUs.css';
 
 const AdvertiseWithUs = () => {
+  const handleCreateBanner = () => {
+    localStorage.removeItem('bannerFormState');
+  };
   const classifiedAdRates = [
     { category: 'Jobs Offered', price: '$10' },
     { category: 'Jobs Wanted', price: '$10' },
@@ -133,7 +136,7 @@ const AdvertiseWithUs = () => {
 
         <div className="text-center my-5">
           <button size="lg" className="btn btn-primary px-5">
-            <Link to="/create/banner">Add Your Banner</Link>
+            <Link to="/create/banner" onClick={handleCreateBanner}>Add Your Banner</Link>
           </button>
         </div>
       </section>
