@@ -63,7 +63,7 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
         </div>
       </div>
 
-      <div className="preview-actions">
+     <div className="preview-actions">
         <button type="button" onClick={onEdit} className="btn btn-edit">
           Edit Details
         </button>
@@ -71,9 +71,8 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
           type="button"
           onClick={onProceed}
           className="btn btn-submit"
-          disabled={isSubmitting}
         >
-          {isSubmitting ? 'Creating Banner...' : 'Create Banner'}
+          Proceed to Payment
         </button>
       </div>
     </div>
