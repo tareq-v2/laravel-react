@@ -1,0 +1,107 @@
+.payment-section {
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.payment-card {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.billing-col {
+  background: white;
+}
+
+.payment-summary-col {
+  border-left: 1px solid #eee;
+}
+
+.sticky-summary {
+  position: sticky;
+  top: 20px;
+}
+
+.payment-icons img {
+  height: 28px;
+  width: auto;
+  filter: grayscale(100%);
+  transition: all 0.3s ease;
+}
+
+.payment-icons img:hover {
+  filter: grayscale(0%);
+}
+
+.form-control-lg {
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.form-select-lg {
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.input-group-text {
+  background: white;
+  border-left: none;
+}
+
+.input-group .form-control {
+  border-right: none;
+}
+
+.input-group .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+/* Expiration Date Specific Styling */
+.expiration-group .form-select-lg {
+  height: 50px;
+  padding: 0.5rem 1rem;
+  flex: 1;
+}
+
+.expiration-separator {
+  align-self: center;
+  padding: 0 0.5rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+/* Consistent Input Sizing */
+.form-control-lg,
+.form-select-lg {
+  height: 50px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+}
+
+.input-group-text {
+  height: 50px;
+  padding: 0 1rem;
+}
+
+/* Uniform spacing for all inputs */
+/* .mb-4, .form-label, .expiration-group {
+  margin-bottom: 1rem !important;
+} */
+
+/* Focus States */
+.form-control-lg:focus,
+.form-select-lg:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+

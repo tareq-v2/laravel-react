@@ -23,7 +23,7 @@ const CreateBannerForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bannerCountMessage, setBannerCountMessage] = useState('');
 
-   const calculateTotal = () => {
+  const calculateTotal = () => {
     // Calculate based on banner category and duration
     let baseRate = 0;
     switch(formData.banner_category) {
@@ -160,7 +160,7 @@ const CreateBannerForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission to preview
+// Handle form submission to preview
 //   const handlePreview = () => {
 //     if (validateForm()) {
 //       setStep('preview');
@@ -169,44 +169,61 @@ const CreateBannerForm = () => {
 
  const handlePreview = () => {
     if (validateForm()) {
+        setStep('preview');
       // Convert image to base64 for payment page
-      const reader = new FileReader();
-      reader.onload = () => {
-        const bannerData = {
-          ...formData,
-          banner_images: reader.result,
-          totalAmount: calculateTotal()
-        };
+    //   const reader = new FileReader();
+    //   reader.onload = () => {
+    //     const bannerData = {
+    //       ...formData,
+    //       banner_images: reader.result,
+    //       totalAmount: calculateTotal()
+    //     };
 
-        navigate('/payment', {
-          state: {
-            draftData: {
-              type: 'banner',
-              bannerData,
-              rate: calculateTotal(),
-              email: formData.customer_email
-            }
-          }
-        });
-      };
+    //     navigate('/payment', {
+    //       state: {
+    //         draftData: {
+    //           type: 'banner',
+    //           bannerData,
+    //           rate: calculateTotal(),
+    //           email: formData.customer_email
+    //         }
+    //       }
+    //     });
+    //   };
 
-      if (formData.banner_images) {
-        reader.readAsDataURL(formData.banner_images);
-      } else {
-        navigate('/payment', {
-          state: {
-            draftData: {
-              type: 'banner',
-              bannerData: { ...formData, banner_images: null },
-              totalAmount: calculateTotal(),
-              email: formData.customer_email
-            }
-          }
-        });
-      }
+    //   if (formData.banner_images) {
+    //     reader.readAsDataURL(formData.banner_images);
+    //   } else {
+    //     navigate('/payment', {
+    //       state: {
+    //         draftData: {
+    //           type: 'banner',
+    //           bannerData: { ...formData, banner_images: null },
+    //           totalAmount: calculateTotal(),
+    //           email: formData.customer_email
+    //         }
+    //       }
+    //     });
+    //   }
     }
   };
+  const handleProceedToPayment = () => {
+    const bannerData = {
+      ...formData,
+      totalAmount: calculateTotal()
+    };
 
+    navigate('/payment', {
+      state: {
+        draftData: {
+          type: 'banner',
+          bannerData,
+          rate: calculateTotal(),
+          email: formData.customer_email
+        }
+      }
+    });
+  };
   // Handle final form submission
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -220,16 +237,16 @@ const CreateBannerForm = () => {
       formPayload.append('override', formData.override);
       formPayload.append('expire_date', formData.expire_date);
 
-      const response = await axios.post('/api/banners', formPayload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
+    //   const response = await axios.post('/banners', formPayload, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    //   });
+      console.log(response);
       // Handle success
       alert('Banner created successfully!');
       resetForm();
-      setStep('form');
+      setStep(null);
     } catch (error) {
       if (error.response && error.response.data.errors) {
         setErrors(error.response.data.errors);
@@ -343,7 +360,7 @@ const CreateBannerForm = () => {
               <div className="image-preview">
                 <img src={previewImage} alt="Banner preview" />
                 <button type="button" onClick={removePreviewImage} className="remove-btn">
-                  ×
+                  x
                 </button>
               </div>
             )}
@@ -463,6 +480,7 @@ const CreateBannerForm = () => {
           bannerCategories={bannerCategories}
           onEdit={handleEdit}
           onSubmit={handleSubmit}
+          onProceed={handleProceedToPayment}
           isSubmitting={isSubmitting}
         />
       )}

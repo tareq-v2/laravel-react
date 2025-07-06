@@ -38,32 +38,32 @@ const Payment = () => {
             let response;
 
             if (paymentType === 'jobOffer') {
-            response = await axios.get('/job/offer/rate');
-            const base = parseFloat(response.data?.base_rate) || 0;
-            const feature = draftData.featured === 'Yes'
-                ? parseFloat(response.data?.feature_rate) || 0
-                : 0;
-            const social = draftData.socialShare
-                ? parseFloat(response.data?.social_share_rate) || 0
-                : 0;
+                response = await axios.get('/job/offer/rate');
+                const base = parseFloat(response.data?.base_rate) || 0;
+                const feature = draftData.featured === 'Yes'
+                    ? parseFloat(response.data?.feature_rate) || 0
+                    : 0;
+                const social = draftData.socialShare
+                    ? parseFloat(response.data?.social_share_rate) || 0
+                    : 0;
 
-            setRates({ baseRate: base, featureRate: feature, socialMediaRate: social });
+                setRates({ baseRate: base, featureRate: feature, socialMediaRate: social });
             }
             else if (paymentType === 'banner') {
-            response = await axios.get('/banner/rates');
-            setRates({
-                baseRate: response.data.base_rate || 0,
-                featureRate: 0,
-                socialMediaRate: 0
-            });
+                response = await axios.get('/banner/rates');
+                setRates({
+                    baseRate: response.data.base_rate || 0,
+                    featureRate: 0,
+                    socialMediaRate: 0
+                });
             }
         } catch (error) {
             console.error('Error fetching rates:', error);
             // Set default rates
             setRates({
-            baseRate: paymentType === 'banner' ? 50 : 50,
-            featureRate: 0,
-            socialMediaRate: 0
+                baseRate: paymentType === 'banner' ? 50 : 50,
+                featureRate: 0,
+                socialMediaRate: 0
             });
         } finally {
             setLoadingRates(false);
@@ -760,7 +760,7 @@ const Payment = () => {
                                 value={promoCode}
                                 onChange={(e) => setPromoCode(e.target.value)}
                               />
-                              <button 
+                              <button
                                 className="btn btn-outline-primary"
                                 type="button"
                                 onClick={applyPromoCode}
@@ -770,7 +770,7 @@ const Payment = () => {
                               </button>
                             </div>
                           </div>
-                          
+
                           {promoCodeMsg.text && (
                             <div className={`text-small ${promoCodeMsg.type === 'success' ? 'text-success' : 'text-danger'}`}>
                               {promoCodeMsg.text}

@@ -1,10 +1,12 @@
 // src/components/BannerCreation/BannerPreview.jsx
 import React from 'react';
 
-const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onSubmit, isSubmitting }) => {
+const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onProceed, onSubmit, isSubmitting }) => {
   const getCategoryName = () => {
-    const category = bannerCategories.find(cat => cat.id === formData.banner_category);
-    return category ? category.name : 'Unknown Category';
+    const category = bannerCategories.find(
+      cat => cat.id.toString() === formData.banner_category
+    );
+    return category ? `${category.name} - #${category.id}` : 'Unknown Category';
   };
 
   const getDisplayPeriod = () => {
@@ -67,7 +69,7 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onSub
         </button>
         <button
           type="button"
-          onClick={onSubmit}
+          onClick={onProceed}
           className="btn btn-submit"
           disabled={isSubmitting}
         >

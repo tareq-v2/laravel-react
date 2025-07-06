@@ -45,7 +45,7 @@ import HousingVacationRentals from './components/Frontend/adCategories/listing/H
 import HousingArmeniaRentals from './components/Frontend/adCategories/listing/HousingArmeniaRentals';
 import HousingInternationalRentals from './components/Frontend/adCategories/listing/HousingInternationalRentals';
 import HousingOtherRentals from './components/Frontend/adCategories/listing/HousingOtherRentals';
-import Payment from './components/Frontend/create/Payment';
+import Payment from './components/Frontend/create/Payment/Payment';
 import PostConfirmation from './components/Frontend/create/PostConfirmation';
 import UserManagement from './components/Backend/users/Index';
 import BlogManagement from './components/Backend/blogs/Index';
