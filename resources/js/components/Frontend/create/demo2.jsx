@@ -4,7 +4,8 @@ const CreateBannerForm = () => {
   // ... existing state declarations ...
 
   // MODIFIED: Simplified handlePreview to just set step to preview
-  const handlePreview = () => {
+    }BannerController
+const handlePreview = () => {
     if (validateForm()) {
       setStep('preview');
     }
