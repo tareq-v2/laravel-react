@@ -3,18 +3,19 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  FaBox, 
-  FaUsers, 
-  FaChartLine, 
-  FaSignOutAlt, 
-  FaPlus, 
+import {
+  FaBox,
+  FaImage,
+  FaUsers,
+  FaChartLine,
+  FaSignOutAlt,
+  FaPlus,
   FaComments,
-  FaList, 
-  FaChevronLeft, 
-  FaChevronRight, 
+  FaList,
+  FaChevronLeft,
+  FaChevronRight,
   FaChevronDown,
-  FaMoon, 
+  FaMoon,
   FaSun,
   FaFolder
 } from 'react-icons/fa';
@@ -42,7 +43,7 @@ const Home = () => {
         console.error('Error fetching user:', err);
       }
     };
-    
+
     fetchCurrentUser();
   }, []);
 
@@ -87,7 +88,7 @@ const Home = () => {
             {isSidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
           </button>
         </div>
-      
+
         <nav className="nav-menu">
           {/* Dashboard Link */}
           <div className='nav-item' data-tooltip="Analytics">
@@ -97,8 +98,8 @@ const Home = () => {
 
           {/* Collapsible Ads Section */}
           <div className="nav-parent">
-            <div 
-              className="nav-item" 
+            <div
+              className="nav-item"
               onClick={() => toggleMenu('ads')}
               data-tooltip="Ads"
             >
@@ -112,7 +113,7 @@ const Home = () => {
               </>
             )}
           </div>
-          
+
           {expandedMenu === 'ads' && isSidebarExpanded && (
             <div className="nav-children open">
               <Link to="/home/ads/history" className="nav-item child">
@@ -137,8 +138,8 @@ const Home = () => {
 
           {/* Directory Section */}
           <div className="nav-parent">
-            <div 
-              className="nav-item" 
+            <div
+              className="nav-item"
               onClick={() => toggleMenu('directory')}
               data-tooltip="Directory Management"
             >
@@ -152,7 +153,7 @@ const Home = () => {
                 </>
               )}
             </div>
-            
+
             {expandedMenu === 'directory' && isSidebarExpanded && (
               <div className="nav-children open">
                 <Link to="/home/directory/history" className="nav-item child">
@@ -171,6 +172,46 @@ const Home = () => {
             )}
           </div>
 
+            {/* Banner Section */}
+            <div className="nav-parent">
+                <div
+                    className="nav-item"
+                    onClick={() => toggleMenu('banners')}
+                    data-tooltip="Banners"
+                >
+                    <FaImage className="nav-icon" />
+                    {isSidebarExpanded && (
+                    <>
+                        <span className='menu-title'>Banners</span>
+                        <span className="chevron">
+                        {expandedMenu === 'banners' ? <FaChevronDown /> : <FaChevronRight />}
+                        </span>
+                    </>
+                    )}
+                </div>
+
+                {expandedMenu === 'banners' && isSidebarExpanded && (
+                    <div className="nav-children open">
+                    <Link to="/home/banner/history" className="nav-item child">
+                        <FaList className="nav-icon" />
+                        <span className="menu-title">Banner History</span>
+                    </Link>
+                    <Link to="/home/banner/categories" className="nav-item child">
+                        <FaList className="nav-icon" />
+                        <span className="menu-title">Categories</span>
+                    </Link>
+                    <Link to="/create/banner" className="nav-item child">
+                        <FaPlus className="nav-icon" />
+                        <span className="menu-title">Create Banner</span>
+                    </Link>
+                    <Link to="/home/banner/rates" className="nav-item child">
+                        <FaList className="nav-icon" />
+                        <span className="menu-title">Rates</span>
+                    </Link>
+                    </div>
+                )}
+            </div>
+
           {/* Other Menu Items */}
           <Link to="/home/blogs" className="nav-item" data-tooltip="Chat">
             <FaComments className="nav-icon" />
@@ -180,7 +221,7 @@ const Home = () => {
             <FaUsers className="nav-icon" />
             {isSidebarExpanded && <span className='menu-title'>Users</span>}
           </Link>
-          
+
         </nav>
 
         <button onClick={handleLogout} className="logout-btn">
@@ -197,7 +238,7 @@ const Home = () => {
           </div>
           <div className="quick-actions">
             <NotificationBell />
-            <button 
+            <button
               onClick={toggleTheme}
               className="theme-toggle"
               aria-label="Toggle theme"
@@ -206,7 +247,7 @@ const Home = () => {
             </button>
           </div>
         </header>
-        
+
         {location.pathname === '/home' ? (
           // Dashboard content
           <div className='admin-analytics'>

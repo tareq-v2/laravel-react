@@ -54,6 +54,8 @@ import AdHistory from './components/Backend/ads/AdHistory';
 import AdCategories from './components/Backend/ads/AdCategories';
 import AdminAdSubCategories from './components/Backend/ads/AdSubCategories';
 import AdRates from './components/Backend/ads/AdRates';
+import BannerHistory from './components/Backend/banner/BannerHistory';
+import BannerRates from './components/Backend/banner/BannerRates';
 import DirectoryRates from './components/Backend/directory/DirectoryRates';
 import PostVerification from './components/Backend/PostVerification';
 import CreateBannerForm from './components/Frontend/create/banner/CreateBannerForm';
@@ -253,22 +255,26 @@ function App() {
             <Route path="ads/categories" element={<AdCategories/>} />
             <Route path="ads/Subcategories" element={<AdminAdSubCategories/>} />
             <Route path="ads/rates" element={<AdRates/>} />
+            <Route path="banner/history" element={<BannerHistory/>} />
+            <Route path="banner/rates" element={<BannerRates/>} />
             <Route path="directory/rates" element={<DirectoryRates/>} />
             <Route path="chat" element={<AdminChat />} />
             <Route path="admin/post/verify/:model/:id" element={<PostVerification />} />
 
           </Route>
            <Route
-              path="/create/banner"
-              element={
+                path="/create/banner"
+                element={
                 <ProtectedRoute
-                  allowedRoles={['customer', 'admin']}
+                    allowedRoles={['customer', 'admin']}
+                    // Add redirectPath prop instead of modifying CreateBannerForm
+                    redirectPath="/create/banner"
                 >
-                  <Layout>
-                    <CreateBannerForm />
-                  </Layout>
+                    <Layout>
+                    <CreateBannerForm /> {/* Remove extra props here */}
+                    </Layout>
                 </ProtectedRoute>
-              }
+                }
             />
         </Routes>
       </GoogleOAuthProvider>

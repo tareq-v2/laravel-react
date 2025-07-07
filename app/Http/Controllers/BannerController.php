@@ -124,6 +124,7 @@ class BannerController extends Controller
             $banner->external_link = $request->bannerData['external_link'] ?? null;
             $banner->email = $request->bannerData['customer_email'];
             $banner->expire_date = Carbon::now()->addDays((int)$request->bannerData['expire_date']);
+            $banner->expire_period = (int)$request->bannerData['expire_date'];
             $banner->override = $request->bannerData['override'];
             $banner->payment_status = 1;
             $banner->status = 0; // Pending admin approval

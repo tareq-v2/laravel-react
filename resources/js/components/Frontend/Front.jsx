@@ -5,29 +5,9 @@ import {CompectHeader, DefaultHeader } from './StickyNav';
 import EqualizerBars from './EqualizerBars';
 
 const Front = () => {
-  // const [products, setProducts] = useState([]);
-
   //  const [isSticky, setIsSticky] = useState(false);
   //  const stickyRef = useRef(null);
   //  const sentinelRef = useRef(null);
-
-  // useEffect(() => {
-  //   // Fetch products from the backend
-  //   const fetchProducts = async () => {
-  //     try {
-  //       const response = await axios.get('/products');
-  //       const transformedProducts = response.data.map((product) => ({
-  //         ...product,
-  //         discountedPrice: product.price * 0.9,
-  //       }));
-  //       setProducts(transformedProducts);
-  //     } catch (error) {
-  //       console.error('Error fetching products:', error);
-  //     }
-  //   };
-
-  //   fetchProducts();
-  // }, []);
 
   return (
     <>

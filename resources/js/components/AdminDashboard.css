@@ -59,7 +59,8 @@
 
 .nav-item:hover {
   background: #34495e;
-  color: white;
+  color: var(--primary-bg);
+  font-weight: bold;
 }
 
 .nav-icon {
@@ -260,10 +261,6 @@
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   box-shadow: 0 2px 5px var(--shadow-color);
-}
-
-.nav-item:hover {
-  background: var(--hover-bg);
 }
 
 .stat-icon {

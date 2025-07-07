@@ -16,19 +16,29 @@ const ProtectedRoute = ({ children, allowedRoles, allowGuest = false }) => {
       }
       return children;
     }
-    
+
     // Guest user - check for guest data
     if (guestData) {
       return children;
     }
-    
+
     // No guest data - redirect to form
     return <Navigate to="/" replace />;
   }
 
   // Regular protected route (non-guest)
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        state={{
+          protectedPath: location.pathname,  // Current path user tried to access
+          from: location,                   // Original location
+          guestCheckout: guestData           // Preserve guest data if exists
+        }}
+        replace
+      />
+    );
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {

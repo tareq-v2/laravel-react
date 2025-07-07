@@ -35,7 +35,8 @@ export default function Login() {
   // Get intended redirect path or default
   const fromPath = location.state?.from?.pathname || '/user/dashboard';
   const preserveDrafts = location.state?.preserveDrafts || false;
-  
+  const protectedPath = location.state?.protectedPath || null;
+
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -48,10 +49,16 @@ export default function Login() {
 
  const handleLoginSuccess = async () => {
   try {
+    
+    if (protectedPath) {
+        navigate(protectedPath);
+        return;
+    }
+
     // Get client IP
     const ipResponse = await axios.get('https://api.ipify.org?format=json');
     const clientIP = ipResponse.data.ip;
-    
+
     // Get draft session ID from localStorage if exists
     const sessionId = localStorage.getItem('draft_session');
     console.log(sessionId);
@@ -60,15 +67,15 @@ export default function Login() {
     if (sessionId) {
       requestData.session_id = sessionId;
     }
-    
+
     console.log(requestData);
     // Check for existing drafts using IP and/or session ID
     const draftResponse = await axios.post('/get-draft', requestData);
-    
+
     if (draftResponse.data.exists) {
       // Redirect to payment page with draft data
       navigate('/payment', {
-        state: { 
+        state: {
           draftData: draftResponse.data.data,
           draftId: draftResponse.data.draft_id
         }
@@ -101,7 +108,7 @@ export default function Login() {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('role', response.data.role);
-        
+
         // Handle post-login logic including draft check
         await handleLoginSuccess();
       }
@@ -138,7 +145,7 @@ export default function Login() {
       const response = await axios.get('/auth/google', {
         token: credentialResponse.credential
       });
-      
+
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         navigate('/admin-dashboard');
@@ -194,7 +201,7 @@ export default function Login() {
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </span>
     </div>
-        
+
 
         <button type="submit" className="login-button">
           Login
