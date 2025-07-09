@@ -12,77 +12,81 @@ class BannerCategorySeeder extends Seeder
     {
         BannerCategory::truncate();
 
-        //  Top Leaderboard
-        BannerCategory::create([
-            'name' => 'Top Leaderboard',
-            // 'size' => '728x90',
-            'size' => '700x87',
-            'limit' => 25
-        ]);
-        //  Top Right Ractangle
-        BannerCategory::create([
-            'name' => 'Top Right Rectangle',
-            // 'size' => '456x307',
-            'size' => '476x320',
-            'limit' => 25
-        ]);
+        $bannerCategories = [
+            [
+                'name' => 'Top Leaderboard',
+                'display_name' => 'Top Leaderboard (All Pages)',
+                'size' => '700x87',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Top Right Rectangle',
+                'display_name' => 'Top Right Rectangle (Home Page)',
+                'size' => '476x320',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Left/Right Large Vertical',
+                'display_name' => 'Left/Right Large Vertical (All Pages)',
+                'size' => '176x660',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Left/Right Medium Vertical',
+                'display_name' => 'Left/Right Medium Vertical (All Pages)',
+                'size' => '176x465',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Home Page Rectangle',
+                'display_name' => 'Home Page Rectangle',
+                'size' => '276x485',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Between Horizontal',
+                'display_name' => 'General Classified Horizontal (Listing Pages)',
+                'size' => '1127x139',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Classified Rectangle',
+                'display_name' => 'Classified Ad Details Banner',
+                'size' => '376x400',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Inside Classified Rectangle',
+                'display_name' => 'Inside Classified Rectangle (Listing Pages)',
+                'size' => '276x386',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Business Directory Rectangle',
+                'display_name' => 'Business Directory Details Banner',
+                'size' => '376x400',
+                'limit' => 25,
+                'rate' => 10
+            ],
+            [
+                'name' => 'Home Video',
+                'display_name' => 'Home Page Video',
+                'size' => '1920x1080',
+                'limit' => 25,
+                'rate' => 10
+            ]
+        ];
 
-        // Right / Left Large
-        BannerCategory::create([
-            'name' => 'Left/Right Vertical',
-            'size' => '176x660',
-            'limit' => 25
-        ]);
-
-        //  Right /Left Medium
-        BannerCategory::create([
-            'name' => 'Left/Right Vertical',
-            'size' => '176x465',
-            'limit' => 25
-        ]);
-
-        // Hompe Page Ractangle
-        BannerCategory::create([
-            'name' => 'Left Vertical',
-            // 'size' => '276x465',
-            'size' => '276x485',
-            'limit' => 25
-        ]);
-
-        // General Classified Listing (Horizontal)
-        BannerCategory::create([
-            'name' => 'Between Horizontal',
-            'size' => '1127x139',
-            'limit' => 25
-        ]);
-
-        // Classified Ad details Banner
-        BannerCategory::create([
-            'name' => 'Rectangle',
-            // 'size' => '376x526',
-            'size' => '376x400',
-            'limit' => 25
-        ]);
-
-        // Ractangle (Inside Classified Listing)
-        BannerCategory::create([
-            'name' => 'Rectangle',
-            'size' => '276x386',
-            'limit' => 25
-        ]);
-        // Business Directory Details page bannner  
-        BannerCategory::create([
-            'name' => 'Rectangle',
-            // 'size' => '376x526',
-            'size' => '376x400',
-            'limit' => 25
-        ]);
-
-        // home video
-        BannerCategory::create([
-            'name' => 'Video',
-            'limit' => 25
-        ]);
-
+        foreach ($bannerCategories as $category) {
+            BannerCategory::create($category);
+        }
     }
 }

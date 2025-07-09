@@ -167,9 +167,82 @@ class BannerController extends Controller
         return BannerCategory::all();
     }
 
+    public function bannerCategories()
+    {
+        $categories = BannerCategory::all();
+
+        $mappedCategories = $categories->map(function ($category) {
+            $displayName = $this->getDisplayName($category->id);
+
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'size' => $category->size,
+                'rate' => $category->rate,
+                'visibility' => $category->visibility,
+                'display_name' => $displayName,
+                'created_at' => $category->created_at,
+                'updated_at' => $category->updated_at,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'banner_categories' => $mappedCategories
+        ]);
+    }
+
+    private function getDisplayName(int $id): string
+    {
+        $displayNames = [
+            1 => 'Top Leaderboard (All Pages)',
+            2 => 'Top Right Rectangle (Home Page)',
+            3 => 'Left/Right Large Vertical (All Pages)',
+            4 => 'Left/Right Medium Vertical (All Pages)',
+            5 => 'Home Page Rectangle',
+            6 => 'General Classified Horizontal (Listing Pages)',
+            7 => 'Classified Ad Details Banner',
+            8 => 'Inside Classified Rectangle (Listing Pages)',
+            9 => 'Business Directory Details Banner',
+            10 => 'Home Page Video'
+        ];
+
+        return $displayNames[$id];
+    }
+
     public function bannerRates() {
         return response()->json([
             'base_rate' => 50 // Default rate, customize as needed
         ]);
+    }
+    public function adminBannerCategories() {
+        return response()->json([
+            'banner_categories' => BannerCategory::all()
+        ]);
+    }
+
+    public function updateBannerCategoryRate($field, $id, Request $request)
+    {
+        $validated = $request->validate([
+            'value' => 'required'
+        ]);
+
+        $bannerCategory = BannerCategory::findOrFail($id);
+        $value = $request->value === 'free' ? 'free' : number_format((float)$request->value, 2);
+
+        // Map URL parameters to database columns
+        $fieldMap = [
+            'rate' => 'rate',
+        ];
+
+        if (!array_key_exists($field, $fieldMap)) {
+            return response()->json(['success' => false, 'message' => 'Invalid field'], 400);
+        }
+
+        $column = $fieldMap[$field];
+        $bannerCategory->$column = $value;
+        $bannerCategory->save();
+
+        return response()->json(['success' => true]);
     }
 }

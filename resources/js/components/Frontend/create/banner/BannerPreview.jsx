@@ -1,7 +1,17 @@
 // src/components/BannerCreation/BannerPreview.jsx
 import React from 'react';
 
-const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onProceed, onSubmit, isSubmitting }) => {
+const BannerPreview = ({ 
+  formData, 
+  previewImage, 
+  bannerCategories, 
+  onEdit, 
+  onProceed, 
+  isSubmitting,
+  bannerRate,
+  displayPeriod,
+  isVideoBanner
+}) => {
   const getCategoryName = () => {
     const category = bannerCategories.find(
       cat => cat.id.toString() === formData.banner_category
@@ -10,11 +20,10 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
   };
 
   const getDisplayPeriod = () => {
-    switch(formData.expire_date) {
+    switch(displayPeriod) {
       case '30': return '30 Days';
       case '60': return '60 Days';
       case '90': return '90 Days';
-      case '36500': return 'Unlimited';
       default: return '30 Days';
     }
   };
@@ -34,13 +43,31 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
             <span className="value">{getCategoryName()}</span>
           </div>
           <div className="preview-row">
+            <span className="label">Banner Type:</span>
+            <span className="value">{isVideoBanner ? 'Video' : 'Graphic'}</span>
+          </div>
+          <div className="preview-row">
             <span className="label">Display Period:</span>
             <span className="value">{getDisplayPeriod()}</span>
           </div>
+          <div className="preview-row">
+            <span className="label">Total Price:</span>
+            <span className="value">${bannerRate}</span>
+          </div>
           {formData.external_link && (
             <div className="preview-row">
-              <span className="label">External Link:</span>
-              <span className="value">{formData.external_link}</span>
+              <span className="label">
+                {isVideoBanner ? 'YouTube Embed:' : 'External Link:'}
+              </span>
+              <span className="value">
+                {isVideoBanner ? (
+                  <div className="video-link-preview">
+                    Video Embed Code Provided
+                  </div>
+                ) : (
+                  formData.external_link
+                )}
+              </span>
             </div>
           )}
           <div className="preview-row">
@@ -52,18 +79,26 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
         </div>
 
         <div className="preview-section">
-          <h4>Banner Preview</h4>
+          <h4>{isVideoBanner ? 'Video Thumbnail Preview' : 'Banner Preview'}</h4>
           <div className="banner-preview-image">
             {previewImage ? (
               <img src={previewImage} alt="Banner preview" />
+            ) : isVideoBanner ? (
+              <div className="no-thumbnail">No thumbnail uploaded</div>
             ) : (
               <div className="no-image">No image uploaded</div>
             )}
           </div>
+          
+          {isVideoBanner && previewImage && (
+            <div className="video-note">
+              Note: This is your video thumbnail preview
+            </div>
+          )}
         </div>
       </div>
 
-     <div className="preview-actions">
+      <div className="preview-actions">
         <button type="button" onClick={onEdit} className="btn btn-edit">
           Edit Details
         </button>
@@ -71,8 +106,9 @@ const BannerPreview = ({ formData, previewImage, bannerCategories, onEdit, onPro
           type="button"
           onClick={onProceed}
           className="btn btn-submit"
+          disabled={isSubmitting}
         >
-          Proceed to Payment
+          {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
         </button>
       </div>
     </div>

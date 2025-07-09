@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('banner_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->string('display_name')->nullable();
             $table->string('size')->nullable();
             $table->integer('limit')->nullable();
+            $table->string('rate')->nullable();
             $table->string('visibility')->nullable();
             $table->timestamps();
         });

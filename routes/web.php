@@ -91,6 +91,7 @@ Route::get('/banners/spot-5', [BannerController::class, 'getSpot5Banners']);
 Route::get('/banners/spot-6', [BannerController::class, 'getSpot6Banners']);
 
 Route::get('/banner-categories', [BannerController::class, 'getBannerCategories']);
+Route::get('/banner/categories', [BannerController::class, 'bannerCategories']);
 
 // Banner Rates
 Route::get('/banner/rates', [BannerController::class, 'bannerRates']);
@@ -129,6 +130,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/admin/directory/rates', [DirectoryController::class, 'getDirectoryRates']);
   Route::post('/admin/update-directory-rates/{id}', [DirectoryController::class, 'updateDirectoryRate']);
   Route::post('/admin/update-subcategories/{type}/{id}', [FrontendController::class, 'updateRate']);
+  Route::get('/admin/banner/categories', [BannerController::class, 'adminBannerCategories']);
+  Route::post('/admin/update-bannerCategories/{field}/{id}', [BannerController::class, 'updateBannerCategoryRate']);
   Route::post('/send-message', [ChatController::class, 'sendMessage']);
   Route::get('/messages/{userId}', [ChatController::class, 'getMessages']);
   Route::get('/active-admins', [ChatController::class, 'getActiveAdmins']);

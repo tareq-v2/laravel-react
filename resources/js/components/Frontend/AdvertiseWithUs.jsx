@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Design/AdvertiseWithUs.css';
+import { FaTimes } from 'react-icons/fa';
 
 const AdvertiseWithUs = () => {
+  const [bannerCategories, setBannerCategories] = useState([]);
+  const [error, setError] = useState('');
   const handleCreateBanner = () => {
     localStorage.removeItem('bannerFormState');
   };
@@ -20,9 +24,36 @@ const AdvertiseWithUs = () => {
     // ... Add all other banner spots from Page 3
   ];
 
+  useEffect(() => {
+      const fetchBannerCategories = async () => {
+        try {
+          const response = await axios.get('/banner/categories');
+          if (response.data) {
+            setBannerCategories(response.data.banner_categories);
+          } else {
+            setError(response.data.message || 'Failed to fetch data');
+          }
+        } catch (err) {
+          setError('Failed to connect to the server. Please try again later.');
+        }
+      };
+
+      fetchBannerCategories();
+    }, []);
+
   return (
+
     <div className="container advertise-container">
       {/* Hero Section */}
+      {error && (
+        <div className="error-message">
+            {/* <FaTimes className="error-icon" /> */}
+            {error}
+            <button onClick={() => setError('')} className="close-button">
+            &times;
+            </button>
+        </div>
+        )}
       <section className="hero-section text-center py-2">
         <h1 className="display-4 mb-4">Advertise With Us</h1>
         <p className="lead">
@@ -32,7 +63,7 @@ const AdvertiseWithUs = () => {
 
       {/* Classified Ads Section */}
       <section className="classified-ads py-4">
-        <h2 className="section-heading mb-4">Classified Ad Rates</h2>
+        <h2 className="section-heading">Classified Ad Rates</h2>
         <p className="text-muted mb-4">Classified ads are active online for 30 days</p>
 
         <div className="row">
@@ -76,7 +107,7 @@ const AdvertiseWithUs = () => {
 
       {/* Business Directory Section */}
       <section className="business-directory py-4 bg-light">
-        <h2 className="section-heading mb-4">Business Directory Rates</h2>
+        <h2 className="section-heading">Business Directory Rates</h2>
 
         <div className="featured-listing mb-5 p-4">
           <h5 className="text-primary">Featured Directory Listing Option:</h5>
@@ -106,31 +137,29 @@ const AdvertiseWithUs = () => {
 
       {/* Banner Advertising Section */}
       <section className="banner-ads py-4">
-        <h2 className="section-heading mb-4">Graphic Banner & Video Rates</h2>
+        <h2 className="section-heading">Graphic Banner & Video Rates</h2>
 
         <div className="table-responsive">
-            <table className="table table-striped table-bordered table-hover mb-5">
+            <table className="table table-striped table-bordered table-hover mb-3">
                 <thead className="table-dark">
                 <tr>
                     <th scope="col" className="p-3">SPOT#</th>
-                    <th scope="col" className="p-3">DESCRIPTION</th>
                     <th scope="col" className="p-3">DISPLAY PAGE</th>
                     <th scope="col" className="p-3">PIXEL SIZE</th>
                     <th scope="col" className="p-3">MONTHLY</th>
                 </tr>
                 </thead>
                 <tbody>
-                {bannerRates.map((rate, index) => (
+                {bannerCategories.map((rate, index) => (
                     <tr key={index}>
-                    <td className="p-3 font-weight-bold">{rate.spot}</td>
-                    <td className="p-3">{rate.description}</td>
-                    <td className="p-3">{rate.display}</td>
+                    <td className="p-3 font-weight-bold">{rate.name}</td>
+                    <td className="p-3 font-weight-bold">{rate.display_name}</td>
                     <td className="p-3"><code>{rate.size}</code></td>
-                    <td className="p-3 text-primary font-weight-bold">{rate.price}</td>
+                    <td className="p-3 text-primary font-weight-bold">${rate.rate}</td>
                     </tr>
                 ))}
                 </tbody>
-                <caption className="text-muted small px-3">All rates in USD</caption>
+                <caption className="text-muted text-right small px-3">All rates in USD</caption>
             </table>
             </div>
 
