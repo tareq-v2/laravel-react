@@ -21,11 +21,7 @@ use App\Http\Controllers\PostPermissionController;
 use App\Http\Controllers\JobOfferController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
-use App\Models\BannerCategory;
-use App\Models\Banner;
-use Carbon\Carbon;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
+
 
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 

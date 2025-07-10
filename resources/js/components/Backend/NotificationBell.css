@@ -1,7 +1,6 @@
 /* NotificationBell.css */
 .notification-container {
-  position: relative;
-  margin-right: 1.5rem;
+  position: relative
 }
 
 .notification-bell {

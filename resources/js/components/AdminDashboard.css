@@ -288,7 +288,6 @@
 .quick-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
 }
 .header-left{
     padding: 5px 25px;
@@ -436,7 +435,7 @@ th {
 /* AdminDashboard.css */
 .notification-container {
     position: relative;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .notification-bell {
