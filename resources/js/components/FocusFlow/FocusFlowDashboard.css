@@ -1,0 +1,144 @@
+.focus-flow-dashboard {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.task-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.tools-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.task-item {
+  background: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  border-left: 4px solid #6c757d;
+}
+
+.task-item.high {
+  border-left-color: #dc3545;
+}
+
+.task-item.medium {
+  border-left-color: #ffc107;
+}
+
+.task-item.low {
+  border-left-color: #28a745;
+}
+
+.task-item.completed {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.priority-badge {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #6c757d;
+  color: white;
+}
+
+.task-item.high .priority-badge {
+  background: #dc3545;
+}
+
+.task-item.medium .priority-badge {
+  background: #ffc107;
+  color: #212529;
+}
+
+.task-item.low .priority-badge {
+  background: #28a745;
+}
+
+.task-manager {
+  margin-top: 20px;
+}
+
+.add-task-btn {
+  margin-bottom: 15px;
+}
+
+.task-form {
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.pomodoro-timer {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.timer-display {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.timer-mode {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.markdown-notes {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.notes-actions {
+  margin-bottom: 15px;
+}
+
+.notes-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.notes-preview {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  min-height: 200px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
