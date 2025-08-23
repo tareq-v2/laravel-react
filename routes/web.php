@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 
+
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
 
 Route::get('/test-broadcast', function() {

@@ -44,7 +44,12 @@ class NewMessage implements ShouldBroadcast
             'sender_id' => $this->message->sender_id,
             'receiver_id' => $this->message->receiver_id,
             'message' => $this->message->message,
-            'created_at' => $this->message->created_at->toDateTimeString()
+            'created_at' => $this->message->created_at->toDateTimeString(),
+            'tempId' => $this->message->temp_id
         ];
+    }
+    
+    public function broadcastAs() {
+        return 'NewMessage'; // Explicit event name
     }
 }

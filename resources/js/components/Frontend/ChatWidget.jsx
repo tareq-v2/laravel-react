@@ -96,24 +96,25 @@ const ChatWidget = () => {
             };
             fetchMessages();
 
-            // Listen for new messages
             echo.private(`chat.${selectedAdmin.id}`)
-            .listen('NewMessage', (message) => {
-                console.log('Received real-time message:', message);
-                setMessages(prev => {
-                    // Replace temporary message or add new one
-                    const existingIndex = prev.findIndex(m => 
-                        m.isTemporary && m.message === message.message
-                    );
-                    
-                    if (existingIndex >= 0) {
-                        const newMessages = [...prev];
-                        newMessages[existingIndex] = message;
-                        return newMessages;
-                    }
-                    return [...prev, message];
+                .listen('.NewMessage', (payload) => { // Note the dot prefix
+                    console.log('Received real-time message:', payload);
+                    setMessages(prev => {
+                        const existingIndex = prev.findIndex(m => 
+                            m.tempId === payload.tempId // Match by tempId
+                        );
+                        
+                        if (existingIndex >= 0) {
+                            const newMessages = [...prev];
+                            newMessages[existingIndex] = {
+                                ...payload.message,
+                                id: payload.message.id // use real ID
+                            };
+                            return newMessages;
+                        }
+                        return [...prev, payload.message];
+                    });
                 });
-            });
         }
     }, [selectedAdmin, echo]);
 
@@ -127,47 +128,31 @@ const ChatWidget = () => {
         e.preventDefault();
         if (!newMessage.trim() || !currentUserId) return;
 
-        const token = localStorage.getItem('token');
         const tempId = Date.now();
-        
-        // Create temporary message
         const tempMessage = {
-            id: tempId,
+            tempId, // Store tempId here
             sender_id: currentUserId,
             receiver_id: selectedAdmin.id,
             message: newMessage,
-            created_at: new Date().toISOString(),
-            isTemporary: true,
-            isFailed: false
+            isTemporary: true
         };
 
-        // Optimistic update
         setMessages(prev => [...prev, tempMessage]);
         setNewMessage('');
 
         try {
-            console.log('Attempting to send message...'); // Debug
-            const response = await axios.post('/send-message', {
+            await axios.post('/send-message', {
                 receiver_id: selectedAdmin.id,
-                message: newMessage
-            }, {
-                headers: { Authorization: `Bearer ${token}` },
-                timeout: 5000 // Add timeout
+                message: newMessage,
+                tempId // Send to backend
+            }, { 
+                headers: { Authorization: `Bearer ${token}` }
             });
-            
-            console.log('Message sent successfully:', response.data); // Debug
-            
-            // If we don't get a Pusher event within 3 seconds, force update
-            setTimeout(() => {
-                setMessages(prev => prev.map(msg => 
-                    msg.id === tempId ? { ...msg, isFailed: true } : msg
-                ));
-            }, 3000);
-            
+
         } catch (error) {
-            console.error('Failed to send message:', error);
+            // Mark as failed
             setMessages(prev => prev.map(msg => 
-                msg.id === tempId ? { ...msg, isFailed: true } : msg
+                msg.tempId === tempId ? { ...msg, isFailed: true } : msg
             ));
         }
     };
