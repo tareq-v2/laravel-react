@@ -31,7 +31,8 @@ class PaymentController extends Controller
 
     public function handlePayment(Request $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey('sk_test_51LESvVLGpkKyPO47ElCFEYUmLkNw8iuzjB7Equ9ZB9tOzWdLxQ6akdTQp3plJmpDQ72AEEjl611uVCmzZqFAudem00BzXM9pN1');
+
         DB::beginTransaction();
 
         try {
@@ -40,7 +41,7 @@ class PaymentController extends Controller
 
             $draftData = json_decode($draft->data, true);
             $modelType = $draftData['model'];
-            
+
             if (!isset($this->modelProcessors[$modelType])) {
                 throw new \Exception("Unknown model type: $modelType");
             }
@@ -84,7 +85,7 @@ class PaymentController extends Controller
     protected function getValidDraft($sessionId)
     {
         $expiredThreshold = Carbon::now()->subHours(config('drafts.expiration_hours', 2));
-        
+
         // Clean up expired drafts
         DraftPost::where('session_id', $sessionId)
             ->where('created_at', '<', $expiredThreshold)
@@ -178,7 +179,7 @@ class PaymentController extends Controller
         foreach ($attachments as $attachment) {
             $oldPath = public_path("drafts/attachments/{$attachment->image}");
             $newPath = public_path("jobOffers/attachments/{$attachment->image}");
-            
+
             if (File::exists($oldPath)) {
                 File::move($oldPath, $newPath);
             }
@@ -201,7 +202,7 @@ class PaymentController extends Controller
         foreach ($thumbnailAttachments as $attachment) {
             $oldPath = public_path("drafts/attachments/{$attachment->image}");
             $newPath = public_path("directory/attachments/{$attachment->image}");
-            
+
             if (File::exists($oldPath)) {
                 File::move($oldPath, $newPath);
             }
@@ -248,7 +249,7 @@ class PaymentController extends Controller
     protected function sendConfirmationEmail($post, $paymentIntentId, $email)
     {
         $userName = Auth::check() ? Auth::user()->name : 'Guest';
-        
+
         if ($post instanceof JobOffer) {
             $post->load('images');
             $post->images_url = $post->images->map(function($image) {
@@ -259,9 +260,9 @@ class PaymentController extends Controller
                 ];
             });
         }
-        
+
         // Add similar processing for other models if needed
-        
+
         Mail::to($email)->send(new AdOrderMail($post, $paymentIntentId, $userName));
     }
 
