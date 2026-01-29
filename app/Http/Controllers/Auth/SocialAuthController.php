@@ -25,11 +25,11 @@ class SocialAuthController extends Controller
         $this->handleSocialCallback('google', request());
     }
 
-    private function handleSocialCallback($provider, Request $request)    
-    {   
+    private function handleSocialCallback($provider, Request $request)
+    {
         try {
             $code = $request->input('code');
-        
+
             // Exchange code for access token
             $response = Http::post('https://oauth2.googleapis.com/token', [
                 'code' => $code,
@@ -40,13 +40,12 @@ class SocialAuthController extends Controller
             ]);
             // dd($response);
             $accessToken = $response->json()['access_token'];
-            
+
             // Get user data with access token
             $socialUser = Socialite::driver($provider)
                 ->stateless()
                 ->userFromToken($accessToken);
             // Get the social user from the provider
-            dd($socialUser);
             // Find or create the user in your database
             $user = User::where('email', $socialUser->getEmail())->first();
 
@@ -85,15 +84,15 @@ class SocialAuthController extends Controller
     }
 
     // private function handleSocialCallback($provider)
-    // {   
+    // {
     //     // dd($this->getAccessToken(request()->session()->token()));
     //     // $socialUser = Socialtite();
     //     try {
     //         $socialUser = Socialite::driver('google');
 
-    //         // Find or create the user in your databasen 
+    //         // Find or create the user in your databasen
     //         $user = User::where(['email' => $socialUser->email])->first();
-    
+
     //         if (!$user) {
     //             $user = User::create([
     //                 'name' => $socialUser->name,
@@ -111,19 +110,19 @@ class SocialAuthController extends Controller
     //                 ]);
     //             }
     //         }
-    
+
     //         // Log in the user
     //         Auth::login($user);
-    
+
     //         // Create a token for the user
     //         $token = $user->createToken('token')->plainTextToken;
-    
+
     //         // Return the token and user data
     //         return response()->json([
     //             'token' => $token,
     //             'user' => $user,
     //         ]);
-    
+
     //     } catch (\Exception $e) {
     //         return response()->json(['error' => 'Authentication failed'. $e], 401);
     //     }

@@ -21,6 +21,12 @@ use App\Http\Controllers\PostPermissionController;
 use App\Http\Controllers\JobOfferController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\FocusFlowController;
+use App\Models\BannerCategory;
+use App\Models\Banner;
+use Carbon\Carbon;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 
 
 Route::post('/ads/final/post', [PaymentController::class, 'handlePayment']);
@@ -181,6 +187,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('/admin/blog/store', [BlogController::class, 'store']);
   Route::post('/admin/blog/edit/{id}', [BlogController::class, 'update']);
   Route::delete('/admin/blog/delete/{id}', [BlogController::class, 'destroy']);
+
+  Route::apiResource('focus-flows', FocusFlowController::class);
+  Route::patch('focus-flows/update-order', [FocusFlowController::class, 'updateOrder']);
 });
 Route::get('/user/blogs', [BlogController::class, 'allBlog']);
 Route::post('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);

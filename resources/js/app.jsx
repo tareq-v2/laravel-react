@@ -59,6 +59,7 @@ import BannerRates from './components/Backend/banner/BannerRates';
 import DirectoryRates from './components/Backend/directory/DirectoryRates';
 import PostVerification from './components/Backend/PostVerification';
 import CreateBannerForm from './components/Frontend/create/banner/CreateBannerForm';
+import FocusFlowDashboard from './components/FocusFlow/FocusFlowDashboard';
 
 function App() {
   const googleClientId = '219618520859-ov7gt3l7b0rqjorih253tndtml7nkvvd.apps.googleusercontent.com';
@@ -87,6 +88,14 @@ function App() {
                 <Layout><Payment /></Layout>
               </ProtectedRoute>
               </Elements>
+            }
+          />
+          <Route
+            path="/focus"
+            element={
+                <ProtectedRoute allowedRoles={['customer', 'admin']}>
+                <Layout><FocusFlowDashboard /></Layout>
+                </ProtectedRoute>
             }
           />
           <Route
